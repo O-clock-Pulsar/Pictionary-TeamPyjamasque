@@ -13,19 +13,31 @@
   "author": "Simon MARTIN and Pulsar",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^3.0.6",
     "body-parser": "^1.19.0",
     "dotenv": "^8.0.0",
     "express": "^4.16.4",
+    "mongoose": "^5.6.7",
     "pug": "^2.0.3",
+    "socket.io": "^2.2.0",
     "ts-node": "^8.1.0",
     "typescript": "^3.4.3"
   },
   "devDependencies": {
+    "@types/bcrypt": "^3.0.0",
     "@types/body-parser": "^1.17.0",
+    "@types/chai": "^4.1.7",
     "@types/dotenv": "^6.1.1",
     "@types/express": "^4.16.1",
+    "@types/mocha": "^5.2.7",
+    "@types/mongoose": "^5.5.11",
+    "@types/morgan": "^1.7.36",
     "@types/node": "^11.13.5",
     "@types/pug": "^2.0.4",
+    "@types/socket.io": "^2.1.2",
+    "chai": "^4.2.0",
+    "mocha": "^6.2.0",
+    "morgan": "^1.9.1",
     "ts-node-dev": "^1.0.0-pre.32"
   }
 }
