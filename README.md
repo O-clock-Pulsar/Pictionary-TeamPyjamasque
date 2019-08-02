@@ -34,3 +34,19 @@ If guesser provide the good answer, he get some points
 + if he is the first to provide the good answer, increase points by 3. (He wont be able to provide other answer until the end of this turn)
 + if he provide the good answer but not first, increase point by one. (He wont be able to provide other answer until the end of this turn)
 + if guesser does not provide a good answer, score does not change
+Party will end when all players had drawn 3 times.
+At the end of the game, the player with the biggest amount of points win the party and all players will be back on homePage to restart a new game and have fun again !!
+### Incoming features
+O'Draw is a project in developpement and some tools will be implement after the MVP version release.
+The team has already some ideas of the next tools to propose but if you have some ideas, send us a message ;)
+We will propose soon:
++ Authentification via facebook, google, others...
++ A profil dashBoard that allowed you to modify informations or had an avatar
++ Possibility to pick a word in a list before drawing
++ A friend list
++ A chatbox
++ Modify timer
++ choose lvl difficulty of words list
++ Save draws
++ ...
+## contact the Pyjamasque team
