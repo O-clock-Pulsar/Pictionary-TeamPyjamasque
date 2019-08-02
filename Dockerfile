@@ -1,15 +1,8 @@
-# on commence avec un environnement nodeJS
-FROM node:12.4.0-alpine
+# on déclare une "image de base"
+FROM oclock/ts:alpha
 
-# on copie le code source local dans l'image
+# on doit copier les sources
 COPY . /MyApp
 
-# on va se placer dans le répertoire qu'on vient de créer
-WORKDIR /MyApp
-
-# on installe les node_modules
+# on installe les modules manquants
 RUN npm install
-
-# un ENTRYPOINT+CMD pour lancer le tout
-ENTRYPOINT ["npm"]
-CMD ["run", "dev"]
