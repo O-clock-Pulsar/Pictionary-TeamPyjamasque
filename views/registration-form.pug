@@ -1,0 +1,37 @@
+extends includes/layout
+
+block title
+    title Inscription
+block content
+    div(class="registration-form")
+        div(class="row")
+            div(class="col-12 text-center") 
+                h1 Inscription
+        form(method="post" action="/register")
+            div(class="row")
+                div(class="col-2")
+                div(class="col-8 text-center form-group")
+                    label(for="username") Nom d'utilisateur
+                    input(type="text" class="form-control" id="username" required autofocus)
+                div(class="col-2")
+            div(class="row")
+                div(class="col-2")
+                div(class="col-8 text-center form-group")
+                    label(for="email") Email
+                    input(type="email" class="form-control" id="email" required)
+                div(class="col-2")
+            div(class="row")
+                div(class="col-2")
+                div(class="col-8 text-center form-group")
+                    label(for="password") Mot de passe
+                    input(type="password" class="form-control" id="password" required)
+                div(class="col-2")
+            div(class="row")
+                div(class="col-2")
+                div(class="col-8 text-center form-group")
+                    label(for="password-confirmation") Confirmation de mot de passe
+                    input(type="password-confirmation" class="form-control" id="password-confirmation" required)
+                div(class="col-2")
+            div(class="row")
+                div(class="col-12 text-center form-group")
+                    button(type="submit" class="btn btn-primary") Submit

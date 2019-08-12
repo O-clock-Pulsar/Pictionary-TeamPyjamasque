@@ -1,0 +1,8 @@
+.registration-form div{
+    padding: 1vh;
+    font-size: 15pt;
+}
+
+.registration-form input { 
+    text-align: center; 
+}
