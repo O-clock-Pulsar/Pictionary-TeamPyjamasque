@@ -6,7 +6,7 @@ import RegistrationController from './controllers/registertationController';
 import bodyParser from 'body-parser';
 
 const router: express.Router = express.Router();
-const urlencodedParser = bodyParser.urlencoded({extended: false});
+const urlencodedParser = bodyParser.urlencoded({extended: true});
 
 
 // on définit des routes

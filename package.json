@@ -19,8 +19,10 @@
     "express": "^4.16.4",
     "mongoose": "^5.6.7",
     "pug": "^2.0.3",
+    "reflect-metadata": "^0.1.13",
     "socket.io": "^2.2.0",
     "ts-node": "^8.1.0",
+    "typedi": "^0.8.0",
     "typescript": "^3.4.3"
   },
   "devDependencies": {
@@ -31,8 +33,13 @@
     "@types/express": "^4.16.1",
     "@types/mocha": "^5.2.7",
     "@types/mongoose": "^5.5.11",
+<<<<<<< HEAD
     "@types/morgan": "^1.7.37",
     "@types/node": "^11.13.5",
+=======
+    "@types/morgan": "^1.7.36",
+    "@types/node": "^11.13.20",
+>>>>>>> Created UserService with createUser method. Includes install of typedi. Closes #32.
     "@types/pug": "^2.0.4",
     "@types/socket.io": "^2.1.2",
     "chai": "^4.2.0",
