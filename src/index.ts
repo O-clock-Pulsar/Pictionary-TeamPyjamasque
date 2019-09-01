@@ -4,6 +4,7 @@ import express from 'express';
 import router from "./router";
 import mongoose from 'mongoose';
 import morgan from 'morgan';
+import "reflect-metadata";
 
 const app: express.Express = express();
 const PORT = process.env.PORT || 5050;
