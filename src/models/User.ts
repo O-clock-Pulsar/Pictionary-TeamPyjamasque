@@ -5,10 +5,8 @@ const hash = (data: string): string => {
     return bcrypt.hashSync(data, process.env.saltRounds || 1);
 };
 
-const emailHash = (unhashedEmail: string): string => {
-    if (emailRegExp.test(unhashedEmail)){
-        return hash(unhashedEmail);
-    }
+const emailCheck = (unhashedEmail: string): any => {
+    emailRegExp.test(unhashedEmail);
 }
 
 const emailRegExp: RegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -37,7 +35,9 @@ const userSchema = new Schema(
             type: String,
             required: true,
             unique: true,
-            set: emailHash
+            validate: {
+                validator: emailCheck
+            }
         },
         password: {
             type: String,
