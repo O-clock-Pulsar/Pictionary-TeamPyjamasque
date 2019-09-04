@@ -5,15 +5,30 @@ import {IRegistrationResult} from '../Interfaces/UserService'
 @Service()
 export default class UserService {
 
-    async createUser({username, email, password, confirmation}) : Promise<IRegistrationResult> {
+    async createUser({username, email, password, confirmation}) {
         let messages: Array<string> = [];
+        let ids: Array<string> = [];
         let error: boolean;
         let user: IUser;
-        if (!username || !email || !password || !confirmation){
+        if (!username){
+            ids.push("username");
+        }
+        if(!email){
+            ids.push("username");
+        }
+        if(!password){
+            ids.push("username");
+        } 
+        if(!confirmation){
+            ids.push("username");
+        }
+        if(messages.length !== 0){
             messages.push("Tous les champs sont réquis.");
         }
         if (password !== confirmation){
             messages.push("Les mots de passe ne sont pas identiques.");
+            ids.push("password");
+            ids.push("confirmation");
         }
         if (messages.length === 0){
             email = email.trim().toLowerCase();
@@ -22,7 +37,10 @@ export default class UserService {
                 if (!user){
                     username = username.trim();
                     user = await new User({username, password, email}).save();
-                }   else messages.push("L'utilisateur existe déjà.");
+                }   else {
+                    messages.push("L'utilisateur existe déjà. Veuillez désigner un autre email.");
+                    ids.push("email");
+                }
             } catch (e) {messages.push("Une erreur inconnue s'est produite.")}
         }
         if(messages.length !== 0) {
@@ -31,6 +49,6 @@ export default class UserService {
             error = false;
             messages.push("L'utilisateur a été créé.");
         };
-        return {user, error, messages};
+        return {user, error, messages, ids};
     }
 }

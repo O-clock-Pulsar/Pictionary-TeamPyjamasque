@@ -13,7 +13,7 @@ export default class RegistrationController {
   static async postRegister(request: Request, response: Response) {
     const formData = request.body;
     const results = await userService.createUser(formData);
-    console.log(results)
+    
   }
 
 }
