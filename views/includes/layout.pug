@@ -6,10 +6,11 @@ html(lang="en")
         link(rel="stylesheet", href="css/style.css")
         script(src="js/scripts.js")
         link(rel="stylesheet", type="text/css", href="libraries/bootstrap.min.css")
-        script(src="libraries/bootstrap.bundle.min.js")
         script(src="libraries/jquery-3.4.1.min.js")
+        script(src="libraries/bootstrap.bundle.min.js")
         block title
             title Pictionary
         body
             div(class="container-fluid")
+                div(class="row")!= flash
                 block content
