@@ -5,11 +5,28 @@ import router from "./router";
 import mongoose from 'mongoose';
 import morgan from 'morgan';
 import "reflect-metadata";
+import flash from 'express-flash-notification';
+import session from 'express-session';
 
 const app: express.Express = express();
 const PORT = process.env.PORT || 5050;
 
 dotenv.config();
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || "dummy", 
+  resave: true,
+  saveUninitialized: false
+}));
+
+app.use(flash(app, {
+  sessionName: 'flash',
+  utilityName: 'flash',
+  localsName: 'flash',
+  viewName: 'includes/flash',
+  beforeSingleRender: function(item, callback){ callback(null, item) },
+  afterAllRender: function(htmlFragments, callback){ callback(null, htmlFragments.join('\n')) }
+}));
 
 // setup view engine
 app.set('views', 'views');

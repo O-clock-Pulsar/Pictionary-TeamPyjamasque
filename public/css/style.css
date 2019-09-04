@@ -6,3 +6,8 @@
 .registration-form input { 
     text-align: center; 
 }
+
+.flash-alert {
+    width:100%;
+    text-align: center;
+}
