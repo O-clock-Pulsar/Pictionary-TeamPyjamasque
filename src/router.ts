@@ -2,7 +2,7 @@
 import express from 'express';
 
 import MainController from './controllers/mainController';
-import RegistrationController from './controllers/registertationController';
+import RegistrationController from './controllers/registrationController';
 import bodyParser from 'body-parser';
 
 const router: express.Router = express.Router();
