@@ -5,7 +5,7 @@ import {IRegistrationResult} from '../Interfaces/UserService'
 @Service()
 export default class UserService {
 
-    async createUser({username, email, password, confirmation}) {
+    async createUser({username, email, password, confirmation}): Promise<IRegistrationResult> {
         let messages: Array<string> = [];
         let ids: Array<string> = [];
         let error: boolean;
@@ -33,12 +33,12 @@ export default class UserService {
         if (messages.length === 0){
             email = email.trim().toLowerCase();
             try{
-                user = await User.findOne({email});
+                user = await User.findOne({$or:[{email}, {username}]});
                 if (!user){
                     username = username.trim();
                     user = await new User({username, password, email}).save();
                 }   else {
-                    messages.push("L'utilisateur existe déjà. Veuillez désigner un autre email.");
+                    messages.push("L'utilisateur existe déjà. Veuillez désigner un autre email ou nom d'utilisateur.");
                     ids.push("email");
                 }
             } catch (e) {messages.push("Une erreur inconnue s'est produite.")}
