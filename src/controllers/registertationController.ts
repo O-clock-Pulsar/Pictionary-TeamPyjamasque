@@ -15,14 +15,17 @@ export default class RegistrationController {
   static async postRegister(request: Request, response: Response) {
     delete request.session.registrationErrors;
     const formData = request.body;
-    const results: IRegistrationResult = await userService.createUser(formData);
-    if (results.error){
+    const result: IRegistrationResult = await userService.createUser(formData);
+    if (result.error){
       let pugVariables = {};
-      results.ids.forEach(id => pugVariables[`${id}Error`] = true);
-      results.messages.forEach(message => request.flash("danger", message, false))
+      result.ids.forEach(id => pugVariables[`${id}Error`] = true);
+      result.messages.forEach(message => request.flash("danger", message, false))
       request.session.registrationErrors = pugVariables;
       response.redirect('/register');
-    } else response.redirect('/login');
+    } else {
+      request.flash("success", result.messages[0], false); 
+      response.redirect('/login');
+    }
   }
 
 }
