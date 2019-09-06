@@ -10,19 +10,12 @@ export default class UserService {
         let ids: Array<string> = [];
         let error: boolean;
         let user: IUser;
-        if (!username){
-            ids.push("username");
+        for (let key in arguments[0]){
+            if (!arguments[0][key]){
+                ids.push(key);
+            }
         }
-        if(!email){
-            ids.push("username");
-        }
-        if(!password){
-            ids.push("username");
-        } 
-        if(!confirmation){
-            ids.push("username");
-        }
-        if(messages.length !== 0){
+        if(ids.length !== 0){
             messages.push("Tous les champs sont réquis.");
         }
         if (password !== confirmation){
@@ -30,8 +23,8 @@ export default class UserService {
             ids.push("password");
             ids.push("confirmation");
         }
-        if (messages.length === 0){
-            email = email.trim().toLowerCase();
+        if (email){
+        email = email.trim().toLowerCase();
             try{
                 user = await User.findOne({$or:[{email}, {username}]});
                 if (!user){
