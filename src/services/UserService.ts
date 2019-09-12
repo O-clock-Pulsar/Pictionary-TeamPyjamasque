@@ -23,7 +23,7 @@ export default class UserService {
             ids.push("password");
             ids.push("confirmation");
         }
-        if (email){
+        if (email || username){
         email = email.trim().toLowerCase();
             try{
                 user = await User.findOne({$or:[{email}, {username}]});
