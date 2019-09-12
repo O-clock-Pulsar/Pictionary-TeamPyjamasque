@@ -11,3 +11,7 @@
     width:100%;
     text-align: center;
 }
+
+#avatar-preview{
+    max-height: 25vh;
+}
