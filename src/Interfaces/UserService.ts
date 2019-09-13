@@ -6,3 +6,8 @@ export interface IRegistrationResult {
     messages: Array<string>
     ids: Array<string>
 }
+
+export interface IAvatarResult {
+    error: boolean;
+    message: string
+}

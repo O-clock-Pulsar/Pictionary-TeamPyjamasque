@@ -45,7 +45,7 @@ const userSchema = new Schema(
             set: hash
         },
         avatar: {
-            type: Buffer
+            type: String
         },
         victories: {
             type: Number,

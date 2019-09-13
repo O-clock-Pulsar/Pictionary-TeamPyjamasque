@@ -1,3 +1,5 @@
 node_modules/
 .env
 yarn-error.log
+public/uploads/avatar
+!public/uploads/avatar/.gitkeep

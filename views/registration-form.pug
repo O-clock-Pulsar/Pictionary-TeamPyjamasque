@@ -7,7 +7,7 @@ block content
         div(class="row")
             div(class="col-12 text-center") 
                 h1 Inscription
-        form(method="post" action="/register")
+        form(method="post" action="/register" enctype="multipart/form-data")
             div(class="row")
                 div(class="col-md-1")
                 div(class="col-md-6 text-center form-group align-self-center")
@@ -16,6 +16,7 @@ block content
                 div(class="col-md-4 text-center form-group")
                     label(for="avatar") Votre avatar
                     input(type="file" class=(avatarError ? "is-invalid form-control-file" : "form-control-file") id="avatar" name="avatar" accept="image/*")
+                    small(class="form-text text-muted") Limite: 5MB
                     img(id="avatar-preview" class="img-fluid")
                 div(class="col-md-1")
             div(class="row")
