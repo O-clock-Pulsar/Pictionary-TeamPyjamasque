@@ -1,6 +1,7 @@
 import { Service } from "typedi";
 import User, { IUser } from '../models/User';
-import {IRegistrationResult} from '../Interfaces/UserService'
+import {IRegistrationResult, IAvatarResult} from '../Interfaces/UserService'
+import {promises} from 'fs';
 
 @Service()
 export default class UserService {
@@ -43,5 +44,13 @@ export default class UserService {
             messages.push("L'utilisateur a été créé.");
         };
         return {user, error, messages, ids};
+    }
+
+    async uploadAvatar(avatarData: Express.Multer.File, userInfo: IUser): Promise<IAvatarResult> {
+        try{
+            const user = await User.findByIdAndUpdate(userInfo.id, {avatar: avatarData.originalname}, {new: true})
+            await promises.writeFile(`${__dirname}../../../public/uploads/avatars/${user.avatar}`, avatarData.buffer);
+            return {error: false, message: "L'avatar de l'utilisateur a été enregistré avec succès."}
+        } catch (e) {return {error: true, message: "Une erreur s'est produite lors de'enregistrement de l'image, mais le compte a été créé."}}
     }
 }
