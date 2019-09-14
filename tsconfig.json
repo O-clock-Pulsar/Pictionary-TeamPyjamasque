@@ -4,6 +4,6 @@
         "esModuleInterop": true,
         "target": "es6",
         "outDir": "dist",
-        "baseUrl": ".",
+        "baseUrl": "."
     }
 }
