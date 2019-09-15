@@ -1,7 +1,21 @@
-<!DOCTYPE html>
-html(lang="en")
-  head
-    meta(charset="UTF-8")
-    title First Page
-  body
-    h1 Hello World! 
+extends includes/layout
+
+block title
+    title ODRAW
+block content
+  div(class="row")
+    div(class="col-12 text-center")
+      div(class="jumbotron")
+        div(class="row")
+          div(class="col-12 text-center")
+            h1(class="display-1") ODRAW
+        div(class="row")
+          div(class="col-12 text-center")
+            hr
+        div(class="row")
+          div(class="col-md-6 text-center")
+            a(href="./login")
+              button(type="button" class="btn btn-success my-4 btn-lg") Connexion
+          div(class="col-md-6 text-center")
+            a(href="./register")
+              button(type="button" class="btn btn-info my-4 btn-lg") Enregistrement
