@@ -1,0 +1,32 @@
+extends includes/layout
+
+include includes/navbar
+
+block title
+    title Liste des parties ouvertes
+block content
+  div(class="row")
+    div(class="col-12 text-center")
+      h1 Parties en cours
+  div(class="row")
+    div(class="col-12 text-center")
+      a(href="./games/create")
+        button(type="button" class="btn btn-info my-4 btn-lg") Créer une partie
+  div(class="row")
+    div(class="col-12")
+      table(class="table table-hover")
+        thead(class="thead-dark")
+          tr
+            th(scope="col") Numéro
+            th(scope="col") Hôte
+            th(scope="col") Jouers
+            th(scope="col") Place restantes
+            th(scope="col") Heure de démarrage
+          tbody
+            each game in games
+              tr(class="table-active")
+                th(scope="row")=game.id
+                td=game.host
+                td=game.players
+                td=game.placesLeft
+                td=game.startTime
