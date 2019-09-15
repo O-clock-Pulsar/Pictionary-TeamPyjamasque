@@ -1,0 +1,13 @@
+extends includes/layout
+
+include includes/navbar
+
+block title
+    title Liste des parties ouvertes
+block content
+    div(class="jumbotron text-center")
+        h1(class="display-1") Aucune partie en cours
+          div(class="row")
+            div(class="col-12 text-center")
+              a(href="./games/create")
+                button(type="button" class="btn btn-info my-4 btn-lg") Créer une partie
