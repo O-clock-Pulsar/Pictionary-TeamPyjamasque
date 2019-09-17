@@ -9,9 +9,14 @@ import flash from 'express-flash-notification';
 import session from 'express-session';
 import AuthChecker from './middlewares/AuthChecker';
 import cookieParser from 'cookie-parser';
+import Server from './services/SocketIOServer';
 
 const app: express.Express = express();
 const PORT = process.env.PORT || 5050;
+const SOCKET_PORT = process.env.SOCKET_IO_PORT || 5060;
+const socketServer = new Server(SOCKET_PORT);
+
+socketServer.start();
 
 dotenv.config();
 
