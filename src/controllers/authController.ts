@@ -8,7 +8,7 @@ const userService = Container.get(UserService);
 export default class AuthController {
 
   static getLogin(request : Request, response: Response) {
-    response.render('registration-form', {login: true});
+    response.render('user-form', {login: true});
   }
 
   static async postLogin(request: Request, response: Response){
@@ -20,7 +20,7 @@ export default class AuthController {
         request.flash("danger", result.message, false);
         response.redirect('/login');
       }
-      request.session.username = username.name;
+      request.session.username = username;
       response.redirect('/home');
   }
 

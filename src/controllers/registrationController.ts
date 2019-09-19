@@ -1,7 +1,7 @@
 import {Request, Response} from 'express';
 import { Container } from 'typedi';
 import UserService from '../services/UserService';
-import {IRegistrationResult, IAvatarResult} from '../Interfaces/UserService'
+import {IRegistrationResult, UserServiceResults} from '../Interfaces/UserService';
 
 const userService = Container.get(UserService);
 export default class RegistrationController {
@@ -9,7 +9,7 @@ export default class RegistrationController {
   static getRegister(request : Request, response: Response) {
     const pugVariables = request.session.registrationErrors;
     delete request.session.registrationErrors;
-    response.render('registration-form', pugVariables);
+    response.render('user-form', pugVariables);
   }
 
   static async postRegister(request: Request, response: Response) {
@@ -24,7 +24,7 @@ export default class RegistrationController {
       response.redirect('/register');
     } else {
     if(avatarData){
-        let avatarResult: IAvatarResult = await userService.uploadAvatar(avatarData, result.user);
+        let avatarResult: UserServiceResults = await userService.uploadAvatar(avatarData, result.user);
         if (avatarResult.error){
           request.flash("danger", avatarResult.message, false);
           response.redirect('/login');
