@@ -7,31 +7,41 @@ block content
         div(class="row")
             div(class="col-12 text-center") 
                 h1 Inscription
-        form(method="post" action="/register")
+        form(method="post" action="/register" enctype="multipart/form-data")
             div(class="row")
-                div(class="col-2")
-                div(class="col-8 text-center form-group")
+                div(class="col-md-1")
+                div(class="col-md-6 text-center form-group align-self-center")
                     label(for="username") Nom d'utilisateur
-                    input(type="text" class="form-control" id="username" required autofocus)
-                div(class="col-2")
+                    input(type="text" class=(usernameError ? "is-invalid form-control" : "form-control") id="username" name="username" required autofocus)
+                div(class="col-md-4 text-center form-group")
+                    label(for="avatar") Votre avatar
+                    input(type="file" class=(avatarError ? "is-invalid form-control-file" : "form-control-file") id="avatar" name="avatar" accept="image/*")
+                    small(class="form-text text-muted") Limite: 5MB
+                    img(id="avatar-preview" class="img-fluid")
+                div(class="col-md-1")
             div(class="row")
-                div(class="col-2")
-                div(class="col-8 text-center form-group")
+                div(class="col-md-1")
+                div(class="col-md-6 text-center form-group")
                     label(for="email") Email
-                    input(type="email" class="form-control" id="email" required)
-                div(class="col-2")
+                    input(type="email" class=(emailError ? "is-invalid form-control" : "form-control") id="email" name="email" required)
+                div(class="col-md-1")
             div(class="row")
-                div(class="col-2")
-                div(class="col-8 text-center form-group")
+                div(class="col-md-1")
+                div(class="col-md-6 text-center form-group")
                     label(for="password") Mot de passe
-                    input(type="password" class="form-control" id="password" required)
-                div(class="col-2")
+                    input(type="password" class=(passwordError ? "is-invalid form-control" : "form-control") id="password" name="password" required)
+                div(class="col-md-1")
             div(class="row")
-                div(class="col-2")
-                div(class="col-8 text-center form-group")
-                    label(for="password-confirmation") Confirmation de mot de passe
-                    input(type="password-confirmation" class="form-control" id="password-confirmation" required)
-                div(class="col-2")
+                div(class="col-md-1")
+                div(class="col-md-6 text-center form-group")
+                    label(for="confirmation") Confirmation de mot de passe
+                    input(type="password" class=(confirmationError ? "is-invalid form-control" : "form-control") id="confirmation" name="confirmation" required)
+                div(class="col-md-1")
             div(class="row")
-                div(class="col-12 text-center form-group")
+                div(class="col-md-1")
+                div(class="col-md-8 text-center form-group")
                     button(type="submit" class="btn btn-primary") Submit
+                div(class="col-md-1")
+block javascript
+    script(src="js/avatarPreview.js")
+
