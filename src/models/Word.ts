@@ -2,26 +2,21 @@ import {Schema, model, Document} from 'mongoose';
 
 interface IWord extends Document {
     word: string,
-    // category: string,
-    // level: number,
+    library_id : number,
 }
 
 const wordSchema = new Schema(
     {
-        worde: {
+        word: {
             type: String,
             required: true,
             unique: true
         },
-        // category : {
-        //     type: String,
-        //     required: true,
-        //     unique: true
-        // },
-        // level: {
-        //     type: Number,
-        //     required: true
-        // }
+        library_id : {
+            type : Number,
+            required : true, 
+            unique: true,
+        }
     }
 )
 
