@@ -14,7 +14,9 @@
 
 #avatar-preview{
     max-height: 25vh;
-}@media (max-width: 500px) {
+}
+
+@media (max-width: 500px) {
     /* Manage Display Headers for Mobile Devices */
     .display-1 {
     font-size: 4.5rem !important;
