@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+
+const fs = require('fs');
+const commitRegex = /[(close)|(closes)|(closed)|(fix)|(fixes)|(fixed)|(resolve)|(resolves)|(resolved)]+ #\d+/i;
+
+console.log("\x1b[35m", "Checking commit message", "\x1b[0m");
+
+const message = fs.readFileSync(process.argv[2], 'utf8').trim();
+
+if (commitRegex.test(message)){
+	console.log("\x1b[32m", "The commit message is good! Cherrio, good chap! Continue to code away!", "\x1b[0m");
+	process.exit(0);
+} else {
+	console.log("\x1b[31m", "YOU SHALL NOT PASS! This commit message isn't quite right so I need you to try again. It needs a keyword followed by a hashtag and issue number. Something like: Closes #25.", "\x1b[0m");
+	process.exit(1);
+}

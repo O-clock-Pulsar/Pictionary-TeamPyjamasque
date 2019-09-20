@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+
+console.log("\x1b[35m", "Checking branch name before push", "\x1b[0m");
+
+const childProcessExec = require('child_process').exec;
+const util = require('util');
+
+const exec = util.promisify(childProcessExec)
+
+const branchRegex = /\* \d+-\w+/i;
+
+async function checkBranch(){
+  	const branchesOutput = await exec('git branch')
+	const branches = branchesOutput.stdout;
+	const currentBranch = branches.split('\n').find(b => b.charAt(0) === '*')
+	console.log(`Current Branch is ${currentBranch}`);
+	if (branchRegex.test(currentBranch)){
+		console.log("\x1b[32m", "Wow! A riveting branch name! So classy, so cool! Time to send this big boy to the mother ship! #chuckNorrisPushHard", "\x1b[0m");
+		process.exit(0);
+	} else {
+		console.log("\x1b[41m", "Oh boy! This branch name isn't quite right. It needs to start with an issue number, a hyphen and then a short description. Something like this: 25-fixes-drawing-bug", "\x1b[0m");
+		process.exit(1);
+	}
+}
+
+checkBranch();
