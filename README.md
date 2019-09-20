@@ -49,6 +49,9 @@ Soon we will implement:
 + Choose the level of difficulty of the word list
 + Save drawings
 + And more!
+
 ## Contact the Pyjamasque team
 Adam Wier: wier.adam (at) gmail.com
 
+## Installation de githooks
+Dans la racine du projet, executer `node git-hooks/init` pour copier les git hooks dans le bon dossier.
