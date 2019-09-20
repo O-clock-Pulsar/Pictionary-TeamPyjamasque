@@ -7,6 +7,7 @@ import morgan from 'morgan';
 import "reflect-metadata";
 import flash from 'express-flash-notification';
 import session from 'express-session';
+import AuthChecker from './middlewares/AuthChecker'
 
 const app: express.Express = express();
 const PORT = process.env.PORT || 5050;
@@ -38,6 +39,8 @@ app.use(express.static('public'));
 if (process.env.NODE_ENV !== 'prod') {
   app.use(morgan('dev'));
 }
+
+app.use(AuthChecker);
 
 //routing
 app.use(router);
