@@ -1,52 +1,54 @@
 ﻿# O'DRAW
-#### (project handke by TeamPyjamasque (O'clock project) )
+#### (project handled by TeamPyjamasque (O'clock project) )
 ## Synopsis
-O'draw is a game to play Online, with friends or unknow people. Like a pictonnary but more funny, we focus on the ludic experience to provide.
+O'draw is an online game to play with friends or strangers. Like pictonnary but more fun, its goal is to provide a fun gaming experience.
 ## Dev
-O'draw will be MVP project for the beginning, but many options will be in progress (depending on time).
+O'draw is currently at the MVP level for now, but many options are planned (depending on time).
 ## Require
-To play O'draw, you only need a device (computer, smartphone....), an internet connection, that's all.
-You only need to log in (or register) and join/create a game and....
-Go!!!
+To play O'draw, you only need a device (computer, smartphone....), an internet connection, and that's all.
+You just need to log in (or register) and join/create a game and....
+Off you go!!!
 ## Getting started
-If it's you'r first time on O'draw, you first have to create an account by register by providing only an Email and a userName.
-If you are already register, you only have to login.
+If it's your first time on O'draw, you have to create an account by providing an email and a username.
+If you are already registered, you just have to login.
 ### create a game
-In O'draw, you have many way to play a game.
-The easier way to do it is to create a game and then, invite your friends in. When the team is full, game start automaticaly.
+In O'draw, you have many ways to start a game.
+The easiest way is to create a game and then invite your friends. When the team is full, the game will start automaticaly.
 ### Search/ join a game
-If you don't want to create a game, you have 2 option:
-+ you can use the "search' tool to find all game that you can join by clicking on it.
-+ you can wait for an invitation. If some one send you an invitation, a little window will pop and you will be able to join the game or decline the invitation.
+If you don't want to create a game, you have 2 options:
++ you can click on the "search' tool to find all the games that you can join.
++ you can wait for an invitation. If someone sends you an invitation, a little window will pop and you will be able to join the game or decline the invitation.
 ### Play a game
-Now that you have create/join a game, it's time to draw!
-A player begin as a drawer and other player begins as guesser. At the end of each turn, the drawer become a guesser an next player become the drawer.
-Each player will draw a least 3 time.
-* when you play as a drawer
-The drawer will get a random word, select by O'draw. He will be the only one to see that word and he willl have to make other player guess it by drawing in a canvas in a limit time.
-The drawer will see all answers provides by other player but won't be able to chat with them.
-Drawer have a limit time to make the other players guess what he is drawing on canvas.
-If time is off, turn end and another player is pick as drawer.
-* when you play as guesser
-While drawer is drawing (thx Mr Obvious) other player will access live stream draw and will try to guess by typping answer.
-When a guesser type an answer, only the drawer will be able to see it.
-If guesser provide the good answer, he get some points
-+ if he is the first to provide the good answer, increase points by 3. (He wont be able to provide other answer until the end of this turn)
-+ if he provide the good answer but not first, increase point by one. (He wont be able to provide other answer until the end of this turn)
-+ if guesser does not provide a good answer, score does not change
-Party will end when all players had drawn 3 times.
-At the end of the game, the player with the biggest amount of points win the party and all players will be back on homePage to restart a new game and have fun again !!
+Now that you have created/joined a game, it's time to draw!
+One player begins as a drawer and the other players begin as guessers. At the end of each turn, the drawer becomes a guesser and the next player becomes the drawer.
+Each player will draw a least 3 times.
+* When you play as a drawer:
+The drawer will get a random word selected by O'draw. They will be the only one to see that word and will have to get other players to guess it by drawing on a canvas with a time limit.
+The drawer will see all the answers provided by other players but won't be able to chat with them.
+The drawer has a time limit to make the other players guess what they are drawing on the canvas.
+If the time runs out, the turn ends and another player is picked as the drawer.
+* When you play as a guesser:
+While the drawer is drawing (thx Mr. Obvious), other players will see them draw live and will try to guess by typing the answer.
+When a guesser types an answer, only the drawer will be able to see it.
+If the guesser provides the right answer, they get points.
++ If he is the first to provide the right answer, their points increase by 3. (He wont be able to provide other answers until the end of this turn.)
++ If he provides the right answer but not first, their points increase by one. (He wont be able to provide other answer until the end of this turn.)
++ If the guesser does not provide a good answer, the score does not change
+The game will end when all the players have drawn 3 times.
+At the end of the game, the player with the biggest number of points wins the game and all the players will be brought back to the home page to restart a new game and have fun all over again!!
 ### Incoming features
-O'Draw is a project in developpement and some tools will be implement after the MVP version release.
-The team has already some ideas of the next tools to propose but if you have some ideas, send us a message ;)
-We will propose soon:
+O'Draw is a project in developpement and some features will be implemented after the MVP version release.
+The team already has some ideas of the next features to come, but if you have some ideas, send us a message! ;)
+Soon we will implement:
 + Authentification via facebook, google, others...
-+ A profil dashBoard that allowed you to modify informations or had an avatar
-+ Possibility to pick a word in a list before drawing
++ A profile dashboard that allowes you to modify information or have an avatar
++ The possibility to pick a word in a list before drawing
 + A friend list
 + A chatbox
-+ Modify timer
-+ choose lvl difficulty of words list
-+ Save draws
-+ ...
-## contact the Pyjamasque team
++ Modify the game timer
++ Choose the level of difficulty of the word list
++ Save drawings
++ And more!
+## Contact the Pyjamasque team
+Adam Wier: wier.adam (at) gmail.com
+
