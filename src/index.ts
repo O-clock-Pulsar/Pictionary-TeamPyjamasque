@@ -10,7 +10,8 @@ import session from 'express-session';
 import AuthChecker from './middlewares/AuthChecker';
 import cookieParser from 'cookie-parser';
 import Server from './services/SocketIOServer';
-import AuthChecker from './middlewares/AuthChecker'
+import AuthChecker from './middlewares/AuthChecker';
+import cookieParser from 'cookie-parser';
 
 const app: express.Express = express();
 const PORT = process.env.PORT || 5050;
