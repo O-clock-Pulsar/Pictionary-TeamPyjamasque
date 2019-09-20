@@ -1,11 +1,10 @@
 import {Schema, model, Document} from 'mongoose';
 
 interface IGame extends Document {
-    game : string,
+    host : string,
     players : [number],
     winner : number,
-    client_id : number,
-    room : number,
+    namespace : number,
     date : Date,
     library_id : number
 }
@@ -21,19 +20,13 @@ const gameSchema = new Schema(
             type : [Number],
             required : true,
             unique : true,
-            minlength: 2
         },
         winner : {
             type : Number,
             required : false,
-            unique : true,
+            unique : false,
         },
-        client_id : {
-            type : Number,
-            required : true,
-            unique : true,
-        },
-        room : {
+        namespace : {
             type : Number,
             required : true,
             unique : true,
@@ -47,7 +40,7 @@ const gameSchema = new Schema(
             type : Number,
             required : true,
             default : 1,
-            unique : true,
+            unique : false,
         }
     }
 )
