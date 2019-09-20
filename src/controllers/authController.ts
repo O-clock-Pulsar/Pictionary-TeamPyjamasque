@@ -2,6 +2,7 @@ import {Request, Response} from 'express';
 import { Container } from 'typedi';
 import UserService from '../services/UserService';
 import { UserServiceResults } from '../Interfaces/UserService';
+import jsonwebtoken from 'jsonwebtoken';
 
 const userService = Container.get(UserService);
 
@@ -20,7 +21,8 @@ export default class AuthController {
         request.flash("danger", result.message, false);
         response.redirect('/login');
       }
-      request.session.username = username;
+      const token = jsonwebtoken.sign({username: username}, process.env.JWT_SECRET || 'dummy', {expiresIn: '24h'});
+      response.cookie('token', token);
       response.redirect('/home');
   }
 

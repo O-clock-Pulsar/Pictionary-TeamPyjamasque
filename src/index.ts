@@ -7,12 +7,15 @@ import morgan from 'morgan';
 import "reflect-metadata";
 import flash from 'express-flash-notification';
 import session from 'express-session';
-import AuthChecker from './middlewares/AuthChecker'
+import AuthChecker from './middlewares/AuthChecker';
+import cookieParser from 'cookie-parser';
 
 const app: express.Express = express();
 const PORT = process.env.PORT || 5050;
 
 dotenv.config();
+
+app.use(cookieParser('dummy' || process.env.COOKIE_SECRET));
 
 app.use(session({
   secret: process.env.SESSION_SECRET || "dummy", 

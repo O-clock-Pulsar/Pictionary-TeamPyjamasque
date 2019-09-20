@@ -1,6 +1,6 @@
 import { Service } from "typedi";
 import User, { IUser } from '../models/User';
-import {IRegistrationResult, UserServiceResults} from '../Interfaces/UserService'
+import {IRegistrationResult, UserServiceResults} from '../Interfaces/UserService';
 import {promises} from 'fs';
 import bcrypt from 'bcrypt';
 
