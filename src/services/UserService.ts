@@ -1,7 +1,8 @@
 import { Service } from "typedi";
 import User, { IUser } from '../models/User';
-import {IRegistrationResult, IAvatarResult} from '../Interfaces/UserService'
+import {IRegistrationResult, UserServiceResults} from '../Interfaces/UserService';
 import {promises} from 'fs';
+import bcrypt from 'bcrypt';
 
 @Service()
 export default class UserService {
@@ -46,11 +47,23 @@ export default class UserService {
         return {user, error, messages, ids};
     }
 
-    async uploadAvatar(avatarData: Express.Multer.File, userInfo: IUser): Promise<IAvatarResult> {
+    async uploadAvatar(avatarData: Express.Multer.File, userInfo: IUser): Promise<UserServiceResults> {
         try{
             const user = await User.findByIdAndUpdate(userInfo.id, {avatar: avatarData.originalname}, {new: true})
             await promises.writeFile(`${__dirname}../../../public/uploads/avatars/${user.avatar}`, avatarData.buffer);
             return {error: false, message: "L'avatar de l'utilisateur a été enregistré avec succès."}
         } catch (e) {return {error: true, message: "Une erreur s'est produite lors de'enregistrement de l'image, mais le compte a été créé."}}
+    }
+
+    async authenticateUser(username: string, password: string): Promise<UserServiceResults> {
+        const user: IUser = await User.findOne({username});
+        let passwordCheck = false;
+        if (user) {
+            passwordCheck = bcrypt.compareSync(password, user.password);
+        }
+        if (!user || !passwordCheck){
+            return {error: true, message: "L'utilisateur n'a pas été trouvé ou le mot de passe n'est pas reconnu."};
+        }
+        return {error: false, message: ""};
     }
 }

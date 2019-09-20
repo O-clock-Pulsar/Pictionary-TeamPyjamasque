@@ -7,11 +7,15 @@ import morgan from 'morgan';
 import "reflect-metadata";
 import flash from 'express-flash-notification';
 import session from 'express-session';
+import AuthChecker from './middlewares/AuthChecker';
+import cookieParser from 'cookie-parser';
 
 const app: express.Express = express();
 const PORT = process.env.PORT || 5050;
 
 dotenv.config();
+
+app.use(cookieParser('dummy' || process.env.COOKIE_SECRET));
 
 app.use(session({
   secret: process.env.SESSION_SECRET || "dummy", 
@@ -38,6 +42,8 @@ app.use(express.static('public'));
 if (process.env.NODE_ENV !== 'prod') {
   app.use(morgan('dev'));
 }
+
+app.use(AuthChecker);
 
 //routing
 app.use(router);
