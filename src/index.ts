@@ -10,6 +10,7 @@ import cookieParser from 'cookie-parser';
 import AuthChecker from './middlewares/AuthChecker';
 import router from './router';
 import Server from './services/SocketIOServer';
+import helmet from './middlewares/helmet';
 
 const app: express.Express = express();
 const PORT = process.env.PORT || 5050;
@@ -18,37 +19,40 @@ const socketServer = new Server(SOCKET_PORT);
 
 socketServer.start();
 
+app.use(helmet);
+
 dotenv.config();
 
 app.use(cookieParser('dummy' || process.env.COOKIE_SECRET));
 
-app.use(session({
+app.use(
+  session({
   secret: process.env.SESSION_SECRET || 'dummy',
-  resave: true,
+    resave: true,
   saveUninitialized: false,
-}));
+    name: process.env.SESSION_NAME || 'dummy'
+  })
+);
 
-app.use(flash(app,
-  {
-    sessionName: 'flash',
-    utilityName: 'flash',
-    localsName: 'flash',
-    viewName: 'includes/flash',
-    beforeSingleRender(item, callback) {
-      callback(null,
-        item);
+app.use(
+  flash(app,
+{
+  sessionName: 'flash',
+  utilityName: 'flash',
+  localsName: 'flash',
+  viewName: 'includes/flash',
+  beforeSingleRender(item, callback){ callback(null, item) },
+    afterAllRender: function(htmlFragments, callback) {
+      callback(null, htmlFragments.join('\n'));
     },
-    afterAllRender(htmlFragments, callback) {
-      callback(null,
-        htmlFragments.join('\n'));
-    },
-  }));
+  })
+);
 
 // setup view engine
 app.set('views',
-  'views');
+'views');
 app.set('view engine',
-  'pug');
+'pug');
 
 app.use(express.static('public'));
 
@@ -62,13 +66,14 @@ app.use(AuthChecker);
 // routing
 app.use(router);
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/odraw',
+mongoose.connect(
+  process.env.MONGODB_URI || 'mongodb://localhost:27017/odraw',
   { useNewUrlParser: true },
-  (err) => {
-    if (err) {
-      console.log(err);
+  err => {
+  if (err) {
+    console.log(err);
       return;
-    }
+  }
 
     console.log('Mongoose connected');
 
