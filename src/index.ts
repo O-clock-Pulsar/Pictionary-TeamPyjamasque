@@ -5,12 +5,13 @@ import mongoose from 'mongoose';
 import morgan from 'morgan';
 import 'reflect-metadata';
 import flash from 'express-flash-notification';
-import session from 'express-session';
+import Server from './services/SocketIOServer';
 import cookieParser from 'cookie-parser';
 import AuthChecker from './middlewares/AuthChecker';
 import router from './router';
-import Server from './services/SocketIOServer';
 import helmet from './middlewares/helmet';
+import FlashSettings from './middlewares/FlashSettings';
+import session from './middlewares/Session';
 
 const app: express.Express = express();
 const PORT = process.env.PORT || 5050;
@@ -25,34 +26,13 @@ dotenv.config();
 
 app.use(cookieParser('dummy' || process.env.COOKIE_SECRET));
 
-app.use(
-  session({
-  secret: process.env.SESSION_SECRET || 'dummy',
-    resave: true,
-  saveUninitialized: false,
-    name: process.env.SESSION_NAME || 'dummy'
-  })
-);
+app.use(session);
 
-app.use(
-  flash(app,
-{
-  sessionName: 'flash',
-  utilityName: 'flash',
-  localsName: 'flash',
-  viewName: 'includes/flash',
-  beforeSingleRender(item, callback){ callback(null, item) },
-    afterAllRender: function(htmlFragments, callback) {
-      callback(null, htmlFragments.join('\n'));
-    },
-  })
-);
+app.use(flash(app, FlashSettings));
 
 // setup view engine
-app.set('views',
-'views');
-app.set('view engine',
-'pug');
+app.set('views', 'views');
+app.set('view engine', 'pug');
 
 app.use(express.static('public'));
 
@@ -70,10 +50,10 @@ mongoose.connect(
   process.env.MONGODB_URI || 'mongodb://localhost:27017/odraw',
   { useNewUrlParser: true },
   err => {
-  if (err) {
-    console.log(err);
+    if (err) {
+      console.log(err);
       return;
-  }
+    }
 
     console.log('Mongoose connected');
 

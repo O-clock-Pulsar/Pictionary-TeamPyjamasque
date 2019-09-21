@@ -2,8 +2,7 @@ import { Request, Response } from 'express';
 import { promises } from 'fs';
 
 export default class MainController {
-
-  static home(request : Request, response: Response) {
+  static home(request: Request, response: Response) {
     response.render('index');
   }
 
@@ -16,4 +15,4 @@ export default class MainController {
       );
     }
   }
-
+}
