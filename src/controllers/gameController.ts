@@ -16,8 +16,10 @@ export default class GameController {
     const { username } = token;
     const result = await gameService.createGame(username);
     const { namespace } = result.game;
-    request.flash(result.alreadyExists ? 'danger' : 'success', result.message, false);
-    response.redirect(`/game/play/${namespace}`);
+    request.flash(result.alreadyExists ? 'danger' : 'success',
+      result.message,
+      false);
+    response.redirect(`/game/${namespace}`);
   }
 
   static async showGames(request: Request, response: Response) {
@@ -25,7 +27,7 @@ export default class GameController {
     if (availableGames.length === 0) {
       response.render('no-games');
     } else {
-      const games = availableGames.map(game => {
+      const games = availableGames.map((game) => {
         const { namespace } = game;
         const { host } = game;
         const { players } = game;
@@ -38,10 +40,17 @@ export default class GameController {
           host,
           players,
           placesLeft,
-          startTime
+          startTime,
         };
       });
-      response.render('game-list', { games });
+      response.render('game-list',
+        { games });
     }
+  }
+
+  static play(request: Request, response: Response) {
+    const { namespace } = request.params;
+    response.render('play',
+      { namespace });
   }
 }

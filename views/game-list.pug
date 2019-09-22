@@ -12,7 +12,7 @@ block content
       h1 Parties en cours
   div(class="row")
     div(class="col-12 text-center")
-      a(href="./games/create")
+      a(href="./game/create")
         button(type="button" class="btn btn-info my-4 btn-lg") Créer une partie
   div(class="row")
     div(class="col-12")
@@ -37,5 +37,5 @@ block content
                 td=game.placesLeft
                 td=game.startTime
                 td
-                  a(href="./games/play/"+game.namespace)
+                  a(href="./game/"+game.namespace)
                     button(type="button" class="btn btn-success") Rejoindre cette partie
