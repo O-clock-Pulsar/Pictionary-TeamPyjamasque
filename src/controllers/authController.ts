@@ -9,7 +9,7 @@ const userService = Container.get(UserService);
 export default class AuthController {
 
   static getLogin(request : Request, response: Response) {
-    response.render('user-form', {login: true});
+    response.render('user-form', {login: true, text:true, title:true});
   }
 
   static async postLogin(request: Request, response: Response){
