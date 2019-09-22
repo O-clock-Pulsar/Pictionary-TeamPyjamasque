@@ -2,9 +2,12 @@ extends includes/layout
 
 block title
     title Liste des parties ouvertes
+
+block navbar
+  include includes/navbar
+
 block content
-    include includes/navbar
-    div(class="jumbotron text-center")
+    div(class="jumbotron text-center my-4")
         h1(class="display-1") Aucune partie en cours
           div(class="row")
             div(class="col-12 text-center")
