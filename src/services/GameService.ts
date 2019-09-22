@@ -8,7 +8,7 @@ adjNoun(1 || process.env.ADJ_NOUN_SEED);
 @Service()
 export default class GameService {
     async createGame(host: string): Promise<GameServiceResult> {
-        let game = await Game.findOne({host});
+        let game = await Game.findOne({host, namespace: {$ne: null}});
         let alreadyExists = true;
         let message = "Vous avez déjà une partie en cours."
         if (!game){
