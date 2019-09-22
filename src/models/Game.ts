@@ -13,21 +13,17 @@ const gameSchema = new Schema({
   host: {
     type: String,
     required: true,
-    unique: true,
   },
   players: {
     type: [String],
     required: true,
-    unique: true,
   },
   winner: {
     type: Number,
     required: false,
-    unique: false,
   },
   namespace: {
     type: String,
-    required: true,
     unique: true,
   },
   date: {
@@ -39,7 +35,6 @@ const gameSchema = new Schema({
     type: Number,
     required: true,
     default: 1,
-    unique: false,
   },
 });
 

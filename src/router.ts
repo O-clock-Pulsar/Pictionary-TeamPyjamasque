@@ -21,6 +21,7 @@ router
   .route('/login')
   .get(AuthController.getLogin)
   .post(multerBodyParser.none(), AuthController.postLogin);
+router.get('/home', GameController.showGames);
 router.get('/games/create', GameController.create);
 
 export default router;

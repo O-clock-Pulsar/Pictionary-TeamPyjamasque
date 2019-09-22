@@ -19,16 +19,23 @@ block content
       table(class="table table-hover")
         thead(class="thead-dark")
           tr
-            th(scope="col") Numéro
+            th(scope="col") Nom
             th(scope="col") Hôte
             th(scope="col") Jouers
             th(scope="col") Place restantes
             th(scope="col") Heure de démarrage
+            th(scope="col") Participer
           tbody
             each game in games
               tr(class="table-active")
-                th(scope="row")=game.id
+                th(scope="row")=game.namespace
                 td=game.host
-                td=game.players
+                td
+                  each player in game.players
+                    span(class="badge badge-pill badge-warning") #{player}
+                    |  
                 td=game.placesLeft
                 td=game.startTime
+                td
+                  a(href="./games/play/"+game.namespace)
+                    button(type="button" class="btn btn-success") Rejoindre cette partie
