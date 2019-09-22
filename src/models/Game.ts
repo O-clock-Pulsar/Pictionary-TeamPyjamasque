@@ -23,8 +23,7 @@ const gameSchema = new Schema({
     required: false,
   },
   namespace: {
-    type: String,
-    unique: true,
+    type: String
   },
   date: {
     type: Date,
