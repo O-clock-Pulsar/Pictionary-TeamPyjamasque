@@ -1,47 +1,50 @@
 extends includes/layout
 
 block title
-    title Inscription
+    title=login ? "Connexion" : "Inscription"
 block content
     div(class="registration-form")
         div(class="row")
             div(class="col-12 text-center") 
-                h1 Inscription
-        form(method="post" action="/register" enctype="multipart/form-data")
+                h1=login ? "Connexion":"Inscription"
+        form(method="post" action=(login ? "/login" : "/register" ) enctype="multipart/form-data")
             div(class="row")
-                div(class="col-md-1")
-                div(class="col-md-6 text-center form-group align-self-center")
+                div(class=(login ? "col-md-2" : "col-md-1"))
+                div(class=(login ? "col-md-8 text-center form-group align-self-center" : "col-md-6 text-center form-group align-self-center"))
                     label(for="username") Nom d'utilisateur
                     input(type="text" class=(usernameError ? "is-invalid form-control" : "form-control") id="username" name="username" required autofocus)
-                div(class="col-md-4 text-center form-group")
-                    label(for="avatar") Votre avatar
-                    input(type="file" class=(avatarError ? "is-invalid form-control-file" : "form-control-file") id="avatar" name="avatar" accept="image/*")
-                    small(class="form-text text-muted") Limite: 5MB
-                    img(id="avatar-preview" class="img-fluid")
-                div(class="col-md-1")
-            div(class="row")
-                div(class="col-md-1")
-                div(class="col-md-6 text-center form-group")
-                    label(for="email") Email
-                    input(type="email" class=(emailError ? "is-invalid form-control" : "form-control") id="email" name="email" required)
-                div(class="col-md-1")
-            div(class="row")
-                div(class="col-md-1")
-                div(class="col-md-6 text-center form-group")
+                if !login                                         
+                    div(class="col-md-4 text-center form-group")
+                        label(for="avatar") Votre avatar
+                        input(type="file" class=(avatarError ? "is-invalid form-control-file" : "form-control-file") id="avatar" name="avatar" accept="image/*")
+                        small(class="form-text text-muted") Limite: 5MB
+                        img(id="avatar-preview" class="img-fluid")
+                div(class=(login ? "col-md-2" : "col-md-1"))
+            if !login        
+                div(class="row")  
+                    div(class="col-md-1")
+                    div(class="col-md-6 text-center form-group")
+                        label(for="email") Email
+                        input(type="email" class=(emailError ? "is-invalid form-control" : "form-control") id="email" name="email" required)
+                    div(class="col-md-1")                   
+            div(class="row")    
+                div(class=(login ? "col-md-2" : "col-md-1"))
+                div(class=(login ? "col-md-8 text-center form-group align-self-center" : "col-md-6 text-center form-group align-self-center"))
                     label(for="password") Mot de passe
                     input(type="password" class=(passwordError ? "is-invalid form-control" : "form-control") id="password" name="password" required)
-                div(class="col-md-1")
+                div(class=(login ? "col-md-2" : "col-md-1"))
+            if !login        
+                div(class="row")
+                    div(class="col-md-1")
+                    div(class="col-md-6 text-center form-group")
+                        label(for="confirmation") Confirmation de mot de passe
+                        input(type="password" class=(confirmationError ? "is-invalid form-control" : "form-control") id="confirmation" name="confirmation" required)
+                    div(class="col-md-1")              
             div(class="row")
                 div(class="col-md-1")
-                div(class="col-md-6 text-center form-group")
-                    label(for="confirmation") Confirmation de mot de passe
-                    input(type="password" class=(confirmationError ? "is-invalid form-control" : "form-control") id="confirmation" name="confirmation" required)
-                div(class="col-md-1")
-            div(class="row")
-                div(class="col-md-1")
-                div(class="col-md-8 text-center form-group")
+                div(class="col-md-10 text-center form-group")
                     button(type="submit" class="btn btn-primary") Submit
                 div(class="col-md-1")
 block javascript
-    script(src="js/avatarPreview.js")
-
+    if !login
+        script(src="js/avatarPreview.js")
