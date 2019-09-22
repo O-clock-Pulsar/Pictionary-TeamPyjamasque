@@ -29,7 +29,7 @@
         "react-hooks"
     ],
     "rules": {
-        "prettier/prettier": ["error", { "singleQuote": true }],
+        "prettier/prettier": ["error", { "singleQuote": true, "printWidth": 90 }],
         "quotes": [2, "single", { "avoidEscape": true, "allowTemplateLiterals": true }]
     }
 }
