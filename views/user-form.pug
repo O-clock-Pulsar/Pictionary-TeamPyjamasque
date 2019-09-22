@@ -1,13 +1,13 @@
 extends includes/layout
 
 block title
-    title Inscription
+    title=text ? "login" : "register"
 block content
     div(class="registration-form")
         div(class="row")
             div(class="col-12 text-center") 
-                h1 Inscription
-        form(method="post" action="/register" enctype="multipart/form-data")
+                h1=text ? "login":"inscription"
+        form(method="post" action="")
             div(class="row")
                 div(class="col-md-1")
                 div(class="col-md-6 text-center form-group align-self-center")
@@ -25,6 +25,7 @@ block content
                     label(for="email") Email
                     input(type="email" class=(emailError ? "is-invalid form-control" : "form-control") id="email" name="email" required)
                 div(class="col-md-1")
+        if ! login
             div(class="row")
                 div(class="col-md-1")
                 div(class="col-md-6 text-center form-group")
@@ -44,4 +45,3 @@ block content
                 div(class="col-md-1")
 block javascript
     script(src="js/avatarPreview.js")
-
