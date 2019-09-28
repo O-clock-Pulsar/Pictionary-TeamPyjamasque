@@ -13,7 +13,7 @@ block content
                 div(class="col-md-6 text-center form-group align-self-center")
                     label(for="username") Nom d'utilisateur
                     input(type="text" class=(usernameError ? "is-invalid form-control" : "form-control") id="username" name="username" required autofocus)
-        if ! login                                
+        if ! login                                         
                 div(class="col-md-4 text-center form-group")
                     label(for="avatar") Votre avatar
                     input(type="file" class=(avatarError ? "is-invalid form-control-file" : "form-control-file") id="avatar" name="avatar" accept="image/*")
@@ -26,8 +26,8 @@ block content
                 div(class="col-md-6 text-center form-group")
                     label(for="email") Email
                     input(type="email" class=(emailError ? "is-invalid form-control" : "form-control") id="email" name="email" required)
-                div(class="col-md-1")   
-        if login                   
+                div(class="col-md-1")  
+        if login ? "/login" : "/register"                   
             div(class="row")    
                 div(class="col-md-1")
                 div(class="col-md-6 text-center form-group")
@@ -40,8 +40,8 @@ block content
                 div(class="col-md-6 text-center form-group")
                     label(for="confirmation") Confirmation de mot de passe
                     input(type="password" class=(confirmationError ? "is-invalid form-control" : "form-control") id="confirmation" name="confirmation" required)
-                div(class="col-md-1")
-        if login        
+                div(class="col-md-1")   
+        if login ? "/login" : "/register"            
             div(class="row")
                 div(class="col-md-1")
                 div(class="col-md-8 text-center form-group")
