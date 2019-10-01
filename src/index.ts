@@ -1,40 +1,54 @@
 // importer les variables d'environnement
 import dotenv from 'dotenv';
 import express from 'express';
-import router from "./router";
 import mongoose from 'mongoose';
 import morgan from 'morgan';
-import "reflect-metadata";
+import 'reflect-metadata';
 import flash from 'express-flash-notification';
 import session from 'express-session';
-import AuthChecker from './middlewares/AuthChecker';
 import cookieParser from 'cookie-parser';
+import AuthChecker from './middlewares/AuthChecker';
+import router from './router';
+import Server from './services/SocketIOServer';
 
 const app: express.Express = express();
 const PORT = process.env.PORT || 5050;
+const SOCKET_PORT = process.env.SOCKET_IO_PORT || 5060;
+const socketServer = new Server(SOCKET_PORT);
+
+socketServer.start();
 
 dotenv.config();
 
 app.use(cookieParser('dummy' || process.env.COOKIE_SECRET));
 
 app.use(session({
-  secret: process.env.SESSION_SECRET || "dummy", 
+  secret: process.env.SESSION_SECRET || 'dummy',
   resave: true,
-  saveUninitialized: false
+  saveUninitialized: false,
 }));
 
-app.use(flash(app, {
-  sessionName: 'flash',
-  utilityName: 'flash',
-  localsName: 'flash',
-  viewName: 'includes/flash',
-  beforeSingleRender: function(item, callback){ callback(null, item) },
-  afterAllRender: function(htmlFragments, callback){ callback(null, htmlFragments.join('\n')) }
-}));
+app.use(flash(app,
+  {
+    sessionName: 'flash',
+    utilityName: 'flash',
+    localsName: 'flash',
+    viewName: 'includes/flash',
+    beforeSingleRender(item, callback) {
+      callback(null,
+        item);
+    },
+    afterAllRender(htmlFragments, callback) {
+      callback(null,
+        htmlFragments.join('\n'));
+    },
+  }));
 
 // setup view engine
-app.set('views', 'views');
-app.set('view engine', 'pug');
+app.set('views',
+  'views');
+app.set('view engine',
+  'pug');
 
 app.use(express.static('public'));
 
@@ -45,20 +59,22 @@ if (process.env.NODE_ENV !== 'prod') {
 
 app.use(AuthChecker);
 
-//routing
+// routing
 app.use(router);
 
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/odraw", {useNewUrlParser: true}, (err) => {
-  if (err){
-    console.log(err);
-    return;
-  }
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/odraw',
+  { useNewUrlParser: true },
+  (err) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
 
-  console.log('Mongoose connected');
+    console.log('Mongoose connected');
 
-  // lancer l'appli
-  app.listen(PORT, () => {
-    console.log(`App running on port ${PORT}`);
+    // lancer l'appli
+    app.listen(PORT,
+      () => {
+        console.log(`App running on port ${PORT}`);
+      });
   });
-
-})

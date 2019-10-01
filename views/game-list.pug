@@ -1,0 +1,41 @@
+extends includes/layout
+
+block title
+    title Liste des parties ouvertes
+
+block navbar
+  include includes/navbar
+
+block content
+  div(class="row")
+    div(class="col-12 text-center")
+      h1 Parties en cours
+  div(class="row")
+    div(class="col-12 text-center")
+      a(href="./game/create")
+        button(type="button" class="btn btn-info my-4 btn-lg") Créer une partie
+  div(class="row")
+    div(class="col-12")
+      table(class="table table-hover")
+        thead(class="thead-dark")
+          tr
+            th(scope="col") Nom
+            th(scope="col") Hôte
+            th(scope="col") Jouers
+            th(scope="col") Place restantes
+            th(scope="col") Heure de démarrage
+            th(scope="col") Participer
+          tbody
+            each game in games
+              tr(class="table-active")
+                th(scope="row")=game.namespace
+                td=game.host
+                td
+                  each player in game.players
+                    span(class="badge badge-pill badge-warning") #{player}
+                    |  
+                td=game.placesLeft
+                td=game.startTime
+                td
+                  a(href="./game/"+game.namespace)
+                    button(type="button" class="btn btn-success") Rejoindre cette partie
