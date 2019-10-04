@@ -5,7 +5,9 @@ export default helmet({
     directives: {
       defaultSrc: ["'self'"],
       reportUri: '/report-violation',
-    }
+      styleSrc: ["'self'", 'fonts.googleapis.com'],
+      fontSrc: ["'self'", 'fonts.gstatic.com'],
+    },
   },
   hidePoweredBy: {
     setTo: 'PHP 7.3.6',
@@ -18,5 +20,5 @@ export default helmet({
   },
   xssFilter: {
     reportUri: '/report-violation',
-  }
+  },
 });
