@@ -9,7 +9,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && npm run clean && npm run move-build",
+    "clean": "rimraf ./../public/static && rimraf ./../views/play.pug",
+    "move-build": "move-cli --mkdirp ./build/static/ ./../public/static && move-cli ./build/index.html ./../views/play.pug",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -28,5 +30,9 @@
       "last 1 safari version"
     ]
   },
-  "hompeage": "."
+  "hompeage": ".",
+  "devDependencies": {
+    "move-cli": "^1.2.1",
+    "rimraf": "^3.0.0"
+  }
 }
