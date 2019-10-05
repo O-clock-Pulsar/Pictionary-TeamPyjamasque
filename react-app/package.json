@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "js-cookie": "^2.2.1",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
     "react-scripts": "3.2.0"
@@ -32,6 +33,7 @@
   },
   "hompeage": ".",
   "devDependencies": {
+    "@types/js-cookie": "^2.2.2",
     "move-cli": "^1.2.1",
     "rimraf": "^3.0.0"
   }
