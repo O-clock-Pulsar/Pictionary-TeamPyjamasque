@@ -49,8 +49,10 @@ export default class GameController {
   }
 
   static play(request: Request, response: Response) {
-    const { namespace } = request.params;
-    response.render('play',
-      { namespace });
+    response.cookie('namespace',
+      request.params.namespace);
+    if (process.env.NODE_ENV === 'prod') {
+      response.render('play');
+    } else response.redirect('http://localhost:3000');
   }
 }

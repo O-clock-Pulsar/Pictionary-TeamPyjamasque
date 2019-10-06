@@ -3,3 +3,6 @@ node_modules/
 yarn-error.log
 public/uploads/avatars
 !public/uploads/avatars/.gitkeep
+public/static
+views/play.pug
+dist/

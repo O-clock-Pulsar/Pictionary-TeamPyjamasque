@@ -55,3 +55,10 @@ Adam Wier: wier.adam (at) gmail.com
 
 ## Installation de githooks
 Dans la racine du projet, executer `node git-hooks/init` pour copier les git hooks dans le bon dossier.
+
+## Comment utiliser le React App
+### En dev
+Pour utiliser le côté react en mode développement, il faut se placer dans le dossier ./react-app et lancer `npm run start`. Le server node basculera automatiquement sur le server react, qui est sur la porte 3000.
+
+### En prod
+Lancer la commande `npm run build` lancera automatiquement la commande `npm run build` dans le dossier react. Elle a été modifié pour vider les anciens builds de react avant de déplacer les dossiers nécessaires (notamment play.pug dans views et le dossier static dans le dossier public) avant de lancer la compilation du typecript.

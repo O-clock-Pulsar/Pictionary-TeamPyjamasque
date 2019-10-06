@@ -1,0 +1,41 @@
+{
+  "name": "react-app",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "js-cookie": "^2.2.1",
+    "react": "^16.10.2",
+    "react-dom": "^16.10.2",
+    "react-scripts": "3.2.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build && npm run clean && npm run move-build",
+    "clean": "rimraf ./../public/static && rimraf ./../views/play.pug",
+    "move-build": "move-cli --mkdirp ./build/static/ ./../public/static && move-cli ./build/index.html ./../views/play.pug",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "hompeage": ".",
+  "devDependencies": {
+    "@types/js-cookie": "^2.2.2",
+    "move-cli": "^1.2.1",
+    "rimraf": "^3.0.0"
+  },
+  "proxy": "http://localhost:5050"
+}
