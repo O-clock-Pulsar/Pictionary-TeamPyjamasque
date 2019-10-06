@@ -2,7 +2,7 @@ import {Schema, model, Document} from 'mongoose';
 
 export interface IPicture extends Document {
     user_id : number,
-    picture : Buffer 
+    picture : string 
 }
 
 const pictureSchema = new Schema(
