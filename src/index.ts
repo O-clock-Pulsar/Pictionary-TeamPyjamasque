@@ -5,8 +5,8 @@ import mongoose from 'mongoose';
 import morgan from 'morgan';
 import 'reflect-metadata';
 import flash from 'express-flash-notification';
-import Server from './services/SocketIOServer';
 import cookieParser from 'cookie-parser';
+import Server from './services/SocketIOServer';
 import AuthChecker from './middlewares/AuthChecker';
 import router from './router';
 import helmet from './middlewares/helmet';
@@ -24,15 +24,18 @@ app.use(helmet);
 
 dotenv.config();
 
-app.use(cookieParser('dummy' || process.env.COOKIE_SECRET));
+app.use(cookieParser(process.env.COOKIE_SECRET || 'dummy'));
 
 app.use(session);
 
-app.use(flash(app, FlashSettings));
+app.use(flash(app,
+  FlashSettings));
 
 // setup view engine
-app.set('views', 'views');
-app.set('view engine', 'pug');
+app.set('views',
+  'views');
+app.set('view engine',
+  'pug');
 
 app.use(express.static('public'));
 
@@ -49,7 +52,7 @@ app.use(router);
 mongoose.connect(
   process.env.MONGODB_URI || 'mongodb://localhost:27017/odraw',
   { useNewUrlParser: true },
-  err => {
+  (err) => {
     if (err) {
       console.log(err);
       return;
@@ -62,4 +65,5 @@ mongoose.connect(
       () => {
         console.log(`App running on port ${PORT}`);
       });
-  });
+  },
+);
