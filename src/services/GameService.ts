@@ -38,9 +38,14 @@ export default class GameService {
         return {playerList, ready};
     }
 
-    async removeFromPlayerList(namespace: string, username: string): Promise<Array<string>> {
+    async removeFromPlayerList(namespace: string, username: string): Promise<PlayerResult> {
+        let ready = false;
         let game = await Game.findOneAndUpdate({namespace}, {$pull: {players: username}}, {new: true});
-        return game.players;
+        const playerList = game.players;
+        if (playerList.length >= 2) {
+            ready = true;
+        }
+        return {playerList, ready};
     }
 
     async getUniqueNamespace() : Promise<string> {

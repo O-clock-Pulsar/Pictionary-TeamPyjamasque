@@ -20,13 +20,15 @@ export default class Server {
     start(): void {
       io.on('connection',
         (baseSocket: SocketIO.Socket) => {
-          // https://stackoverflow.com/questions/11356001/socket-io-private-message Add user to connectedUser property
           baseSocket.on('game start',
             (gameNamespace: string) => {
               this.namespaces[gameNamespace] = io.of(`/${gameNamespace}`);
               this.namespaces[gameNamespace].on('connection',
                 async (namespaceSocket: SocketIO.Socket) => {
                   const { username } = namespaceSocket.handshake.query;
+
+                  this.namespaces[gameNamespace].connectedUsers[username] = namespaceSocket;
+
                   const playerResults = await gameService.addToPlayerList(gameNamespace,
                     username);
                   if (playerResults.ready) {
@@ -38,11 +40,13 @@ export default class Server {
                       namespaceSocket.leave('drawerer');
                       namespaceSocket.leave('answerer');
 
-                      const remainingPlayers = await gameService.removeFromPlayerList(gameNamespace,
+                      delete this.namespaces[gameNamespace].connectedUsers[username];
+
+                      const playerResults = await gameService.removeFromPlayerList(gameNamespace,
                         username);
-                      if (remainingPlayers.length === 0) {
+                      if (playerResults.playerList.length === 0) {
                         delete this.namespaces[gameNamespace];
-                      } else if (remainingPlayers.length <= 2) {
+                      } else if (!playerResults.ready) {
                         namespaceSocket.emit('waiting for players');
                       }
                     });
