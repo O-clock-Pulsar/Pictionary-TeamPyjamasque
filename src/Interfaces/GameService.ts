@@ -5,3 +5,8 @@ export interface GameServiceResult {
   alreadyExists: boolean;
   message: string;
 }
+
+export interface PlayerResult{
+  playerList: Array<string>;
+  ready: boolean
+}

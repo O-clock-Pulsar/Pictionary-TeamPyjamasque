@@ -1,7 +1,7 @@
 import { Service } from "typedi";
 import Game from '../models/Game';
 import adjNoun from 'adj-noun';
-import {GameServiceResult} from '../Interfaces/GameService';
+import {GameServiceResult, PlayerResult} from '../Interfaces/GameService';
 import io from 'socket.io-client';
 
 const socket = io(process.env.SOCKET_IO_ADDRESS+process.env.SOCKET_IO_PORT || "http://localhost:5060")
@@ -15,7 +15,7 @@ export default class GameService {
         let alreadyExists = true;
         let message = "Vous avez déjà une partie en cours.";
         if (!game){
-            const namespace =  adjNoun().join('-');
+            const namespace = this.getUniqueNamespace();
             game = await new Game({
                 host,
                 players: [host],
@@ -28,13 +28,26 @@ export default class GameService {
         return {game, alreadyExists, message};
     }
 
-    async addToPlayerList(namespace: string, username: string): Promise<Array<string>> {
-        let game = await Game.findOneAndUpdate({namespace}, {$addToSet: {players: username}}, {new: true});
-        return game.players;
+    async addToPlayerList(namespace: string, username: string): Promise<PlayerResult> {
+        let ready = false;
+        const game = await Game.findOneAndUpdate({namespace}, {$addToSet: {players: username}}, {new: true});
+        const playerList = game.players;
+        if (playerList.length >= 2) {
+            ready = true;
+        }
+        return {playerList, ready};
     }
 
     async removeFromPlayerList(namespace: string, username: string): Promise<Array<string>> {
         let game = await Game.findOneAndUpdate({namespace}, {$pull: {players: username}}, {new: true});
         return game.players;
+    }
+
+    async getUniqueNamespace() : Promise<string> {
+        const namespace =  adjNoun().join('-');
+        const game = await Game.findOne({namespace});
+        if (game){
+            this.getUniqueNamespace();
+        } return namespace;
     }
 }

@@ -20,16 +20,16 @@ export default class Server {
     start(): void {
       io.on('connection',
         (baseSocket: SocketIO.Socket) => {
+          // https://stackoverflow.com/questions/11356001/socket-io-private-message Add user to connectedUser property
           baseSocket.on('game start',
             (gameNamespace: string) => {
               this.namespaces[gameNamespace] = io.of(`/${gameNamespace}`);
               this.namespaces[gameNamespace].on('connection',
                 async (namespaceSocket: SocketIO.Socket) => {
-                  // Returns null if not enough players to start
                   const { username } = namespaceSocket.handshake.query;
-                  const playerList = await gameService.addToPlayerList(gameNamespace,
+                  const playerResults = await gameService.addToPlayerList(gameNamespace,
                     username);
-                  if (playerList.length >= 2) {
+                  if (playerResults.ready) {
                     namespaceSocket.emit('game ready');
                   }
 
@@ -76,6 +76,7 @@ export default class Server {
                       namespaceSocket.leave('drawerer');
                       namespaceSocket.leave('answerer');
                       delete this.namespaces[gameNamespace];
+                      // Need to add game service method that ends game
                     });
                 });
             });

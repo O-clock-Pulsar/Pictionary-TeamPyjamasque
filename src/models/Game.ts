@@ -4,7 +4,7 @@ export interface IGame extends Document {
   host: string;
   players: [string];
   winner: number;
-  namespace: string;
+  namespace: Promise<string>;
   date: Date;
   library_id: number;
 }
@@ -23,7 +23,7 @@ const gameSchema = new Schema({
     required: false,
   },
   namespace: {
-    type: String
+    type: String,
   },
   date: {
     type: Date,
@@ -37,4 +37,5 @@ const gameSchema = new Schema({
   },
 });
 
-export default model<IGame>('Game', gameSchema);
+export default model<IGame>('Game',
+  gameSchema);
