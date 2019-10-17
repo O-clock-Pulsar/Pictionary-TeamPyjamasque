@@ -80,7 +80,7 @@ export default class Server {
                       namespaceSocket.leave('drawerer');
                       namespaceSocket.leave('answerer');
                       delete this.namespaces[gameNamespace];
-                      // Need to add game service method that ends game
+                      gameService.endGame(gameNamespace);
                     });
                 });
             });

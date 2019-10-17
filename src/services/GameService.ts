@@ -1,5 +1,5 @@
 import { Service } from "typedi";
-import Game from '../models/Game';
+import Game, { IGame } from '../models/Game';
 import adjNoun from 'adj-noun';
 import {GameServiceResult, PlayerResult} from '../Interfaces/GameService';
 import io from 'socket.io-client';
@@ -54,5 +54,9 @@ export default class GameService {
         if (game){
             this.getUniqueNamespace();
         } return namespace;
+    }
+
+    async endGame(namespace: string): Promise<IGame>{
+        return await Game.findOneAndUpdate({namespace}, {namespace: null}, {new:true});
     }
 }
