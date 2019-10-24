@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { Container } from 'typedi';
 import jsonwebtoken from 'jsonwebtoken';
 import UserService from '../services/UserService';
-import { UserServiceResults } from '../Interfaces/UserService';
+import { IUserServiceResults } from '../Interfaces/UserService';
 
 const userService = Container.get(UserService);
 
@@ -14,7 +14,7 @@ export default class AuthController {
 
   static async postLogin(request: Request, response: Response) {
     const { username, password } = request.body;
-    const result: UserServiceResults = await userService.authenticateUser(username,
+    const result: IUserServiceResults = await userService.authenticateUser(username,
       password);
     if (result.error) {
       request.flash('danger',
@@ -22,7 +22,7 @@ export default class AuthController {
         false);
       response.redirect('/login');
     }
-    const token = jsonwebtoken.sign({ username },
+    const token: string = jsonwebtoken.sign({ username },
       process.env.JWT_SECRET || 'dummy',
       { expiresIn: '24h' });
     response.cookie('token',

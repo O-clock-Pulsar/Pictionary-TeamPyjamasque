@@ -3,18 +3,19 @@ import { Container } from 'typedi';
 import jsonwebtoken from 'jsonwebtoken';
 import GameService from '../services/GameService';
 import Game from '../models/Game';
+import { IGameServiceResult } from '../Interfaces/GameService';
 
 const gameService = Container.get(GameService);
 
 export default class GameController {
-  static async create(request: Request, response: Response) {
+  static async create(request: Request, response: Response): Promise<void> {
     // Type must be any or throws an error
     const token: any = await jsonwebtoken.verify(
       request.cookies.token,
       process.env.JWT_SECRET || 'dummy',
     );
     const { username } = token;
-    const result = await gameService.createGame(username);
+    const result: IGameServiceResult = await gameService.createGame(username);
     const { namespace } = result.game;
     request.flash(result.alreadyExists ? 'danger' : 'success',
       result.message,
@@ -22,7 +23,7 @@ export default class GameController {
     response.redirect(`/game/${namespace}`);
   }
 
-  static async showGames(request: Request, response: Response) {
+  static async showGames(request: Request, response: Response): Promise<void> {
     const availableGames = await Game.find({ namespace: { $ne: null } });
     if (availableGames.length === 0) {
       response.render('no-games');
@@ -48,7 +49,7 @@ export default class GameController {
     }
   }
 
-  static play(request: Request, response: Response) {
+  static play(request: Request, response: Response): void {
     response.cookie('namespace',
       request.params.namespace);
     if (process.env.NODE_ENV === 'prod') {

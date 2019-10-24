@@ -19,12 +19,13 @@ export default class Server {
 
     start(): void {
       io.on('connection',
-        (baseSocket: SocketIO.Socket) => {
+        (baseSocket: SocketIO.Socket): void => {
           baseSocket.on('game start',
-            (gameNamespace: string) => {
+            (gameNamespace: string): void => {
               this.namespaces[gameNamespace] = io.of(`/${gameNamespace}`);
               this.namespaces[gameNamespace].on('connection',
-                async (namespaceSocket: SocketIO.Socket) => {
+                async (namespaceSocket: SocketIO.Socket): Promise<void> => {
+                  // Returns null if not enough players to start
                   const { username } = namespaceSocket.handshake.query;
 
                   this.namespaces[gameNamespace].connectedUsers[username] = namespaceSocket;
@@ -36,7 +37,7 @@ export default class Server {
                   }
 
                   namespaceSocket.on('disconnect',
-                    async () => {
+                    async (): Promise<void> => {
                       namespaceSocket.leave('drawerer');
                       namespaceSocket.leave('answerer');
 
@@ -52,31 +53,31 @@ export default class Server {
                     });
 
                   namespaceSocket.on('become drawerer',
-                    () => {
+                    (): void => {
                       namespaceSocket.leave('answerers');
                       namespaceSocket.join('drawerer');
                     });
 
                   namespaceSocket.on('become answerer',
-                    () => {
+                    (): void => {
                       namespaceSocket.leave('drawerer');
                       namespaceSocket.join('answerers');
                     });
 
                   namespaceSocket.on('draw',
-                    (image: JSON) => {
+                    (image: JSON): void => {
                       this.namespaces[gameNamespace].to('answerers').emit('drawed',
                         image);
                     });
 
                   namespaceSocket.on('answer',
-                    (answer: string) => {
+                    (answer: string): void => {
                       this.namespaces[gameNamespace].to('drawerer').emit('answered',
                         answer);
                     });
 
                   namespaceSocket.on('game end',
-                    (gameNamespace: string) => {
+                    (gameNamespace: string): void => {
                       namespaceSocket.leave('drawerer');
                       namespaceSocket.leave('answerer');
                       delete this.namespaces[gameNamespace];

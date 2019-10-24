@@ -1,6 +1,6 @@
 import { Service } from "typedi";
 import User, { IUser } from '../models/User';
-import {IRegistrationResult, UserServiceResults} from '../Interfaces/UserService';
+import {IRegistrationResult, IUserServiceResults} from '../Interfaces/UserService';
 import {promises} from 'fs';
 import bcrypt from 'bcrypt';
 
@@ -47,7 +47,7 @@ export default class UserService {
         return {user, error, messages, ids};
     }
 
-    async uploadAvatar(avatarData: Express.Multer.File, userInfo: IUser): Promise<UserServiceResults> {
+    async uploadAvatar(avatarData: Express.Multer.File, userInfo: IUser): Promise<IUserServiceResults> {
         try{
             const user = await User.findByIdAndUpdate(userInfo.id, {avatar: avatarData.originalname}, {new: true})
             await promises.writeFile(`${__dirname}../../../public/uploads/avatars/${user.avatar}`, avatarData.buffer);
@@ -55,7 +55,7 @@ export default class UserService {
         } catch (e) {return {error: true, message: "Une erreur s'est produite lors de'enregistrement de l'image, mais le compte a été créé."}}
     }
 
-    async authenticateUser(username: string, password: string): Promise<UserServiceResults> {
+    async authenticateUser(username: string, password: string): Promise<IUserServiceResults> {
         username = username.trim();
         const user: IUser = await User.findOne({username});
         let passwordCheck = false;
