@@ -56,9 +56,11 @@ export default class UserService {
     }
 
     async authenticateUser(username: string, password: string): Promise<UserServiceResults> {
+        username = username.trim();
         const user: IUser = await User.findOne({username});
         let passwordCheck = false;
         if (user) {
+            password = password.trim();
             passwordCheck = bcrypt.compareSync(password, user.password);
         }
         if (!user || !passwordCheck){

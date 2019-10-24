@@ -25,11 +25,13 @@ export default class Server {
               this.namespaces[gameNamespace] = io.of(`/${gameNamespace}`);
               this.namespaces[gameNamespace].on('connection',
                 async (namespaceSocket: SocketIO.Socket) => {
-                  // Returns null if not enough players to start
                   const { username } = namespaceSocket.handshake.query;
-                  const playerList = await gameService.addToPlayerList(gameNamespace,
+
+                  this.namespaces[gameNamespace].connectedUsers[username] = namespaceSocket;
+
+                  const playerResults = await gameService.addToPlayerList(gameNamespace,
                     username);
-                  if (playerList.length >= 2) {
+                  if (playerResults.ready) {
                     namespaceSocket.emit('game ready');
                   }
 
@@ -38,11 +40,13 @@ export default class Server {
                       namespaceSocket.leave('drawerer');
                       namespaceSocket.leave('answerer');
 
-                      const remainingPlayers = await gameService.removeFromPlayerList(gameNamespace,
+                      delete this.namespaces[gameNamespace].connectedUsers[username];
+
+                      const playerResults = await gameService.removeFromPlayerList(gameNamespace,
                         username);
-                      if (remainingPlayers.length === 0) {
+                      if (playerResults.playerList.length === 0) {
                         delete this.namespaces[gameNamespace];
-                      } else if (remainingPlayers.length <= 2) {
+                      } else if (!playerResults.ready) {
                         namespaceSocket.emit('waiting for players');
                       }
                     });
@@ -76,6 +80,7 @@ export default class Server {
                       namespaceSocket.leave('drawerer');
                       namespaceSocket.leave('answerer');
                       delete this.namespaces[gameNamespace];
+                      gameService.endGame(gameNamespace);
                     });
                 });
             });
