@@ -5,11 +5,13 @@ import mongoose from 'mongoose';
 import morgan from 'morgan';
 import 'reflect-metadata';
 import flash from 'express-flash-notification';
-import session from 'express-session';
 import cookieParser from 'cookie-parser';
+import Server from './services/SocketIOServer';
 import AuthChecker from './middlewares/AuthChecker';
 import router from './router';
-import Server from './services/SocketIOServer';
+import helmet from './middlewares/helmet';
+import FlashSettings from './middlewares/FlashSettings';
+import session from './middlewares/Session';
 
 const app: express.Express = express();
 const PORT = process.env.PORT || 5050;
@@ -18,31 +20,16 @@ const socketServer = new Server(SOCKET_PORT);
 
 socketServer.start();
 
+app.use(helmet);
+
 dotenv.config();
 
-app.use(cookieParser('dummy' || process.env.COOKIE_SECRET));
+app.use(cookieParser(process.env.COOKIE_SECRET || 'dummy'));
 
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'dummy',
-  resave: true,
-  saveUninitialized: false,
-}));
+app.use(session);
 
 app.use(flash(app,
-  {
-    sessionName: 'flash',
-    utilityName: 'flash',
-    localsName: 'flash',
-    viewName: 'includes/flash',
-    beforeSingleRender(item, callback) {
-      callback(null,
-        item);
-    },
-    afterAllRender(htmlFragments, callback) {
-      callback(null,
-        htmlFragments.join('\n'));
-    },
-  }));
+  FlashSettings));
 
 // setup view engine
 app.set('views',
@@ -62,7 +49,8 @@ app.use(AuthChecker);
 // routing
 app.use(router);
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/odraw',
+mongoose.connect(
+  process.env.MONGODB_URI || 'mongodb://localhost:27017/odraw',
   { useNewUrlParser: true },
   (err) => {
     if (err) {
@@ -77,4 +65,5 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/odraw',
       () => {
         console.log(`App running on port ${PORT}`);
       });
-  });
+  },
+);

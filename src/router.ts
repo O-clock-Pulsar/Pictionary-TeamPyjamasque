@@ -12,13 +12,14 @@ const multerBodyParser = multer();
 const router: express.Router = express.Router();
 
 // on définit des routes
-router.get('/',
-  MainController.home);
+router.get('/', MainController.home);
 router
   .route('/register')
   .get(RegistrationController.getRegister)
-  .post(AvatarUploadHandler.single('avatar'),
-    RegistrationController.postRegister);
+  .post(
+    AvatarUploadHandler.single('avatar'),
+    RegistrationController.postRegister,
+  );
 router
   .route('/login')
   .get(AuthController.getLogin)
@@ -30,5 +31,10 @@ router.get('/game/create',
   GameController.create);
 router.get('/game/:namespace',
   GameController.play);
+router.post(
+  '/report-violation',
+  multerBodyParser.none(),
+  MainController.reportViolation,
+);
 
 export default router;

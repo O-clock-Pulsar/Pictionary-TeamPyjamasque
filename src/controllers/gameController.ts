@@ -11,7 +11,7 @@ export default class GameController {
     // Type must be any or throws an error
     const token: any = await jsonwebtoken.verify(
       request.cookies.token,
-      'dummy' || process.env.JWT_SECRET,
+      process.env.JWT_SECRET || 'dummy',
     );
     const { username } = token;
     const result = await gameService.createGame(username);
