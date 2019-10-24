@@ -6,12 +6,12 @@ export default class MainController {
     response.render('index');
   }
 
-  static async reportViolation(request: Request, response: Response): void {
+  static async reportViolation(request: Request, response: Response): Promise<void> {
     if (request.body) {
       const timestamp = new Date();
       await promises.writeFile(
         `${__dirname}../../../${timestamp}.txt`,
-        request.body
+        request.body,
       );
     }
   }
