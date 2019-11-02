@@ -1,6 +1,5 @@
 import React from 'react';
 import './App.css';
-// @ts-ignore
 import CanvasDraw from 'react-canvas-draw';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -16,7 +15,7 @@ function App() {
     brushRadius: 6
   });
 
-  let canvas = useRef<any>(null);
+  let canvas = useRef(null);
 
   const handleCanvasChange = () => {
       const currentPicture = canvas.current.getSaveData();
