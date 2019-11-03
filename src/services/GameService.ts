@@ -15,7 +15,7 @@ export default class GameService {
         let alreadyExists = true;
         let message = "Vous avez déjà une partie en cours.";
         if (!game){
-            const namespace = this.getUniqueNamespace();
+            const namespace = await this.getUniqueNamespace();
             game = await new Game({
                 host,
                 players: [host],
@@ -48,12 +48,12 @@ export default class GameService {
         return {playerList, ready};
     }
 
-    async getUniqueNamespace() : Promise<string> {
-        const namespace =  adjNoun().join('-');
+    async getUniqueNamespace(): Promise<string> {
+        const namespace = adjNoun().join('-');
         const game = await Game.findOne({namespace});
         if (game){
             this.getUniqueNamespace();
-        } return namespace;
+        } else return namespace;
     }
 
     async endGame(namespace: string): Promise<IGame>{

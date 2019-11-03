@@ -4,7 +4,7 @@ export interface IGame extends Document {
   host: string;
   players: [string];
   winner: number;
-  namespace: Promise<string>;
+  namespace: string;
   date: Date;
   library_id: number;
 }

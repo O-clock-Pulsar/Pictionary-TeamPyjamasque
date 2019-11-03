@@ -23,6 +23,7 @@ export default class Server {
           baseSocket.on('game start',
             (gameNamespace: string) => {
               this.namespaces[gameNamespace] = io.of(`/${gameNamespace}`);
+              this.namespaces[gameNamespace].connectedUsers = {};
               this.namespaces[gameNamespace].on('connection',
                 async (namespaceSocket: SocketIO.Socket) => {
                   const { username } = namespaceSocket.handshake.query;
