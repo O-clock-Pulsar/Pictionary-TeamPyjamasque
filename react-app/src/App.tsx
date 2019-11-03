@@ -4,18 +4,44 @@ import CanvasDraw from 'react-canvas-draw';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button'
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import io from 'socket.io-client';
+import Cookie from 'js-cookie';
+import jsonwebtoken from 'jsonwebtoken';
 
 function App() {
+
+  let canvas = useRef(null);
 
   let [state, setState] = useState({
     currentPicture: null,
     isCanvasDisabled: true,
     brushColor: "#000000",
-    brushRadius: 6
+    brushRadius: 6,
+    namespaceSocket: null
   });
 
-  let canvas = useRef(null);
+  const joinNamespace = (): void => {
+    const token = Cookie.get("token");
+    const decodedToken: any = jsonwebtoken.verify(token,
+      process.env.JWT_SECRET || 'dummy');
+    const namespace = Cookie.get("namespace");
+    const username: string = decodedToken.username;
+    //Add back in environment variable later when closer to prod
+    const namespaceSocket: SocketIOClient.Socket = io(`http://localhost:5060/${namespace}?username=${username}`);
+    setState({
+      ...state,
+      namespaceSocket
+    });
+  };
+
+  useEffect(() => {
+    joinNamespace();
+
+    return function disconnectNamespace(): void {
+      state.namespaceSocket.disconnect();
+    }
+  },[]);
 
   const handleCanvasChange = () => {
       const currentPicture = canvas.current.getSaveData();
@@ -23,12 +49,12 @@ function App() {
         ...state,
         currentPicture
       });
-  }
+  };
 
   const handleCanvasClear = () => {
-    canvas.current.clear()
+    canvas.current.clear();
     handleCanvasChange();
-  }
+  };
 
   return (
     <div className="App">
