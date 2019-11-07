@@ -5,13 +5,14 @@ const permittedRoutes = ['/login',
   '/',
   '/register'];
 
-export default function (request: Request, response: Response, next: NextFunction) {
+export default function (request: Request, response: Response, next: NextFunction): void {
   if (permittedRoutes.includes(request.url)) {
     next();
   } else {
     const { token } = request.cookies;
     if (token) {
       try {
+        // Must be any or throws an error
         const decodedToken: any = jsonwebtoken.verify(token,
           process.env.JWT_SECRET || 'dummy');
         if (decodedToken.username) {

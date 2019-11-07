@@ -7,7 +7,7 @@ export interface IRegistrationResult {
     ids: Array<string>
 }
 
-export interface UserServiceResults {
+export interface IUserServiceResults {
     error: boolean;
     message: string
 }
