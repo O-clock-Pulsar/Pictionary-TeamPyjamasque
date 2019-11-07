@@ -9,12 +9,14 @@ function Timer(){
   let [state, setState] = useState({
       seconds: 0,
       minutes: 5,
+      interval: null
     });
 
-  const myInterval = () => {
+  const runTimer = () => {
     setInterval(() => {
       setState(state => {
         const seconds = state.seconds - 1;
+        if (state.seconds || state.minutes){
         if (seconds >= 0){
           return {
           ...state,
@@ -26,12 +28,24 @@ function Timer(){
           minutes: state.minutes - 1,
           seconds: 59
         }
+      }} else {
+        clearInterval(state.interval);
+        return {
+          ...state,
+          minutes: 0,
+          seconds: 0
+        }
       }
     })}, 1000)
   }
 
   useEffect(() => {
-    myInterval();
+    setState({
+      ...state,
+      interval: runTimer()
+    })
+
+    return clearInterval(state.interval);
   },[])
 
    return(
