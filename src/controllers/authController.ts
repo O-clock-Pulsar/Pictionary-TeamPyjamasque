@@ -29,4 +29,14 @@ export default class AuthController {
       token);
     response.redirect('/home');
   }
+
+  static getLogout(request : Request, response: Response) {
+    request.session.destroy((err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        response.redirect('/');
+      }
+    });
+  }
 }
