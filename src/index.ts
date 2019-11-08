@@ -12,6 +12,7 @@ import router from './router';
 import helmet from './middlewares/helmet';
 import FlashSettings from './middlewares/FlashSettings';
 import session from './middlewares/Session';
+import pageNotFound from './middlewares/PageNotFound';
 
 const app: express.Express = express();
 const PORT = process.env.PORT || 5050;
@@ -49,8 +50,10 @@ app.use(AuthChecker);
 // routing
 app.use(router);
 
-mongoose.connect(
-  process.env.MONGODB_URI || 'mongodb://localhost:27017/odraw',
+// middleware pour les 404 !
+app.use(pageNotFound);
+
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/odraw',
   { useNewUrlParser: true },
   (err) => {
     if (err) {
@@ -65,5 +68,4 @@ mongoose.connect(
       () => {
         console.log(`App running on port ${PORT}`);
       });
-  },
-);
+  });
