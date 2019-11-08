@@ -40,7 +40,7 @@ app.set('view engine',
 app.use(express.static('public'));
 
 // Middlewares moved morgan into if for clear tests
-if (process.env.NODE_ENV !== 'prod') {
+if (process.env.NODE_ENV !== 'production') {
   app.use(morgan('dev'));
 }
 

@@ -23,6 +23,7 @@ export default class Server {
           baseSocket.on('game start',
             (gameNamespace: string): void => {
               this.namespaces[gameNamespace] = io.of(`/${gameNamespace}`);
+              this.namespaces[gameNamespace].connectedUsers = {};
               this.namespaces[gameNamespace].on('connection',
                 async (namespaceSocket: SocketIO.Socket): Promise<void> => {
                   // Returns null if not enough players to start
