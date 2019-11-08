@@ -7,12 +7,6 @@
     text-align: center; 
 }
 
-@media (max-width: 500px) {
-    /* Manage Display Headers for Mobile Devices */
-    .display-1 {
-    font-size: 4.5rem !important;
-    }
-}
 .flash-alert {
     width:100%;
     text-align: center;
@@ -27,4 +21,17 @@
     .display-1 {
     font-size: 4.5rem !important;
     }
+}
+
+#image-404 {
+    width: 100%;
+    height: auto;
+}
+
+#image-404-container{
+    height: 90vh;
+}
+
+.navbar{
+    z-index: 5;
 }
