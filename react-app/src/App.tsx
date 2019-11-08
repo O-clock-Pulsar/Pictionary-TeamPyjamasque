@@ -8,6 +8,7 @@ import { useState, useRef, useEffect } from 'react';
 import io from 'socket.io-client';
 import Cookie from 'js-cookie';
 import jsonwebtoken from 'jsonwebtoken';
+import Timer from './components/Timer';
 
 function App() {
 
@@ -61,6 +62,11 @@ function App() {
       <Row>
         <Col className="text-center">
           <h1>ODRAW</h1>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <Timer />
         </Col>
       </Row>
       <Row>
