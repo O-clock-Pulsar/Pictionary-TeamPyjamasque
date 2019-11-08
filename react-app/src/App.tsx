@@ -8,6 +8,7 @@ import { useState, useRef, useEffect } from 'react';
 import io from 'socket.io-client';
 import Cookie from 'js-cookie';
 import jsonwebtoken from 'jsonwebtoken';
+import Timer from './components/Timer';
 
 function App() {
 
@@ -64,8 +65,13 @@ function App() {
         </Col>
       </Row>
       <Row>
+        <Col>
+          <Timer />
+        </Col>
+      </Row>
+      <Row>
         <Col className="d-flex justify-content-center">
-          <span className="border border-primary" onMouseMove={handleCanvasChange}>
+          <span className="border border-primary" onMouseUp={handleCanvasChange}>
             <CanvasDraw
               ref={canvas}
               loadTimeOffset={0}
