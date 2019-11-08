@@ -9,6 +9,7 @@ import io from 'socket.io-client';
 import Cookie from 'js-cookie';
 import jsonwebtoken from 'jsonwebtoken';
 import Timer from './components/Timer';
+import SendInvitation from './components/SendInvitation'
 
 function App() {
 
@@ -19,7 +20,8 @@ function App() {
     isCanvasDisabled: true,
     brushColor: "#000000",
     brushRadius: 6,
-    namespaceSocket: null
+    namespaceSocket: null,
+    gameReady: false
   });
 
   const joinNamespace = (): void => {
@@ -57,44 +59,50 @@ function App() {
     handleCanvasChange();
   };
 
-  return (
-    <div className="App">
-      <Row>
-        <Col className="text-center">
-          <h1>ODRAW</h1>
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <Timer />
-        </Col>
-      </Row>
-      <Row>
-        <Col className="d-flex justify-content-center">
-          <span className="border border-primary" onMouseUp={handleCanvasChange}>
-            <CanvasDraw
-              ref={canvas}
-              loadTimeOffset={0}
-              lazyRadius={0}
-              brushRadius={state.brushRadius} 
-              brushColor={state.brushColor}
-              canvasWidth="50vw" 
-              canvasHeight="50vh"
-              hideGrid={true}
-              disabled={state.isCanvasDisabled}
-              saveData={state.currentPicture}
-              immediateLoading={true}
-            />
-          </span>
-        </Col>
-      </Row>
-      <Row>
-        <Col className="text-center">
-          <Button className='my-4' onClick={handleCanvasClear}>Clear</Button>
-        </Col>
-      </Row>
-    </div>
-  );
+    return (
+      <div className="App">
+        <Row>
+          <Col className="text-center">
+            <h1>ODRAW</h1>
+          </Col>
+        </Row>
+        {state.gameReady ?
+          <div id="game-screen">
+            <Row>
+              <Col>
+                <Timer />
+              </Col>
+            </Row>
+            <Row>
+              <Col className="d-flex justify-content-center">
+                <span className="border border-primary" onMouseUp={handleCanvasChange}>
+                  <CanvasDraw
+                    ref={canvas}
+                    loadTimeOffset={0}
+                    lazyRadius={0}
+                    brushRadius={state.brushRadius} 
+                    brushColor={state.brushColor}
+                    canvasWidth="50vw" 
+                    canvasHeight="50vh"
+                    hideGrid={true}
+                    disabled={state.isCanvasDisabled}
+                    saveData={state.currentPicture}
+                    immediateLoading={true}
+                  />
+                </span>
+              </Col>
+            </Row>
+            <Row>
+              <Col className="text-center">
+                <Button className='my-4' onClick={handleCanvasClear}>Clear</Button>
+              </Col>
+            </Row>
+          </div> :
+          <div>
+            <SendInvitation/>
+          </div>}
+      </div>
+    );
 }
 
 export default App;
