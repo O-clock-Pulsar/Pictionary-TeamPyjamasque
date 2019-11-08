@@ -12,7 +12,8 @@ const multerBodyParser = multer();
 const router: express.Router = express.Router();
 
 // on définit des routes
-router.get('/', MainController.home);
+router.get('/',
+  MainController.home);
 router
   .route('/register')
   .get(RegistrationController.getRegister)
@@ -25,6 +26,8 @@ router
   .get(AuthController.getLogin)
   .post(multerBodyParser.none(),
     AuthController.postLogin);
+router.get('/logout',
+  AuthController.getLogout);
 router.get('/home',
   GameController.showGames);
 router.get('/game/create',
