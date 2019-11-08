@@ -71,7 +71,7 @@ function App() {
       </Row>
       <Row>
         <Col className="d-flex justify-content-center">
-          <span className="border border-primary" onMouseMove={handleCanvasChange}>
+          <span className="border border-primary" onMouseUp={handleCanvasChange}>
             <CanvasDraw
               ref={canvas}
               loadTimeOffset={0}
