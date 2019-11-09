@@ -21,17 +21,22 @@ function App() {
     brushColor: "#000000",
     brushRadius: 6,
     namespaceSocket: null,
-    gameReady: false
+    gameReady: false,
+    namespace: null,
+    username: null
   });
 
   const joinNamespace = (): void => {
     const token = Cookie.get("token");
-    const decodedToken: any = jsonwebtoken.verify(token,
-      process.env.JWT_SECRET || 'dummy');
-    const namespace = Cookie.get("namespace");
-    const username: string = decodedToken.username;
+      const decodedToken: any = jsonwebtoken.verify(token,
+        process.env.JWT_SECRET || 'dummy');
+      setState({
+        ...state,
+        username: decodedToken.username,
+        namespace: Cookie.get("namespace")
+      })
     //Add back in environment variable later when closer to prod
-    const namespaceSocket: SocketIOClient.Socket = io(`http://localhost:5060/${namespace}?username=${username}`);
+    const namespaceSocket: SocketIOClient.Socket = io(`http://localhost:5060/${state.namespace}?username=${state.username}`);
     setState({
       ...state,
       namespaceSocket
@@ -98,9 +103,8 @@ function App() {
               </Col>
             </Row>
           </div> :
-          <div>
-            <SendInvitation/>
-          </div>}
+            <SendInvitation props={state.namespace} username={state.username} namespace={state.namespace} />
+          }
       </div>
     );
 }
