@@ -27,6 +27,11 @@ export default class Server {
           const { username } = baseSocket.handshake.query;
           this.connectedUsers[username] = baseSocket;
 
+          baseSocket.on('disconnect',
+            () => {
+              delete this.connectedUsers[username];
+            });
+
           baseSocket.on('sendInvitation',
             (invitation: Invitation): void => {
               const playerSocket = this.connectedUsers[invitation.receiver];

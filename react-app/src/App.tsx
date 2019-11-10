@@ -28,19 +28,18 @@ function App() {
 
   const joinNamespace = (): void => {
     const token = Cookie.get("token");
-      const decodedToken: any = jsonwebtoken.verify(token,
-        process.env.JWT_SECRET || 'dummy');
-      setState({
-        ...state,
-        username: decodedToken.username,
-        namespace: Cookie.get("namespace")
-      })
+    const decodedToken: any = jsonwebtoken.verify(token,
+      process.env.JWT_SECRET || 'dummy');
+    const username = decodedToken.username;
+    const namespace = Cookie.get("namespace");
     //Add back in environment variable later when closer to prod
-    const namespaceSocket: SocketIOClient.Socket = io(`http://localhost:5060/${state.namespace}?username=${state.username}`);
-    setState({
+    const namespaceSocket: SocketIOClient.Socket = io(`http://localhost:5060/${namespace}?username=${username}`);
+    setState(state => ({
       ...state,
-      namespaceSocket
-    });
+      namespaceSocket,
+      username,
+      namespace
+    }));
   };
 
   useEffect(() => {
@@ -52,11 +51,11 @@ function App() {
   },[]);
 
   const handleCanvasChange = () => {
-      const currentPicture = canvas.current.getSaveData();
-      setState({
-        ...state,
-        currentPicture
-      });
+    const currentPicture = canvas.current.getSaveData();
+    setState(state => ({
+      ...state,
+      currentPicture
+    }));
   };
 
   const handleCanvasClear = () => {
@@ -103,7 +102,7 @@ function App() {
               </Col>
             </Row>
           </div> :
-            <SendInvitation props={state.namespace} username={state.username} namespace={state.namespace} />
+            <SendInvitation username={state.username} namespace={state.namespace} />
           }
       </div>
     );

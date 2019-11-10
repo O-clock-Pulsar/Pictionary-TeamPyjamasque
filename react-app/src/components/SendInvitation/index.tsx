@@ -18,57 +18,61 @@ function SendInvitation(props){
     const joinBaseSocket = (): void => {
       //Add back in environment variable later when closer to prod
       const baseSocket: SocketIOClient.Socket = io(`http://localhost:5060?username=${props.username}`);
-      setState({
+      setState(state => ({
         ...state,
         baseSocket
-      });
+      }));
       
       baseSocket.on('invitationSuccess', () => {
-        setState({
+        setState(state => ({
           ...state,
           modalShow: true,
           modalSuccess: true
-        })
-      })
+        }));
+      });
 
       baseSocket.on('invitationFail', () => {
-        setState({
+        setState(state => ({
           ...state,
           modalShow: true,
           modalSuccess: false
-        })
-      })
+        }));
+      });
     }
 
     useEffect(() => {
+      if(props.username){
         joinBaseSocket();
+      }
     
-        return function disconnectNamespace(): void {
+      return function disconnectNamespace(): void {
+        if(state.baseSocket){
           state.baseSocket.disconnect();
         }
-      },[]);
+      }
+    },[props.username]);
 
     const emitInvite = (event: React.FormEvent<HTMLButtonElement>): void => {
       state.baseSocket.emit("sendInvitation", {
         receiver: state.playerName,
         sender: props.username,
         namespace: props.namespace
-      })
+      });
     }
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
       let playerName = event.target.value;
-      setState({
+      setState(state => ({
         ...state,
         playerName
-      })
+      }));
     }
 
     const closeModal = () => {
-      setState({
+      setState(state => ({
         ...state,
         modalShow: false
-      })
+      }));
     }
 
     return(
