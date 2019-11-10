@@ -63,49 +63,49 @@ function App() {
     handleCanvasChange();
   };
 
-    return (
-      <div className="App">
-        <Row>
-          <Col className="text-center">
-            <h1>ODRAW</h1>
-          </Col>
-        </Row>
-        {state.gameReady ?
-          <div id="game-screen">
-            <Row>
-              <Col>
-                <Timer />
-              </Col>
-            </Row>
-            <Row>
-              <Col className="d-flex justify-content-center">
-                <span className="border border-primary" onMouseUp={handleCanvasChange}>
-                  <CanvasDraw
-                    ref={canvas}
-                    loadTimeOffset={0}
-                    lazyRadius={0}
-                    brushRadius={state.brushRadius} 
-                    brushColor={state.brushColor}
-                    canvasWidth="50vw" 
-                    canvasHeight="50vh"
-                    hideGrid={true}
-                    disabled={state.isCanvasDisabled}
-                    saveData={state.currentPicture}
-                    immediateLoading={true}
-                  />
-                </span>
-              </Col>
-            </Row>
-            <Row>
-              <Col className="text-center">
-                <Button className='my-4' onClick={handleCanvasClear}>Clear</Button>
-              </Col>
-            </Row>
-          </div> :
-            <SendInvitation username={state.username} namespace={state.namespace} />
-          }
-      </div>
-    );
+  return (
+    <div className="App">
+      <Row>
+        <Col className="text-center">
+          <h1>ODRAW</h1>
+        </Col>
+      </Row>
+      {state.gameReady ?
+        <div id="game-screen">
+          <Row>
+            <Col>
+              <Timer />
+            </Col>
+          </Row>
+          <Row>
+            <Col className="d-flex justify-content-center">
+              <span className="border border-primary" onMouseUp={handleCanvasChange}>
+                <CanvasDraw
+                  ref={canvas}
+                  loadTimeOffset={0}
+                  lazyRadius={0}
+                  brushRadius={state.brushRadius} 
+                  brushColor={state.brushColor}
+                  canvasWidth="50vw" 
+                  canvasHeight="50vh"
+                  hideGrid={true}
+                  disabled={state.isCanvasDisabled}
+                  saveData={state.currentPicture}
+                  immediateLoading={true}
+                />
+              </span>
+            </Col>
+          </Row>
+          <Row>
+            <Col className="text-center">
+              <Button className='my-4' onClick={handleCanvasClear}>Clear</Button>
+            </Col>
+          </Row>
+        </div> :
+          <SendInvitation username={state.username} namespace={state.namespace} />
+        }
+    </div>
+  );
 }
 
 export default App;

@@ -59,6 +59,11 @@ function SendInvitation({username, namespace}){
         sender: username,
         namespace: namespace
       });
+
+      setState(state => ({
+        ...state,
+        playerName: ""
+      }))
     }
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -83,7 +88,7 @@ function SendInvitation({username, namespace}){
               <InvitationModal show={state.modalShow} success={state.modalSuccess} handleClose={closeModal} />
               <h1>En attente de joueurs</h1>
               <h2>Voulez-vous inviter un ami ?</h2>
-              <input type="text" className="form-control" onChange={handleChange} />
+              <input type="text" className="form-control" onChange={handleChange} value={state.playerName} />
               <Button className="my-3" onClick={emitInvite}>Envoyer</Button>
             </Col>
             <Col md={4} />
