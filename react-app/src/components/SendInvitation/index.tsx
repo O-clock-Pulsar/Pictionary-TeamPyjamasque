@@ -5,8 +5,9 @@ import Col from 'react-bootstrap/Col';
 import io from 'socket.io-client';
 import Button from 'react-bootstrap/Button';
 import InvitationModal from '../Modal';
+import PropTypes from 'prop-types';
  
-function SendInvitation(props){
+function SendInvitation({username, namespace}){
 
     let [state, setState] = useState({
         baseSocket: null,
@@ -17,7 +18,7 @@ function SendInvitation(props){
 
     const joinBaseSocket = (): void => {
       //Add back in environment variable later when closer to prod
-      const baseSocket: SocketIOClient.Socket = io(`http://localhost:5060?username=${props.username}`);
+      const baseSocket: SocketIOClient.Socket = io(`http://localhost:5060?username=${username}`);
       setState(state => ({
         ...state,
         baseSocket
@@ -41,7 +42,7 @@ function SendInvitation(props){
     }
 
     useEffect(() => {
-      if(props.username){
+      if(username){
         joinBaseSocket();
       }
     
@@ -50,13 +51,13 @@ function SendInvitation(props){
           state.baseSocket.disconnect();
         }
       }
-    },[props.username]);
+    },[username]);
 
     const emitInvite = (event: React.FormEvent<HTMLButtonElement>): void => {
       state.baseSocket.emit("sendInvitation", {
         receiver: state.playerName,
-        sender: props.username,
-        namespace: props.namespace
+        sender: username,
+        namespace: namespace
       });
     }
 
@@ -88,6 +89,11 @@ function SendInvitation(props){
             <Col md={4} />
         </Row>
     )
+}
+
+SendInvitation.propTypes = {
+  username: PropTypes.string.isRequired,
+  namespace: PropTypes.string.isRequired
 }
 
 export default SendInvitation
