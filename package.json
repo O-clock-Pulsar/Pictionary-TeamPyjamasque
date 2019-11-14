@@ -8,7 +8,8 @@
     "devwatch": "ts-node-dev --respawn ./src/index.ts",
     "build": "cd ./react-app && npm run build && tsc",
     "start": "node ./dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install:full": "npm i && cd./react-app && npm i"
   },
   "author": "Team Pyjamasque",
   "license": "ISC",
