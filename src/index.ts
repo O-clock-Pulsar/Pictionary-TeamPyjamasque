@@ -39,6 +39,8 @@ app.set('view engine',
   'pug');
 
 app.use(express.static('public'));
+app.use('/react',
+  express.static('public/react'));
 
 // Middlewares moved morgan into if for clear tests
 if (process.env.NODE_ENV !== 'production') {
