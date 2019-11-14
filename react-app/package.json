@@ -16,8 +16,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build && npm run clean && npm run move-build",
-    "clean": "rimraf ./../public/static && rimraf ./../views/play.pug",
-    "move-build": "move-cli --mkdirp ./build/static/ ./../public/static && move-cli ./build/index.html ./../views/play.pug",
+    "clean": "rimraf ./../public/react",
+    "move-build": "move-cli --mkdirp ./build/ ./../public/react",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -36,7 +36,7 @@
       "last 1 safari version"
     ]
   },
-  "hompeage": ".",
+  "homepage": ".",
   "devDependencies": {
     "@types/js-cookie": "^2.2.4",
     "@types/prop-types": "^15.7.3",

@@ -7,6 +7,7 @@ export default helmet({
       reportUri: '/report-violation',
       styleSrc: ["'self'", 'fonts.googleapis.com'],
       fontSrc: ["'self'", 'fonts.gstatic.com'],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
     },
   },
   hidePoweredBy: {
