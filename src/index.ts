@@ -9,7 +9,7 @@ import cookieParser from 'cookie-parser';
 import Server from './services/SocketIOServer';
 import AuthChecker from './middlewares/AuthChecker';
 import router from './router';
-import helmet from './middlewares/helmet';
+import helmet from './middlewares/Helmet';
 import FlashSettings from './middlewares/FlashSettings';
 import session from './middlewares/Session';
 import pageNotFound from './middlewares/PageNotFound';
