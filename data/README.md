@@ -29,7 +29,7 @@ You are ready to feed your database.
 Initial datas are in word.csv, others collections doesn't not need to have initial data.
 To import word list: 
 open a new shell on your desktop (do not use mongo shell)
-`mongoimport --db=odraw --collection=word --file=\data\words.csv --type=csv --headerline`
+`mongoimport --db=odraw --collection=word --file=.\data\words.csv --type=csv --headerline`
 
 When runing `show collections` you should now have 'word' in the list.
 
