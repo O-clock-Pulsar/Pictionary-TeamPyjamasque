@@ -4,7 +4,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import io from 'socket.io-client';
 import Button from 'react-bootstrap/Button';
-import InvitationModal from '../Modal';
+import InvitationModal from '../InvitationModal';
 import PropTypes from 'prop-types';
  
 function SendInvitation({username, namespace}){
@@ -17,7 +17,7 @@ function SendInvitation({username, namespace}){
       });
 
     const joinBaseSocket = (): void => {
-      //Add back in environment variable later when closer to prod
+      const socketAddress = process.env.socketAddress ? process.env.socketAddress : 'http://localhost:5060/'
       const baseSocket: SocketIOClient.Socket = io(`http://localhost:5060?username=${username}`);
       setState(state => ({
         ...state,
