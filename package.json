@@ -11,7 +11,7 @@
     "start": "node ./dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "install:full": "npm i && cd ./react-app && npm i",
-    "heroku-preinstall": "npm run install:full && npm run build"
+    "heroku-prebuild": "npm run install:full && npm run build"
   },
   "author": "Team Pyjamasque",
   "license": "ISC",
