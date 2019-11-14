@@ -32,8 +32,8 @@ function App() {
       process.env.JWT_SECRET || 'dummy');
     const username = decodedToken.username;
     const namespace = Cookie.get("namespace");
-    //Add back in environment variable later when closer to prod
-    const namespaceSocket: SocketIOClient.Socket = io(`http://localhost:5060/${namespace}?username=${username}`);
+    const socketAddress = process.env.socketAddress ? process.env.socketAddress : 'http://localhost:5060/'
+    const namespaceSocket: SocketIOClient.Socket = io(`${socketAddress}${namespace}?username=${username}`);
     setState(state => ({
       ...state,
       namespaceSocket,
@@ -102,7 +102,7 @@ function App() {
             </Col>
           </Row>
         </div> :
-          <SendInvitation username={state.username} namespace={state.namespace} />
+          state.username && state.namespace && <SendInvitation username={state.username} namespace={state.namespace} />
         }
     </div>
   );

@@ -25,7 +25,7 @@ function InvitationModal ({show, success, handleClose}) {
 InvitationModal.propTypes = {
   show: PropTypes.bool.isRequired,
   success: PropTypes.bool.isRequired,
-  onClick: PropTypes.func.isRequired
+  handleClose: PropTypes.func.isRequired
 }
 
 export default InvitationModal;
