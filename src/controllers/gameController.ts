@@ -53,7 +53,7 @@ export default class GameController {
     response.cookie('namespace',
       request.params.namespace);
     if (process.env.NODE_ENV === 'production') {
-      response.render('play');
+      response.redirect('/react');
     } else response.redirect('http://localhost:3000');
   }
 }
