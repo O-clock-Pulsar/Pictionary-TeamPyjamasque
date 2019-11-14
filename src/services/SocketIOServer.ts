@@ -1,6 +1,7 @@
 import SocketIO from 'socket.io';
 import { Container } from 'typedi';
 import GameService from '../services/GameService';
+import { Invitation } from '../Interfaces/SocketIOServer';
 
 const gameService = Container.get(GameService);
 
@@ -11,15 +12,38 @@ export default class Server {
 
     namespaces: Object;
 
+    connectedUsers: Object;
+
     // Port type must be any to avoid problems with SocketIO types but is converted to a number when stored after activating the server
     constructor(port: any) {
       this.port = Number(port);
       this.namespaces = {};
+      this.connectedUsers = {};
     }
 
     start(): void {
       io.on('connection',
         (baseSocket: SocketIO.Socket): void => {
+          const { username } = baseSocket.handshake.query;
+          this.connectedUsers[username] = baseSocket;
+
+          baseSocket.on('disconnect',
+            () => {
+              delete this.connectedUsers[username];
+            });
+
+          baseSocket.on('sendInvitation',
+            (invitation: Invitation): void => {
+              const playerSocket = this.connectedUsers[invitation.receiver];
+              if (playerSocket) {
+                io.to(playerSocket).emit('invite',
+                  invitation.namespace);
+                baseSocket.emit('invitationSuccess');
+              } else {
+                baseSocket.emit('invitationFail');
+              }
+            });
+
           baseSocket.on('game start',
             (gameNamespace: string): void => {
               this.namespaces[gameNamespace] = io.of(`/${gameNamespace}`);
