@@ -24,6 +24,7 @@ export default class Server {
     start(): void {
       io.on('connection',
         (baseSocket: SocketIO.Socket): void => {
+          console.log('username');
           const { username } = baseSocket.handshake.query;
           this.connectedUsers[username] = baseSocket;
 
@@ -34,12 +35,15 @@ export default class Server {
 
           baseSocket.on('sendInvitation',
             (invitation: Invitation): void => {
+              console.log(invitation);
               const playerSocket = this.connectedUsers[invitation.receiver];
               if (playerSocket) {
+                console.log(playerSocket);
                 io.to(playerSocket).emit('invite',
                   invitation.namespace);
                 baseSocket.emit('invitationSuccess');
               } else {
+                console.log('not found');
                 baseSocket.emit('invitationFail');
               }
             });
