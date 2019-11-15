@@ -5,7 +5,10 @@ import { Invitation } from '../Interfaces/SocketIOServer';
 
 const gameService = Container.get(GameService);
 
-const io: SocketIO.Server = SocketIO();
+
+const app = require('express')();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 
 export default class Server {
     port: number;
