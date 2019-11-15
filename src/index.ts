@@ -14,7 +14,7 @@ import FlashSettings from './middlewares/FlashSettings';
 import session from './middlewares/Session';
 import pageNotFound from './middlewares/PageNotFound';
 
-const app: express.Express = express();
+export const app: express.Express = express();
 const PORT = process.env.PORT || 5050;
 const SOCKET_PORT = process.env.SOCKET_IO_PORT || 5060;
 const socketServer = new Server(SOCKET_PORT);

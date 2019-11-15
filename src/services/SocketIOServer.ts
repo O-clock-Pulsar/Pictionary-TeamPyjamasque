@@ -2,11 +2,11 @@ import SocketIO from 'socket.io';
 import { Container } from 'typedi';
 import GameService from '../services/GameService';
 import { Invitation } from '../Interfaces/SocketIOServer';
+import { app } from '../index';
 
 const gameService = Container.get(GameService);
 
 
-const app = require('express')();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
