@@ -18,7 +18,7 @@ function SendInvitation({username, namespace}){
 
     const joinBaseSocket = (): void => {
       const socketAddress = process.env.socketAddress ? process.env.socketAddress : 'http://localhost:5060/'
-      const baseSocket: SocketIOClient.Socket = io(`https://odraw.heroku.com:5060?username=${username}`);
+      const baseSocket: SocketIOClient.Socket = io(`https://odraw.heroku.com?username=${username}`);
       setState(state => ({
         ...state,
         baseSocket
