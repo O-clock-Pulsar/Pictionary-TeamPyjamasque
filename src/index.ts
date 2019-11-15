@@ -52,8 +52,10 @@ app.use(AuthChecker);
 // routing
 app.use(router);
 
-// middleware pour les 404 !
-app.use(pageNotFound);
+/*
+ * middleware pour les 404 !
+ * app.use(pageNotFound);
+ */
 
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/odraw',
   { useNewUrlParser: true },
