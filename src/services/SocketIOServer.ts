@@ -2,7 +2,7 @@ import SocketIO from 'socket.io';
 import { Container } from 'typedi';
 import GameService from '../services/GameService';
 import { Invitation } from '../Interfaces/SocketIOServer';
-import { app, server } from '../index';
+import { app } from '../index';
 
 const gameService = Container.get(GameService);
 
