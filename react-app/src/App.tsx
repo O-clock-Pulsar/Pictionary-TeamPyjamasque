@@ -42,13 +42,13 @@ function App() {
     }));
   };
 
-  useEffect(() => {
-    joinNamespace();
+  // useEffect(() => {
+  //   joinNamespace();
 
-    return function disconnectNamespace(): void {
-      state.namespaceSocket.disconnect();
-    }
-  },[]);
+  //   return function disconnectNamespace(): void {
+  //     state.namespaceSocket.disconnect();
+  //   }
+  // },[]);
 
   const handleCanvasChange = () => {
     const currentPicture = canvas.current.getSaveData();
