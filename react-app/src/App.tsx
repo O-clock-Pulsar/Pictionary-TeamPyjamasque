@@ -32,23 +32,23 @@ function App() {
       process.env.JWT_SECRET || 'dummy');
     const username = decodedToken.username;
     const namespace = Cookie.get("namespace");
-    const socketAddress = process.env.socketAddress ? process.env.socketAddress : 'http://localhost:5060/'
-    const namespaceSocket: SocketIOClient.Socket = io(`http://odraw.heroku.com/${namespace}?username=${username}`);
+    // const socketAddress = process.env.socketAddress ? process.env.socketAddress : 'http://localhost:5060/'
+    // const namespaceSocket: SocketIOClient.Socket = io(`http://odraw.heroku.com/${namespace}?username=${username}`);
     setState(state => ({
       ...state,
-      namespaceSocket,
+      // namespaceSocket,
       username,
       namespace
     }));
   };
 
-  // useEffect(() => {
-  //   joinNamespace();
+  useEffect(() => {
+    joinNamespace();
 
-  //   return function disconnectNamespace(): void {
-  //     state.namespaceSocket.disconnect();
-  //   }
-  // },[]);
+    return function disconnectNamespace(): void {
+      state.namespaceSocket.disconnect();
+    }
+  },[]);
 
   const handleCanvasChange = () => {
     const currentPicture = canvas.current.getSaveData();
