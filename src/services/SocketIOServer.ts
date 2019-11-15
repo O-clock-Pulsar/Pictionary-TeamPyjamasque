@@ -9,15 +9,15 @@ const gameService = Container.get(GameService);
 const io: SocketIO.Server = SocketIO(app);
 
 export default class Server {
-    port: number;
+    server: any;
 
     namespaces: Object;
 
     connectedUsers: Object;
 
     // Port type must be any to avoid problems with SocketIO types but is converted to a number when stored after activating the server
-    constructor(port: any) {
-      this.port = Number(port);
+    constructor(server: any) {
+      this.server = server;
       this.namespaces = {};
       this.connectedUsers = {};
     }
@@ -118,7 +118,7 @@ export default class Server {
               });
           });
 
-        io.listen(server);
+        io.listen(this.server);
         console.log('Socket IO Server started');
       } catch (e) { console.log(e); }
     }
