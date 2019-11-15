@@ -2,13 +2,10 @@ import SocketIO from 'socket.io';
 import { Container } from 'typedi';
 import GameService from '../services/GameService';
 import { Invitation } from '../Interfaces/SocketIOServer';
-import { app } from '../index';
 
 const gameService = Container.get(GameService);
 
-
-const server = require('http').createServer(app);
-const io = require('socket.io')(server);
+const io: SocketIO.Server = SocketIO();
 
 export default class Server {
     port: number;

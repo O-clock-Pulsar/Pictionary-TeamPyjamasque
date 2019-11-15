@@ -17,7 +17,7 @@ import pageNotFound from './middlewares/PageNotFound';
 export const app: express.Express = express();
 const PORT = process.env.PORT || 5050;
 const SOCKET_PORT = process.env.SOCKET_IO_PORT || 5060;
-const socketServer = new Server(SOCKET_PORT);
+const socketServer = new Server(5050);
 
 socketServer.start();
 
