@@ -21,7 +21,7 @@ const socketServer = new Server(SOCKET_PORT);
 
 socketServer.start();
 
-app.use(helmet);
+// app.use(helmet);
 
 dotenv.config();
 
