@@ -2,7 +2,7 @@ import SocketIO from 'socket.io';
 import { Container } from 'typedi';
 import GameService from '../services/GameService';
 import { Invitation } from '../Interfaces/SocketIOServer';
-import { app } from '../index';
+import { app, server } from '../index';
 
 const gameService = Container.get(GameService);
 
@@ -118,7 +118,7 @@ export default class Server {
               });
           });
 
-        // io.listen(this.port);
+        io.listen(server);
         console.log('Socket IO Server started');
       } catch (e) { console.log(e); }
     }

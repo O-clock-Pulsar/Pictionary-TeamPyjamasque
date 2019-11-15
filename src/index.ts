@@ -56,6 +56,7 @@ app.use(router);
  * middleware pour les 404 !
  * app.use(pageNotFound);
  */
+export var server;
 
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/odraw',
   { useNewUrlParser: true },
@@ -68,7 +69,7 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/odraw',
     console.log('Mongoose connected');
 
     // lancer l'appli
-    app.listen(PORT,
+    server = app.listen(PORT,
       () => {
         console.log(`App running on port ${PORT}`);
       });
