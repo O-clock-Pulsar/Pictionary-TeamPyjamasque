@@ -13,7 +13,7 @@ import SendInvitation from './components/SendInvitation'
 
 function App() {
 
-  let canvas = useRef(null);
+  let canvas = useRef({getSaveData: () => null, clear: () => null});
 
   let [state, setState] = useState({
     currentPicture: null,
@@ -23,8 +23,7 @@ function App() {
     namespaceSocket: null,
     gameReady: false,
     namespace: null,
-    username: null,
-    canvasInterval: null
+    username: null
   });
 
   const joinNamespace = (): void => {
@@ -59,12 +58,15 @@ function App() {
 
   useEffect(() => {
     joinNamespace();
-    handleCanvasChange();
 
     return function disconnectNamespace(): void {
       state.namespaceSocket.disconnect();
     }
   },[]);
+
+  useEffect(() => {
+    handleCanvasChange();
+  }, [canvas.current])
 
   useEffect(() => {
     if(state.namespaceSocket){
