@@ -23,7 +23,8 @@ function App() {
     namespaceSocket: null,
     gameReady: false,
     namespace: null,
-    username: null
+    username: null,
+    canvasInterval: null
   });
 
   const joinNamespace = (): void => {
@@ -32,8 +33,8 @@ function App() {
       process.env.JWT_SECRET || 'dummy');
     const username = decodedToken.username;
     const namespace = Cookie.get("namespace");
-    //Add back in environment variable later when closer to prod
-    const namespaceSocket: SocketIOClient.Socket = io(`http://localhost:5060/${namespace}?username=${username}`);
+    const namespaceSocket = initaliseNamespace(namespace, username)
+    
     setState(state => ({
       ...state,
       namespaceSocket,
@@ -42,13 +43,34 @@ function App() {
     }));
   };
 
+  const initaliseNamespace = (namespace: string, username: string): SocketIOClient.Socket => {
+    //Add back in environment variable later when closer to prod
+    const namespaceSocket: SocketIOClient.Socket = io(`http://localhost:5060/${namespace}?username=${username}`);
+    
+    namespaceSocket.on("drawed", (currentPicture: JSON)=> {
+      setState(state=> ({
+        ...state,
+        currentPicture
+      }))
+    })
+    
+    return namespaceSocket;
+  }
+
   useEffect(() => {
     joinNamespace();
+    handleCanvasChange();
 
     return function disconnectNamespace(): void {
       state.namespaceSocket.disconnect();
     }
   },[]);
+
+  useEffect(() => {
+    if(state.namespaceSocket){
+      state.namespaceSocket.emit('draw', state.currentPicture)
+    }
+  }, [state.currentPicture])
 
   const handleCanvasChange = () => {
     const currentPicture = canvas.current.getSaveData();
