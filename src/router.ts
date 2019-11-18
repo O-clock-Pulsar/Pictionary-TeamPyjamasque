@@ -4,6 +4,7 @@ import multer from 'multer';
 import MainController from './controllers/mainController';
 import RegistrationController from './controllers/registrationController';
 import AuthController from './controllers/authController';
+import UserController from './controllers/userController';
 import { AvatarUploadHandler } from './middlewares/AvatarUploadHandler';
 import GameController from './controllers/gameController';
 
@@ -39,5 +40,7 @@ router.post(
   multerBodyParser.none(),
   MainController.reportViolation,
 );
+router.get('/profile',
+  UserController.getProfile);
 
 export default router;
