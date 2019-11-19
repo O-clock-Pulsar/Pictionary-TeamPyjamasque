@@ -39,3 +39,8 @@ block content
                 td
                   a(href="./game/"+game.namespace)
                     button(type="button" class="btn btn-success") Rejoindre cette partie
+block javascript
+  script.
+    var username = "#{username}"
+  script(src="libraries/socket.io.js")
+  script(src="js/baseSocket.js")
