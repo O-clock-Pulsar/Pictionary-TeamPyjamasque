@@ -37,7 +37,7 @@ export default class Server {
               const playerSocketId = this.connectedUsers[invitation.receiver];
               if (playerSocketId) {
                 io.to(playerSocketId).emit('invite',
-                  invitation.namespace);
+                  invitation);
                 baseSocket.emit('invitationSuccess');
               } else {
                 baseSocket.emit('invitationFail');

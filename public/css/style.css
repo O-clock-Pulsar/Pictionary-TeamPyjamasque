@@ -35,3 +35,7 @@
 .navbar{
     z-index: 5;
 }
+
+.modal-title{
+    font-weight: 700;
+}
