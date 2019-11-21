@@ -6,3 +6,4 @@ public/uploads/avatars
 public/static
 views/play.pug
 dist/
+public/react
