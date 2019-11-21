@@ -4,7 +4,6 @@ import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { useState } from 'react';
-import PropTypes from 'prop-types';
 
 function Answer () {
     const [state, setState] = useState({
@@ -22,7 +21,14 @@ function Answer () {
     }
 
     const handleSubmit = (): void => {
-        return
+        const answer = state.inputText;
+        const answers = state.answers;
+        answers.push(answer);
+        setState(state => ({
+            ...state,
+            answers,
+            inputText: ""
+        }))
     }
     
     return(
@@ -38,20 +44,18 @@ function Answer () {
                 <Button type="submit" onClick={handleSubmit}>Envoyer</Button>
             </InputGroup.Append>
         </InputGroup>
-        <h4>Vos réponses</h4>
-        <ListGroup>
-            <ListGroup.Item>TEST</ListGroup.Item>
-            <ListGroup.Item>TEST</ListGroup.Item>
-            <ListGroup.Item>TEST</ListGroup.Item>
-        </ListGroup>
+        {state.answers.length !== 0 &&
+            <div>
+                <h4>Vos réponses</h4>
+                <ListGroup>
+                    {
+                        state.answers.map(answer => <ListGroup.Item key={answer}>{answer}</ListGroup.Item>)
+                    }
+                </ListGroup>
+            </div>
+        }
         </div>
     )
-}
-
-Answer.propTypes = {
-//   show: PropTypes.bool.isRequired,
-//   success: PropTypes.bool.isRequired,
-//   onClick: PropTypes.func.isRequired
 }
 
 export default Answer;
