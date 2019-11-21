@@ -1,11 +1,12 @@
 import React from 'react';
+import { useState } from 'react';
+import './style.css';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Card from 'react-bootstrap/Card';
-import { useState } from 'react';
-import './style.css';
+import Form from 'react-bootstrap/Form';
 
 function Answer () {
     const [state, setState] = useState({
@@ -22,15 +23,18 @@ function Answer () {
         }));
     }
 
-    const handleSubmit = (): void => {
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+        event.preventDefault();
         const answer = state.inputText;
-        const answers = state.answers;
-        answers.push(answer);
-        setState(state => ({
-            ...state,
-            answers,
-            inputText: ""
-        }))
+        if(answer){
+            const answers = state.answers;
+            answers.push(answer);
+            setState(state => ({
+                ...state,
+                answers,
+                inputText: ""
+            }))
+        }
     }
     
     return(
@@ -47,17 +51,19 @@ function Answer () {
                             </ListGroup> }
                 </div> 
             </Card>
-            <InputGroup className="my-4">
-                <FormControl 
-                    type="email"
-                    placeholder="Ecrivez votre réponse"
-                    aria-label="Ecrivez votre réponse"
-                    onChange={handleChange}
-                    value={state.inputText} />
-                <InputGroup.Append>
-                    <Button type="submit" onClick={handleSubmit}>Envoyer</Button>
-                </InputGroup.Append>
-            </InputGroup>
+            <Form onSubmit={handleSubmit}>
+                <InputGroup className="my-4">
+                    <FormControl 
+                        type="text"
+                        placeholder="Ecrivez votre réponse"
+                        aria-label="Ecrivez votre réponse"
+                        onChange={handleChange}
+                        value={state.inputText} />
+                    <InputGroup.Append>
+                        <Button type="submit">Envoyer</Button>
+                    </InputGroup.Append>
+                </InputGroup>
+            </Form>
         </div>
     )
 }
