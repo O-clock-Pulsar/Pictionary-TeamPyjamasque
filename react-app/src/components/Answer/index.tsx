@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './style.css';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
@@ -9,6 +9,9 @@ import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 
 function Answer () {
+
+    let messagesEnd = useRef(null);
+
     const [state, setState] = useState({
         inputText: "",
         answers: []
@@ -36,6 +39,12 @@ function Answer () {
             }))
         }
     }
+
+    useEffect(() => {
+        if (messagesEnd.current){
+            messagesEnd.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [state.answers.length])
     
     return(
         <div>
@@ -43,11 +52,12 @@ function Answer () {
                 <Card.Header>
                     Vos Réponses
                 </Card.Header>
-                <div id="message-window"> 
+                <div id="message-window" > 
                             { state.answers.length !== 0 && <ListGroup className="text-center my-2">
                                 {
                                     state.answers.map((answer, index) => <ListGroup.Item key={`answer-${index.toString()}`}>{answer}</ListGroup.Item>)
                                 }
+                                <div ref={messagesEnd} ></div>
                             </ListGroup> }
                 </div> 
             </Card>
