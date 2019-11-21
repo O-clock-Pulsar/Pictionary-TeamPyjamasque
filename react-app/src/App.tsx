@@ -13,7 +13,7 @@ import SendInvitation from './components/SendInvitation'
 
 function App() {
 
-  let canvas = useRef(null);
+  let canvas = useRef({getSaveData: () => null, clear: () => null});
 
   let [state, setState] = useState({
     currentPicture: null,
@@ -32,8 +32,8 @@ function App() {
       process.env.JWT_SECRET || 'dummy');
     const username = decodedToken.username;
     const namespace = Cookie.get("namespace");
-    //Add back in environment variable later when closer to prod
-    const namespaceSocket: SocketIOClient.Socket = io(`http://localhost:5060/${namespace}?username=${username}`);
+    const namespaceSocket = initaliseNamespace(namespace, username)
+    
     setState(state => ({
       ...state,
       namespaceSocket,
@@ -42,6 +42,20 @@ function App() {
     }));
   };
 
+  const initaliseNamespace = (namespace: string, username: string): SocketIOClient.Socket => {
+    //Add back in environment variable later when closer to prod
+    const namespaceSocket: SocketIOClient.Socket = io(`http://localhost:5060/${namespace}?username=${username}`);
+    
+    namespaceSocket.on("drawed", (currentPicture: JSON)=> {
+      setState(state=> ({
+        ...state,
+        currentPicture
+      }))
+    })
+    
+    return namespaceSocket;
+  }
+
   useEffect(() => {
     joinNamespace();
 
@@ -49,6 +63,16 @@ function App() {
       state.namespaceSocket.disconnect();
     }
   },[]);
+
+  useEffect(() => {
+    handleCanvasChange();
+  }, [canvas.current])
+
+  useEffect(() => {
+    if(state.namespaceSocket){
+      state.namespaceSocket.emit('draw', state.currentPicture)
+    }
+  }, [state.currentPicture])
 
   const handleCanvasChange = () => {
     const currentPicture = canvas.current.getSaveData();

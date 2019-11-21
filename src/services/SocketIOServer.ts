@@ -70,8 +70,10 @@ export default class Server {
 
                       const playerResults = await gameService.removeFromPlayerList(gameNamespace,
                         username);
-                      if (playerResults.playerList.length === 0) {
+                      if (playerResults.playerList.length === 0 && process.env.NODE_ENV === 'production') {
+                        // Nod env check added to make testing in development easier for when react reloads after changes. Possibly remove later?
                         delete this.namespaces[gameNamespace];
+                        gameService.endGame(gameNamespace);
                       } else if (!playerResults.ready) {
                         namespaceSocket.emit('waiting for players');
                       }
