@@ -13,6 +13,7 @@ import helmet from './middlewares/Helmet';
 import FlashSettings from './middlewares/FlashSettings';
 import session from './middlewares/Session';
 import pageNotFound from './middlewares/PageNotFound';
+import NonceGenerator from './middlewares/NonceGenerator';
 
 const app: express.Express = express();
 const PORT = process.env.PORT || 5050;
@@ -20,6 +21,8 @@ const SOCKET_PORT = process.env.SOCKET_IO_PORT || 5060;
 const socketServer = new Server(SOCKET_PORT);
 
 socketServer.start();
+
+app.use(NonceGenerator);
 
 app.use(helmet);
 

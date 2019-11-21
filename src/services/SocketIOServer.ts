@@ -25,7 +25,7 @@ export default class Server {
       io.on('connection',
         (baseSocket: SocketIO.Socket): void => {
           const { username } = baseSocket.handshake.query;
-          this.connectedUsers[username] = baseSocket;
+          this.connectedUsers[username] = baseSocket.id;
 
           baseSocket.on('disconnect',
             () => {
@@ -34,10 +34,10 @@ export default class Server {
 
           baseSocket.on('sendInvitation',
             (invitation: Invitation): void => {
-              const playerSocket = this.connectedUsers[invitation.receiver];
-              if (playerSocket) {
-                io.to(playerSocket).emit('invite',
-                  invitation.namespace);
+              const playerSocketId = this.connectedUsers[invitation.receiver];
+              if (playerSocketId) {
+                io.to(playerSocketId).emit('invite',
+                  invitation);
                 baseSocket.emit('invitationSuccess');
               } else {
                 baseSocket.emit('invitationFail');
@@ -53,7 +53,7 @@ export default class Server {
                   // Returns null if not enough players to start
                   const { username } = namespaceSocket.handshake.query;
 
-                  this.namespaces[gameNamespace].connectedUsers[username] = namespaceSocket;
+                  this.namespaces[gameNamespace].connectedUsers[username] = namespaceSocket.id;
 
                   const playerResults = await gameService.addToPlayerList(gameNamespace,
                     username);

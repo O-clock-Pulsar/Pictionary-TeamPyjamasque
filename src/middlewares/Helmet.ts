@@ -7,9 +7,10 @@ export default helmet({
       reportUri: '/report-violation',
       styleSrc: ["'self'", 'fonts.googleapis.com'],
       fontSrc: ["'self'", 'fonts.gstatic.com'],
-
-      scriptSrc: ["'self'"],
-
+      scriptSrc: ["'self'", (req, res) => `'nonce-${res.locals.nonce}'`],
+      connectSrc: ["'self'",
+        process.env.SOCKET_IO_ADDRESS_WS_PROTOCOL || 'ws://localhost:5060',
+        process.env.SOCKET_IO_ADDRESS_HTTP_PROTOCOL || 'http://localhost:5060'],
     },
   },
   hidePoweredBy: {

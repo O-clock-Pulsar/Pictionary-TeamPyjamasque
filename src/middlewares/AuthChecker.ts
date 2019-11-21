@@ -15,7 +15,9 @@ export default function (request: Request, response: Response, next: NextFunctio
         // Must be any or throws an error
         const decodedToken: any = jsonwebtoken.verify(token,
           process.env.JWT_SECRET || 'dummy');
-        if (decodedToken.username) {
+        const { username } = decodedToken;
+        if (username) {
+          response.locals.username = username;
           next();
         }
       } catch (e) {
