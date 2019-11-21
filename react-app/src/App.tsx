@@ -124,9 +124,11 @@ function App() {
             </Col>
           </Row>
           <Row>
+            <Col md={3}></Col>
             <Col className="text-center">
             {state.isCanvasDisabled ? <Answer/> : <Button className='my-4' onClick={handleCanvasClear}>Clear</Button>}
             </Col>
+            <Col md={3}></Col>
           </Row>
         </div> :
           state.username && state.namespace && <SendInvitation username={state.username} namespace={state.namespace} />
