@@ -44,5 +44,5 @@
     "move-cli": "^1.2.1",
     "rimraf": "^3.0.0"
   },
-  "proxy": "http://localhost:5050/"
+  "proxy": "http://localhost:5050/react"
 }

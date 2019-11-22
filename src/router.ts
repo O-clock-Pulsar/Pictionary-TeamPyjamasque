@@ -28,7 +28,7 @@ router
     AuthController.postLogin);
 router.get('/logout',
   AuthController.getLogout);
-router.get('/authentificate/:token/',
+router.get('/react/authentificate/:token/',
   AuthController.getAuthentificate);
 router.get('/home',
   GameController.showGames);
