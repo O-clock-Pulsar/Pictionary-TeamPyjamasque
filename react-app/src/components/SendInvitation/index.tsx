@@ -17,7 +17,7 @@ function SendInvitation({username, namespace}){
       });
 
     const joinBaseSocket = (): void => {
-      const socketAddress = process.env.SOCKET_ADDRESS ? process.env.SOCKET_ADDRESS : 'http://localhost:5060/'
+      const socketAddress = process.env.REACT_APP_SOCKET_ADDRESS ? process.env.REACT_APP_SOCKET_ADDRESS : 'http://localhost:5060/'
       const baseSocket: SocketIOClient.Socket = io(`${socketAddress}?username=${username}`);
       setState(state => ({
         ...state,

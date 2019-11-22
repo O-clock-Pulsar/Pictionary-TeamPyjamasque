@@ -29,11 +29,11 @@ function App() {
   const joinNamespace = (): void => {
     const token = Cookie.get("token");
     const decodedToken: any = jsonwebtoken.verify(token,
-      process.env.JWT_SECRET || 'dummy');
+      process.env.REACT_APP_JWT_SECRET || 'dummy');
     const username = decodedToken.username;
     const namespace = Cookie.get("namespace");
 
-    const socketAddress = process.env.SOCKET_ADDRESS ? process.env.SOCKET_ADDRESS : 'http://localhost:5060/'
+    const socketAddress = process.env.REACT_APP_SOCKET_ADDRESS ? process.env.REACT_APP_SOCKET_ADDRESS : 'http://localhost:5060/'
     const namespaceSocket: SocketIOClient.Socket = io(`${socketAddress}${namespace}?username=${username}`);
 
     setState(state => ({
