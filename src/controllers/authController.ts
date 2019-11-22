@@ -35,7 +35,7 @@ export default class AuthController {
     response.redirect('/');
   }
 
-  static getAuthentificate(request: Request, response: Response) {
+  static getAuthentificate(request: Request, response: Response): void {
     try {
       const decodedToken: any = jsonwebtoken.verify(request.params.token,
         process.env.JWT_SECRET || 'dummy');
