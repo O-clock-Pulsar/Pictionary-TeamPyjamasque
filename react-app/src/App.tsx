@@ -39,8 +39,7 @@ function App() {
     const username = state.username;
     const namespace = Cookie.get("namespace");
 
-    const socketAddress = process.env.REACT_APP_SOCKET_ADDRESS ? process.env.REACT_APP_SOCKET_ADDRESS : 'http://localhost:5060/'
-    const namespaceSocket: SocketIOClient.Socket = io(`${socketAddress}${namespace}?username=${username}`);
+    const namespaceSocket: SocketIOClient.Socket = initaliseNamespace(namespace, username);
 
     setState(state => ({
       ...state,
@@ -50,8 +49,8 @@ function App() {
   };
 
   const initaliseNamespace = (namespace: string, username: string): SocketIOClient.Socket => {
-    //Add back in environment variable later when closer to prod
-    const namespaceSocket: SocketIOClient.Socket = io(`http://localhost:5060/${namespace}?username=${username}`);
+    const socketAddress = process.env.REACT_APP_SOCKET_ADDRESS ? process.env.REACT_APP_SOCKET_ADDRESS : 'http://localhost:5060/'
+    const namespaceSocket: SocketIOClient.Socket = io(`${socketAddress}${namespace}?username=${username}`);
     
     namespaceSocket.on("drawed", (currentPicture: JSON)=> {
       setState(state=> ({

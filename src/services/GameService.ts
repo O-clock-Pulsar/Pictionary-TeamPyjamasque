@@ -4,7 +4,8 @@ import adjNoun from 'adj-noun';
 import { IGameServiceResult, IPlayerResult } from '../Interfaces/GameService';
 import io from 'socket.io-client';
 
-const socket = io(process.env.SOCKET_IO_ADDRESS_HTTP_PROTOCOL+":"+process.env.SOCKET_IO_PORT || "http://localhost:5060")
+const socketAddress = process.env.SOCKET_IO_ADDRESS_HTTP_PROTOCOL ? process.env.SOCKET_IO_ADDRESS_HTTP_PROTOCOL+":"+process.env.SOCKET_IO_PORT : 'http://localhost:5060/'
+const socket = io(socketAddress)
 
 adjNoun(process.env.ADJ_NOUN_SEED || 1);
 
