@@ -7,7 +7,6 @@ import Button from 'react-bootstrap/Button'
 import { useState, useRef, useEffect } from 'react';
 import io from 'socket.io-client';
 import Cookie from 'js-cookie';
-import jsonwebtoken from 'jsonwebtoken';
 import Timer from './components/Timer';
 import SendInvitation from './components/SendInvitation'
 
@@ -26,11 +25,18 @@ function App() {
     username: null
   });
 
-  const joinNamespace = (): void => {
+  const getUsername = async (): Promise<void> => {
     const token = Cookie.get("token");
-    const decodedToken: any = jsonwebtoken.verify(token,
-      process.env.REACT_APP_JWT_SECRET || 'dummy');
+    const decodedToken = JSON.parse(await (await fetch(`authentificate/${token}`)).json());
     const username = decodedToken.username;
+    setState(state => ({
+      ...state,
+      username
+    }))
+  }
+
+  const joinNamespace = (): void => {
+    const username = state.username;
     const namespace = Cookie.get("namespace");
 
     const socketAddress = process.env.REACT_APP_SOCKET_ADDRESS ? process.env.REACT_APP_SOCKET_ADDRESS : 'http://localhost:5060/'
@@ -39,7 +45,6 @@ function App() {
     setState(state => ({
       ...state,
       namespaceSocket,
-      username,
       namespace
     }));
   };
@@ -59,12 +64,18 @@ function App() {
   }
 
   useEffect(() => {
-    joinNamespace();
+    getUsername();
 
     return function disconnectNamespace(): void {
       state.namespaceSocket.disconnect();
     }
   },[]);
+
+  useEffect(() => {
+    if(state.username){
+      joinNamespace();
+    }
+  }, [state.username])
 
   useEffect(() => {
     handleCanvasChange();

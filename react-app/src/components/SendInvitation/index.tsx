@@ -87,7 +87,7 @@ function SendInvitation({username, namespace}){
             <Col className="text-center">
               <InvitationModal show={state.modalShow} success={state.modalSuccess} handleClose={closeModal} />
               <h1>En attente de joueurs</h1>
-              <h2>Voulez-vous inviter un ami ?</h2>
+              <h2>Voulez-vous inviter un ami&nbsp;?</h2>
               <input type="text" className="form-control" onChange={handleChange} value={state.playerName} />
               <Button className="my-3" onClick={emitInvite}>Envoyer</Button>
             </Col>
