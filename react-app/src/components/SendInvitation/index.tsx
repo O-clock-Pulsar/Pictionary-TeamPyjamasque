@@ -54,11 +54,13 @@ function SendInvitation({username, namespace}){
     },[username]);
 
     const emitInvite = (event: React.FormEvent<HTMLButtonElement>): void => {
-      state.baseSocket.emit("sendInvitation", {
-        receiver: state.playerName,
-        sender: username,
-        namespace: namespace
-      });
+      if(state.playerName){
+        state.baseSocket.emit("sendInvitation", {
+          receiver: state.playerName,
+          sender: username,
+          namespace: namespace
+        });
+      }
 
       setState(state => ({
         ...state,
