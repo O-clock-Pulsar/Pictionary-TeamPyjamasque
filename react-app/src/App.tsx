@@ -9,7 +9,8 @@ import io from 'socket.io-client';
 import Cookie from 'js-cookie';
 import jsonwebtoken from 'jsonwebtoken';
 import Timer from './components/Timer';
-import SendInvitation from './components/SendInvitation'
+import SendInvitation from './components/SendInvitation';
+import Answer from './components/Answer';
 
 function App() {
 
@@ -104,32 +105,39 @@ function App() {
             </Col>
           </Row>
           <Row>
-            <Col className="d-flex justify-content-center">
-              <span className="border border-primary" onMouseUp={handleCanvasChange}>
-                <CanvasDraw
-                  ref={canvas}
-                  loadTimeOffset={0}
-                  lazyRadius={0}
-                  brushRadius={state.brushRadius} 
-                  brushColor={state.brushColor}
-                  canvasWidth="50vw" 
-                  canvasHeight="50vh"
-                  hideGrid={true}
-                  disabled={state.isCanvasDisabled}
-                  saveData={state.currentPicture}
-                  immediateLoading={true}
-                />
-              </span>
+            <Col>
+              <Answer/>
             </Col>
-          </Row>
-          <Row>
-            <Col className="text-center">
-              <Button className='my-4' onClick={handleCanvasClear}>Clear</Button>
+            <Col>
+              <Row>
+                <Col>
+                  <span className="border border-primary d-flex justify-content-center" onMouseUp={handleCanvasChange}>
+                    <CanvasDraw
+                      ref={canvas}
+                      loadTimeOffset={0}
+                      lazyRadius={0}
+                      brushRadius={state.brushRadius} 
+                      brushColor={state.brushColor}
+                      canvasWidth="50vw" 
+                      canvasHeight="50vh"
+                      hideGrid={true}
+                      disabled={state.isCanvasDisabled}
+                      saveData={state.currentPicture}
+                      immediateLoading={true}
+                    />
+                  </span>
+                </Col>
+              </Row>
+              <Row>
+                <Col className="text-center">
+                {!state.isCanvasDisabled && <Button className='my-4' onClick={handleCanvasClear}>Clear</Button>}
+                </Col>
+              </Row>
             </Col>
           </Row>
         </div> :
-          state.username && state.namespace && <SendInvitation username={state.username} namespace={state.namespace} />
-        }
+        state.username && state.namespace && <SendInvitation username={state.username} namespace={state.namespace} />
+      }
     </div>
   );
 }
