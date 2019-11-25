@@ -9,7 +9,7 @@ import io from 'socket.io-client';
 import Cookie from 'js-cookie';
 import Timer from './components/Timer';
 import SendInvitation from './components/SendInvitation';
-import Answer from './components/Answer';
+import ReadyCheckModal from './components/ReadyCheckModal';
 
 function App() {
 
@@ -21,9 +21,11 @@ function App() {
     brushColor: "#000000",
     brushRadius: 6,
     namespaceSocket: null,
-    gameReady: false,
+    isGameReady: false,
     namespace: null,
-    username: null
+    username: null,
+    isPlayerReady: false,
+    isGameStarted: false
   });
 
   const getUsername = async (): Promise<void> => {
@@ -53,14 +55,21 @@ function App() {
     const socketAddress = process.env.REACT_APP_SOCKET_ADDRESS ? process.env.REACT_APP_SOCKET_ADDRESS : 'http://localhost:5060/'
     const namespaceSocket: SocketIOClient.Socket = io(`${socketAddress}${namespace}?username=${username}`);
     
+    namespaceSocket.on('game ready', () => {
+      setState(state => ({
+        ...state,
+        isGameReady: true
+      }))
+    })
+
     namespaceSocket.on("drawed", (currentPicture: JSON)=> {
       setState(state=> ({
         ...state,
         currentPicture
       }))
     })
-    
-    return namespaceSocket;
+
+  return namespaceSocket;
   }
 
   useEffect(() => {
@@ -107,7 +116,7 @@ function App() {
           <h1>ODRAW</h1>
         </Col>
       </Row>
-      {state.gameReady ?
+      {state.isGameStarted ?
         <div id="game-screen">
           <Row>
             <Col>
@@ -115,39 +124,36 @@ function App() {
             </Col>
           </Row>
           <Row>
-            <Col>
-              <Answer/>
+            <Col className="d-flex justify-content-center">
+              <span className="border border-primary" onMouseUp={handleCanvasChange}>
+                <CanvasDraw
+                  ref={canvas}
+                  loadTimeOffset={0}
+                  lazyRadius={0}
+                  brushRadius={state.brushRadius} 
+                  brushColor={state.brushColor}
+                  canvasWidth="50vw" 
+                  canvasHeight="50vh"
+                  hideGrid={true}
+                  disabled={state.isCanvasDisabled}
+                  saveData={state.currentPicture}
+                  immediateLoading={true}
+                />
+              </span>
             </Col>
-            <Col>
-              <Row>
-                <Col>
-                  <span className="border border-primary d-flex justify-content-center" onMouseUp={handleCanvasChange}>
-                    <CanvasDraw
-                      ref={canvas}
-                      loadTimeOffset={0}
-                      lazyRadius={0}
-                      brushRadius={state.brushRadius} 
-                      brushColor={state.brushColor}
-                      canvasWidth="50vw" 
-                      canvasHeight="50vh"
-                      hideGrid={true}
-                      disabled={state.isCanvasDisabled}
-                      saveData={state.currentPicture}
-                      immediateLoading={true}
-                    />
-                  </span>
-                </Col>
-              </Row>
-              <Row>
-                <Col className="text-center">
-                {!state.isCanvasDisabled && <Button className='my-4' onClick={handleCanvasClear}>Clear</Button>}
-                </Col>
-              </Row>
+          </Row>
+          <Row>
+            <Col className="text-center">
+              <Button className='my-4' onClick={handleCanvasClear}>Clear</Button>
             </Col>
           </Row>
         </div> :
-        state.username && state.namespace && <SendInvitation username={state.username} namespace={state.namespace} />
-      }
+          state.username && state.namespace && <div>
+            <SendInvitation username={state.username} namespace={state.namespace} />
+            <ReadyCheckModal show={state.isGameReady} handleClose={() => state.namespaceSocket.emit('player ready', state.username)} />
+            {state.isPlayerReady && "On attend juste encore un petit peu..."}
+            </div>
+        }
     </div>
   );
 }

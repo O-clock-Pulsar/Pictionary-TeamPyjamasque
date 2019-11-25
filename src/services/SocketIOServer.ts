@@ -1,5 +1,9 @@
 import SocketIO from 'socket.io';
 import { Container } from 'typedi';
+import { finished } from 'stream';
+import { Db } from 'mongodb';
+import { token } from 'morgan';
+import bcrypt from 'bcrypt';
 import GameService from '../services/GameService';
 import { Invitation } from '../Interfaces/SocketIOServer';
 
@@ -48,6 +52,8 @@ export default class Server {
             (gameNamespace: string): void => {
               this.namespaces[gameNamespace] = io.of(`/${gameNamespace}`);
               this.namespaces[gameNamespace].connectedUsers = {};
+              this.namespaces[gameNamespace].readyusers = [];
+
               this.namespaces[gameNamespace].on('connection',
                 async (namespaceSocket: SocketIO.Socket): Promise<void> => {
                   // Returns null if not enough players to start
@@ -76,6 +82,22 @@ export default class Server {
                         gameService.endGame(gameNamespace);
                       } else if (!playerResults.ready) {
                         namespaceSocket.emit('waiting for players');
+                      }
+                    });
+
+                  namespaceSocket.on('player ready',
+                    (username) => {
+                      const readyUsers = this.namespaces[gameNamespace].readyusers;
+                      readyUsers.push(username);
+                      if (readyUsers.length === playerResults.playerList) {
+                        namespaceSocket.emit('game start',
+                          () => {
+
+                            /*
+                             * game start or round start
+                             * Send all the stuff : assign roles, send the word
+                             */
+                          });
                       }
                     });
 
