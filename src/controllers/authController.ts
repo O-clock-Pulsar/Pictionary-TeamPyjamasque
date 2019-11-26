@@ -7,12 +7,12 @@ import { IUserServiceResults } from '../Interfaces/UserService';
 const userService = Container.get(UserService);
 
 export default class AuthController {
-  static getLogin(request : Request, response: Response) {
+  static getLogin(request : Request, response: Response): void {
     response.render('user-form',
       { login: true });
   }
 
-  static async postLogin(request: Request, response: Response) {
+  static async postLogin(request: Request, response: Response): Promise<void> {
     const { username, password } = request.body;
     const result: IUserServiceResults = await userService.authenticateUser(username,
       password);
@@ -30,8 +30,18 @@ export default class AuthController {
     response.redirect('/home');
   }
 
-  static getLogout(request : Request, response: Response) {
+  static getLogout(request : Request, response: Response): void {
     response.clearCookie('token');
     response.redirect('/');
+  }
+
+  static getAuthentificate(request: Request, response: Response): void {
+    try {
+      const decodedToken: any = jsonwebtoken.verify(request.params.token,
+        process.env.JWT_SECRET || 'dummy');
+      response.json(JSON.stringify(decodedToken));
+    } catch {
+      response.json({});
+    }
   }
 }

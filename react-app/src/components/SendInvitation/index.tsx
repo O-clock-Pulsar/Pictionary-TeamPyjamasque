@@ -17,7 +17,7 @@ function SendInvitation({username, namespace}){
       });
 
     const joinBaseSocket = (): void => {
-      const socketAddress = process.env.SOCKET_ADDRESS ? process.env.SOCKET_ADDRESS : 'http://localhost:5060/'
+      const socketAddress = process.env.REACT_APP_SOCKET_ADDRESS ? process.env.REACT_APP_SOCKET_ADDRESS : 'http://localhost:5060/'
       const baseSocket: SocketIOClient.Socket = io(`${socketAddress}?username=${username}`);
       setState(state => ({
         ...state,
@@ -54,11 +54,13 @@ function SendInvitation({username, namespace}){
     },[username]);
 
     const emitInvite = (event: React.FormEvent<HTMLButtonElement>): void => {
-      state.baseSocket.emit("sendInvitation", {
-        receiver: state.playerName,
-        sender: username,
-        namespace: namespace
-      });
+      if(state.playerName){
+        state.baseSocket.emit("sendInvitation", {
+          receiver: state.playerName,
+          sender: username,
+          namespace: namespace
+        });
+      }
 
       setState(state => ({
         ...state,
@@ -87,7 +89,7 @@ function SendInvitation({username, namespace}){
             <Col className="text-center">
               <InvitationModal show={state.modalShow} success={state.modalSuccess} handleClose={closeModal} />
               <h1>En attente de joueurs</h1>
-              <h2>Voulez-vous inviter un ami ?</h2>
+              <h2>Voulez-vous inviter un ami&nbsp;?</h2>
               <input type="text" className="form-control" onChange={handleChange} value={state.playerName} />
               <Button className="my-3" onClick={emitInvite}>Envoyer</Button>
             </Col>

@@ -61,4 +61,26 @@ Dans la racine du projet, executer `node git-hooks/init` pour copier les git hoo
 Pour utiliser le côté react en mode développement, il faut se placer dans le dossier ./react-app et lancer `npm run start`. Le server node basculera automatiquement sur le server react, qui est sur la porte 3000.
 
 ### En prod
-Lancer la commande `npm run build` lancera automatiquement la commande `npm run build` dans le dossier react. Elle a été modifié pour vider les anciens builds de react avant de déplacer les dossiers nécessaires (notamment play.pug dans views et le dossier static dans le dossier public) avant de lancer la compilation du typecript.
+Lancer la commande `npm run build` lancera automatiquement la commande `npm run build` dans le dossier react. Elle a été modifié pour vider les anciens builds de react avant de déplacer le dossier react dans le dossier public du server node avant de lancer la compilation du typecript.
+Avant de lancer `npm run build`, il faut mettre `INLINE_RUNTIME_CHUNK=false` dans le fichier .env trouvé dans /react-app pour que ça passe avec Helmet (qui bloque les in-line scripts).
+Egalement, on doit mettre un .env dans le dossier dist avec la valeur `NODE_ENV=true` pour gérer la différence en routage entre l'environement dev et l'environment prod.
+D'autres valeurs à ajouté au fichier .env selon besoin sont:
+
+#### .env React (avant build)
+INLINE_RUNTIME_CHUNK
+REACT_APP_JWT_SECRET
+REACT_APP_SOCKET_ADDRESS
+
+#### .env Node (pris en compte au démarrage)
+NODE_ENV
+PORT
+SOCKET_IO_ADDRESS_WS_PROTOCOL
+SOCKET_IO_ADDRESS_HTTP_PROTOCOL
+SOCKET_IO_PORT
+MONGODB_URI
+JWT_SECRET
+COOKIE_SECRET
+SESSION_SECRET
+SESSION_NAME
+SALT_ROUNDS
+ADJ_NOUN_SEED
