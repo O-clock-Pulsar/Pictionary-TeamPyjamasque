@@ -57,6 +57,6 @@ export default class GameService {
     }
 
     async endGame(namespace: string): Promise<IGame>{
-        return await Game.findOneAndUpdate({namespace}, {namespace: null}, {new:true});
+        return await Game.findOneAndUpdate({namespace}, {namespace: null}, {new: true});
     }
 }
