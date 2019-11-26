@@ -1,0 +1,21 @@
+extends includes/layout
+
+block navbar
+   include includes/navbar
+
+block content
+  div(class="row")
+   div(class="col-12")
+     div(class="profile_user")
+       div(class="row")
+         div(class="col-12 text-center")
+           h2(class="my-4 text-success") PROFILE UTLISATEUR
+     table(class="table")
+       thead(class="table table-dark ")
+         tr
+         th(scope="col") Name
+         th(scope="col") Email
+       tbody
+         tr
+         td #{user.username}
+         td #{user.email}
