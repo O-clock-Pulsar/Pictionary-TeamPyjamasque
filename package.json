@@ -9,7 +9,7 @@
     "build": "cd ./react-app && npm run build && cd .. && npm run compile:typescript",
     "compile:typescript": "tsc",
     "start": "node ./dist/index.js",
-    "test": "mocha --exit --require ts-node/register test/*.ts",
+    "test": "mocha --timeout 10000 --exit --require ts-node/register --recursive test/*/*.ts",
     "install:full": "npm i && cd ./react-app && npm i",
     "heroku-postbuild": "npm run install:full && npm run build"
   },
@@ -39,6 +39,7 @@
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
     "@types/chai": "^4.1.7",
+    "@types/chai-http": "^4.2.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/dotenv": "^6.1.1",
     "@types/express": "^4.16.1",
@@ -57,6 +58,7 @@
     "@types/uuid": "^3.4.6",
     "babel-eslint": "^10.0.3",
     "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
     "eslint": "^6.2.1",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-config-prettier": "^6.1.0",
