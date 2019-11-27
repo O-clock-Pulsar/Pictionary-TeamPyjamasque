@@ -13,7 +13,7 @@ function SendInvitation({username, namespace}){
         baseSocket: null,
         playerName: "",
         modalShow: false,
-        modalSuccess: false
+        modalSuccess: {sent: false, isSamePlayer: false},
       });
 
     const joinBaseSocket = (): void => {
@@ -28,7 +28,7 @@ function SendInvitation({username, namespace}){
         setState(state => ({
           ...state,
           modalShow: true,
-          modalSuccess: true
+          modalSuccess: {sent: true, isSamePlayer: false},
         }));
       });
 
@@ -36,7 +36,7 @@ function SendInvitation({username, namespace}){
         setState(state => ({
           ...state,
           modalShow: true,
-          modalSuccess: false
+          modalSuccess: {sent: false, isSamePlayer: false},
         }));
       });
     }
@@ -55,11 +55,19 @@ function SendInvitation({username, namespace}){
 
     const emitInvite = (event: React.FormEvent<HTMLButtonElement>): void => {
       if(state.playerName){
-        state.baseSocket.emit("sendInvitation", {
-          receiver: state.playerName,
-          sender: username,
-          namespace: namespace
-        });
+        if (state.playerName !== username){
+          state.baseSocket.emit("sendInvitation", {
+            receiver: state.playerName,
+            sender: username,
+            namespace: namespace
+          });
+        } else {
+          setState(state => ({
+            ...state,
+            modalShow: true,
+            modalSuccess: {sent: false, isSamePlayer: true},
+          }));
+        }
       }
 
       setState(state => ({
