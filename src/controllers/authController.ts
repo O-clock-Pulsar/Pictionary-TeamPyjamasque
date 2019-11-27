@@ -21,13 +21,14 @@ export default class AuthController {
         result.message,
         false);
       response.redirect('/login');
+    } else {
+      const token: string = jsonwebtoken.sign({ username },
+        process.env.JWT_SECRET || 'dummy',
+        { expiresIn: '24h' });
+      response.cookie('token',
+        token);
+      response.redirect('/home');
     }
-    const token: string = jsonwebtoken.sign({ username },
-      process.env.JWT_SECRET || 'dummy',
-      { expiresIn: '24h' });
-    response.cookie('token',
-      token);
-    response.redirect('/home');
   }
 
   static getLogout(request : Request, response: Response): void {
