@@ -2,7 +2,7 @@ import { Document, Schema, model } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 const hash = (data: string): string => bcrypt.hashSync(data,
-  process.env.SALT_ROUNDS || 1);
+  parseInt(process.env.SALT_ROUNDS) || 1);
 
 const emailCheck = (unhashedEmail: string): any => {
   emailRegExp.test(unhashedEmail);
