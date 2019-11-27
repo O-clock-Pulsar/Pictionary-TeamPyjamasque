@@ -9,9 +9,10 @@ function InvitationModal ({show, success, handleClose}) {
         <Modal.Header>
           <Modal.Title>Votre invitation</Modal.Title>
         </Modal.Header>
-        {success ?
+        {success.sent ?
           <Modal.Body>Votre invitation a été envoyé avec succès !</Modal.Body> :
-          <Modal.Body>Cet utilisateur n'a pas été trouvé.</Modal.Body>
+          success.isSamePlayer ? <Modal.Body> Mais ce n'est pas vous ? </Modal.Body> :
+            <Modal.Body>Cet utilisateur n'a pas été trouvé.</Modal.Body>
         }
         <Modal.Footer>
           <Button onClick={handleClose}>
@@ -24,7 +25,7 @@ function InvitationModal ({show, success, handleClose}) {
 
 InvitationModal.propTypes = {
   show: PropTypes.bool.isRequired,
-  success: PropTypes.bool.isRequired,
+  success: PropTypes.object.isRequired,
   handleClose: PropTypes.func.isRequired
 }
 
