@@ -16,8 +16,9 @@ export default class GameService {
         let game = await Game.findOne({host, namespace: {$ne: null}});
         let alreadyExists = true;
         let message = "Vous avez déjà une partie en cours.";
+        let namespace = "";
         if (!game){
-            const namespace = await this.getUniqueNamespace();
+            namespace = await this.getUniqueNamespace();
             game = await new Game({
                 host,
                 players: [host],
@@ -27,7 +28,7 @@ export default class GameService {
             alreadyExists = false;
             message = "Vous avez commencé une nouvelle partie.";
         }
-        return {game, alreadyExists, message};
+        return {game, alreadyExists, message, namespace};
     }
 
     async addToPlayerList(namespace: string, username: string): Promise<IPlayerResult> {
@@ -54,7 +55,7 @@ export default class GameService {
         const namespace = adjNoun().join('-');
         const game = await Game.findOne({namespace});
         if (game){
-            this.getUniqueNamespace();
+            return this.getUniqueNamespace();
         } else return namespace;
     }
 
@@ -78,6 +79,7 @@ export default class GameService {
     async getRoundWord() {
         const word =  await IWord.findOne();
         console.log(word);
+        return word;
     }
 
     async getPlayerList(namespace: string) {

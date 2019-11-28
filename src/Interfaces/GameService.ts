@@ -4,6 +4,7 @@ export interface IGameServiceResult {
   game: IGame;
   alreadyExists: boolean;
   message: string;
+  namespace: string
 }
 
 export interface IPlayerResult {
