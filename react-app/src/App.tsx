@@ -25,7 +25,8 @@ function App() {
     namespace: null,
     username: null,
     isPlayerReady: false,
-    isGameStarted: false
+    isGameStarted: false,
+    word: ""
   });
 
   const getUsername = async (): Promise<void> => {
@@ -62,6 +63,13 @@ function App() {
       }))
     })
 
+    namespaceSocket.on('game start', () => {
+      setState(state => ({
+        ...state,
+        isGameStarted: true
+      }))
+    })
+
     namespaceSocket.on("drawed", (currentPicture: JSON)=> {
       setState(state=> ({
         ...state,
@@ -69,7 +77,18 @@ function App() {
       }))
     })
 
+    namespaceSocket.on("receive word", (word: string)=> {
+      setState(state=> ({
+        ...state,
+        word
+      }))
+    })
+
   return namespaceSocket;
+  }
+
+  const sendUserConfirmation = () => {
+    state.namespaceSocket.emit('player ready', state.username)
   }
 
   useEffect(() => {
@@ -150,7 +169,7 @@ function App() {
         </div> :
           state.username && state.namespace && <div>
             <SendInvitation username={state.username} namespace={state.namespace} />
-            <ReadyCheckModal show={state.isGameReady} handleClose={() => state.namespaceSocket.emit('player ready', state.username)} />
+            <ReadyCheckModal show={state.isGameReady} handleClose={sendUserConfirmation} />
             {state.isPlayerReady && "On attend juste encore un petit peu..."}
             </div>
         }

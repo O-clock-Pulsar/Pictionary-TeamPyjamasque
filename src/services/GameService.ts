@@ -1,6 +1,6 @@
 import { Service } from "typedi";
 import Game, { IGame } from '../models/Game';
-import IWord from '../models/Word';
+import Word from '../models/Word';
 import adjNoun from 'adj-noun';
 import { IGameServiceResult, IPlayerResult } from '../Interfaces/GameService';
 import io from 'socket.io-client';
@@ -77,16 +77,13 @@ export default class GameService {
     }
 
     async getRoundWord() {
-        const word =  await IWord.findOne();
-        console.log(word);
+        const word = await Word.findOne();
         return word;
     }
 
     async getPlayerList(namespace: string) {
-        // let playerList = await Game.find({namespace},{$pull:{players: username}});
         const game = await Game.findOne({namespace});
         const playerList = game.players;
-        console.log(playerList);
         return playerList;
     }
 

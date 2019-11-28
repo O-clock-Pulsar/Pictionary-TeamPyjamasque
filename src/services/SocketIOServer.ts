@@ -52,7 +52,8 @@ export default class Server {
             (gameNamespace: string): void => {
               this.namespaces[gameNamespace] = io.of(`/${gameNamespace}`);
               this.namespaces[gameNamespace].connectedUsers = {};
-              this.namespaces[gameNamespace].readyusers = [];
+              this.namespaces[gameNamespace].readyUsers = new Set();
+              this.namespaces[gameNamespace].playerList;
 
               this.namespaces[gameNamespace].on('connection',
                 async (namespaceSocket: SocketIO.Socket): Promise<void> => {
@@ -64,7 +65,8 @@ export default class Server {
                   const playerResults = await gameService.addToPlayerList(gameNamespace,
                     username);
                   if (playerResults.ready) {
-                    namespaceSocket.emit('game ready');
+                    this.namespaces[gameNamespace].playerList = playerResults.playerList;
+                    io.of(gameNamespace).emit('game ready');
                   }
 
                   namespaceSocket.on('disconnect',
@@ -81,33 +83,31 @@ export default class Server {
                         delete this.namespaces[gameNamespace];
                         gameService.endGame(gameNamespace);
                       } else if (!playerResults.ready) {
-                        namespaceSocket.emit('waiting for players');
+                        io.of(gameNamespace).emit('waiting for players');
                       }
                     });
 
                   namespaceSocket.on('player ready',
-                    (username) => {
-                      const readyUsers = this.namespaces[gameNamespace].readyusers;
-                      readyUsers.push(username);
-                      if (readyUsers.length === playerResults.playerList) {
-                        namespaceSocket.emit('game start',
-                          () => {
-
-                            /*
-                             * game start or round start
-                             * Send all the stuff : assign roles, send the word
-                             */
-                          });
+                    async (username) => {
+                      this.namespaces[gameNamespace].readyUsers.add(username);
+                      if (this.namespaces[gameNamespace].readyUsers.size === this.namespaces[gameNamespace].playerList.length) {
+                        const players = this.namespaces[gameNamespace].playerList;
+                        const drawerer = players[Math.floor(Math.random() * players.length)];
+                        const drawererSocketId = this.namespaces[gameNamespace].connectedUsers[drawerer];
+                        const word = await gameService.getRoundWord();
+                        io.of(gameNamespace).emit('game start');
+                        io.of(gameNamespace).to(drawererSocketId).emit('receive word',
+                          word);
                       }
                     });
 
-                  namespaceSocket.on('become drawerer',
+                  namespaceSocket.on('became drawerer',
                     (): void => {
                       namespaceSocket.leave('answerers');
                       namespaceSocket.join('drawerer');
                     });
 
-                  namespaceSocket.on('become answerer',
+                  namespaceSocket.on('became answerer',
                     (): void => {
                       namespaceSocket.leave('drawerer');
                       namespaceSocket.join('answerers');
