@@ -15,9 +15,11 @@ import session from './middlewares/Session';
 import pageNotFound from './middlewares/PageNotFound';
 import NonceGenerator from './middlewares/NonceGenerator';
 
+dotenv.config();
+
 const app: express.Express = express();
-const PORT = process.env.PORT || 5050;
-const SOCKET_PORT = process.env.SOCKET_IO_PORT || 5060;
+const PORT = parseInt(process.env.PORT) || 5050;
+const SOCKET_PORT = parseInt(process.env.SOCKET_IO_PORT) || 5060;
 const socketServer = new Server(SOCKET_PORT);
 
 socketServer.start();
@@ -25,8 +27,6 @@ socketServer.start();
 app.use(NonceGenerator);
 
 app.use(helmet);
-
-dotenv.config();
 
 app.use(cookieParser(process.env.COOKIE_SECRET || 'dummy'));
 
