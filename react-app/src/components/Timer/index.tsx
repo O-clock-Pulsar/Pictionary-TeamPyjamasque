@@ -52,7 +52,7 @@ function Timer(){
       <Row>
         <Col className="text-center">
           <h1>
-            <span id="timer-text">{state.minutes}:{state.seconds > 10 ? state.seconds : "0" + String(state.seconds)}</span>
+            <span id="timer-text">{state.minutes}:{state.seconds > 9 ? state.seconds : "0" + String(state.seconds)}</span>
           </h1>
         </Col>
       </Row>
