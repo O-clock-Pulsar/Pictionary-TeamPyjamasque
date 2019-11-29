@@ -153,10 +153,10 @@ function App() {
   }, [canvas.current])
 
   useEffect(() => {
-    if (state.namespaceSocket) {
+    if (state.namespaceSocket && !state.isCanvasDisabled) {
       state.namespaceSocket.emit('draw', state.currentPicture)
     }
-  }, [state.currentPicture])
+  }, [state.currentPicture, state.isCanvasDisabled])
 
   const handleCanvasChange = () => {
     const currentPicture = canvas.current.getSaveData();
