@@ -85,6 +85,13 @@ function App() {
       }))
     })
 
+    namespaceSocket.on('waiting', () => {
+      setState(state => ({
+        ...state,
+        isPlayerReady : true
+      }))
+    })
+
     return namespaceSocket;
   }
 
@@ -183,8 +190,11 @@ function App() {
         </div> :
         state.username && state.namespace && <div>
           <SendInvitation username={state.username} namespace={state.namespace} />
-          <ReadyCheckModal show={state.isGameReady} handleClose={sendUserConfirmation} />
-          {state.isPlayerReady && "On attend juste encore un petit peu..."}
+          <ReadyCheckModal show={state.isGameReady && !state.isPlayerReady} handleClose={sendUserConfirmation} />
+          {state.isPlayerReady && 
+            <Row>
+              <Col className="text-center">On attend juste encore un petit peu...</Col>
+            </Row>}
         </div>
       }
     </div>

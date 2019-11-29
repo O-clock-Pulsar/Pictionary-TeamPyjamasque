@@ -92,8 +92,6 @@ export default class Server {
                         // Nod env check added to make testing in development easier for when react reloads after changes. Possibly remove later?
                         delete this.namespaces[gameNamespace];
                         gameService.endGame(gameNamespace);
-                      } else if (!playerResults.ready) {
-                        io.of(gameNamespace).emit('waiting for players');
                       }
                     });
 
@@ -111,6 +109,8 @@ export default class Server {
                         io.of(gameNamespace).emit('game start');
                         io.of(gameNamespace).to(drawererSocketId).emit('receive word',
                           word);
+                      } else {
+                        namespaceSocket.emit('waiting');
                       }
                     });
 
