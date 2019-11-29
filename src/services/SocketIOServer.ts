@@ -54,6 +54,9 @@ export default class Server {
               this.namespaces[gameNamespace].connectedUsers = {};
               this.namespaces[gameNamespace].readyUsers = new Set();
               this.namespaces[gameNamespace].playerList;
+              this.namespaces[gameNamespace].isInProgress = false;
+              this.namespaces[gameNamespace].drawerer = '';
+              this.namespaces[gameNamespace].word = '';
 
               this.namespaces[gameNamespace].on('connection',
                 async (namespaceSocket: SocketIO.Socket): Promise<void> => {
@@ -64,9 +67,16 @@ export default class Server {
 
                   const playerResults = await gameService.addToPlayerList(gameNamespace,
                     username);
-                  if (playerResults.ready) {
+                  if (!this.namespaces[gameNamespace].isInProgress && playerResults.ready) {
                     this.namespaces[gameNamespace].playerList = playerResults.playerList;
                     io.of(gameNamespace).emit('game ready');
+                  } else if (this.namespaces[gameNamespace].isInProgress) {
+                    io.of(gameNamespace).emit('game start');
+                    if (username === this.namespaces[gameNamespace].drawerer) {
+                      const drawererSocketId = this.namespaces[gameNamespace].connectedUsers[this.namespaces[gameNamespace].drawerer];
+                      io.of(gameNamespace).to(drawererSocketId).emit('receive word',
+                        this.namespaces[gameNamespace].word);
+                    }
                   }
 
                   namespaceSocket.on('disconnect',
@@ -93,8 +103,11 @@ export default class Server {
                       if (this.namespaces[gameNamespace].readyUsers.size === this.namespaces[gameNamespace].playerList.length) {
                         const players = this.namespaces[gameNamespace].playerList;
                         const drawerer = players[Math.floor(Math.random() * players.length)];
+                        this.namespaces[gameNamespace].drawerer = drawerer;
                         const drawererSocketId = this.namespaces[gameNamespace].connectedUsers[drawerer];
                         const word = await gameService.getRoundWord();
+                        this.namespaces[gameNamespace].word = word;
+                        this.namespaces[gameNamespace].isInProgress = true;
                         io.of(gameNamespace).emit('game start');
                         io.of(gameNamespace).to(drawererSocketId).emit('receive word',
                           word);
