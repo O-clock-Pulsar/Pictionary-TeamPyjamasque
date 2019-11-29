@@ -109,6 +109,13 @@ export default class Server {
                         io.of(gameNamespace).emit('game start');
                         io.of(gameNamespace).to(drawererSocketId).emit('receive word',
                           word);
+                        players.forEach((player: string): void => {
+                          if (player === drawerer) {
+                            io.of(gameNamespace).to(this.namespaces[gameNamespace].connectedUsers[player]).emit('become drawerer');
+                          } else {
+                            io.of(gameNamespace).to(this.namespaces[gameNamespace].connectedUsers[player]).emit('become answerer');
+                          }
+                        });
                       } else {
                         namespaceSocket.emit('waiting');
                       }
@@ -118,12 +125,14 @@ export default class Server {
                     (): void => {
                       namespaceSocket.leave('answerers');
                       namespaceSocket.join('drawerer');
+                      namespaceSocket.emit('set drawerer interface');
                     });
 
                   namespaceSocket.on('became answerer',
                     (): void => {
                       namespaceSocket.leave('drawerer');
                       namespaceSocket.join('answerers');
+                      namespaceSocket.emit('set answerer interface');
                     });
 
                   namespaceSocket.on('draw',

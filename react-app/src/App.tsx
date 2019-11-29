@@ -27,7 +27,8 @@ function App() {
     username: null,
     isPlayerReady: false,
     isGameStarted: false,
-    word: null
+    word: null,
+    timer: null
   });
 
   const getUsername = async (): Promise<void> => {
@@ -83,6 +84,7 @@ function App() {
         ...state,
         word
       }))
+
     })
 
     namespaceSocket.on('waiting', () => {
@@ -92,6 +94,28 @@ function App() {
       }))
     })
 
+    namespaceSocket.on('become drawerer', () => {
+      namespaceSocket.emit('became drawerer')
+    })
+
+    namespaceSocket.on('become answerer', () => {
+      namespaceSocket.emit('became answerer')
+    })
+
+    namespaceSocket.on('set drawerer interface', (timer) => {
+      setState(state => ({
+        ...state,
+        isCanvasDisabled : false,
+        timer: timer
+      }))
+    })
+    
+    namespaceSocket.on('set answerer interface', (timer) => {
+      setState(state => ({
+        ...state,
+        timer: timer
+      }))
+    })
     return namespaceSocket;
   }
 
