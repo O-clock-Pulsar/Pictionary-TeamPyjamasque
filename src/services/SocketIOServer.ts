@@ -103,7 +103,7 @@ export default class Server {
                         const drawerer = players[Math.floor(Math.random() * players.length)];
                         this.namespaces[gameNamespace].drawerer = drawerer;
                         const drawererSocketId = this.namespaces[gameNamespace].connectedUsers[drawerer];
-                        const word = await gameService.getRoundWord();
+                        const { word } = await gameService.getRoundWord();
                         this.namespaces[gameNamespace].word = word;
                         this.namespaces[gameNamespace].isInProgress = true;
                         io.of(gameNamespace).emit('game start');

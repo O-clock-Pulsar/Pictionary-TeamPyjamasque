@@ -27,7 +27,7 @@ function App() {
     username: null,
     isPlayerReady: false,
     isGameStarted: false,
-    word: null,
+    word: "",
     timer: null
   });
 
@@ -173,18 +173,18 @@ function App() {
             <Col>
               <Timer />
             </Col>
+            {!state.isCanvasDisabled && state.word && 
+              <Col className="text-center">
+                <h4>Votre mot est </h4>
+                <h1 id="word-text">{state.word}</h1>
+              </Col> 
+            }
           </Row>
           <Row>
             <Col>
               <Answer />
             </Col>
             <Col>
-              {/*
-          {state.isDrawer ?
-              state.word && <span>{state.word}</span>
-          :
-          // don't render the word
-           */}
               <Row>
                 <Col>
                   <span className="border border-primary d-flex justify-content-center" onMouseUp={handleCanvasChange}>
