@@ -10,10 +10,11 @@ import Cookie from 'js-cookie';
 import Timer from './components/Timer';
 import SendInvitation from './components/SendInvitation';
 import ReadyCheckModal from './components/ReadyCheckModal';
+import Answer from './components/Answer';
 
 function App() {
 
-  let canvas = useRef({getSaveData: () => null, clear: () => null});
+  let canvas = useRef({ getSaveData: () => null, clear: () => null });
 
   let [state, setState] = useState({
     currentPicture: null,
@@ -26,7 +27,7 @@ function App() {
     username: null,
     isPlayerReady: false,
     isGameStarted: false,
-    word: ""
+    word: null
   });
 
   const getUsername = async (): Promise<void> => {
@@ -55,7 +56,7 @@ function App() {
   const initaliseNamespace = (namespace: string, username: string): SocketIOClient.Socket => {
     const socketAddress = process.env.REACT_APP_SOCKET_ADDRESS ? process.env.REACT_APP_SOCKET_ADDRESS : 'http://localhost:5060/'
     const namespaceSocket: SocketIOClient.Socket = io(`${socketAddress}${namespace}?username=${username}`);
-    
+
     namespaceSocket.on('game ready', () => {
       setState(state => ({
         ...state,
@@ -70,21 +71,21 @@ function App() {
       }))
     })
 
-    namespaceSocket.on("drawed", (currentPicture: JSON)=> {
-      setState(state=> ({
+    namespaceSocket.on("drawed", (currentPicture: JSON) => {
+      setState(state => ({
         ...state,
         currentPicture
       }))
     })
 
-    namespaceSocket.on("receive word", (word: string)=> {
-      setState(state=> ({
+    namespaceSocket.on("receive word", (word: string) => {
+      setState(state => ({
         ...state,
         word
       }))
     })
 
-  return namespaceSocket;
+    return namespaceSocket;
   }
 
   const sendUserConfirmation = () => {
@@ -97,10 +98,10 @@ function App() {
     return function disconnectNamespace(): void {
       state.namespaceSocket.disconnect();
     }
-  },[]);
+  }, []);
 
   useEffect(() => {
-    if(state.username){
+    if (state.username) {
       joinNamespace();
     }
   }, [state.username])
@@ -110,7 +111,7 @@ function App() {
   }, [canvas.current])
 
   useEffect(() => {
-    if(state.namespaceSocket){
+    if (state.namespaceSocket) {
       state.namespaceSocket.emit('draw', state.currentPicture)
     }
   }, [state.currentPicture])
@@ -143,36 +144,49 @@ function App() {
             </Col>
           </Row>
           <Row>
-            <Col className="d-flex justify-content-center">
-              <span className="border border-primary" onMouseUp={handleCanvasChange}>
-                <CanvasDraw
-                  ref={canvas}
-                  loadTimeOffset={0}
-                  lazyRadius={0}
-                  brushRadius={state.brushRadius} 
-                  brushColor={state.brushColor}
-                  canvasWidth="50vw" 
-                  canvasHeight="50vh"
-                  hideGrid={true}
-                  disabled={state.isCanvasDisabled}
-                  saveData={state.currentPicture}
-                  immediateLoading={true}
-                />
-              </span>
+            <Col>
+              <Answer />
             </Col>
-          </Row>
-          <Row>
-            <Col className="text-center">
-              <Button className='my-4' onClick={handleCanvasClear}>Clear</Button>
+            <Col>
+              {/*
+          {state.isDrawer ?
+              state.word && <span>{state.word}</span>
+          :
+          // don't render the word
+           */}
+              <Row>
+                <Col>
+                  <span className="border border-primary d-flex justify-content-center" onMouseUp={handleCanvasChange}>
+                    <CanvasDraw
+                      ref={canvas}
+                      loadTimeOffset={0}
+                      lazyRadius={0}
+                      brushRadius={state.brushRadius}
+                      brushColor={state.brushColor}
+                      canvasWidth="50vw"
+                      canvasHeight="50vh"
+                      hideGrid={true}
+                      disabled={state.isCanvasDisabled}
+                      saveData={state.currentPicture}
+                      immediateLoading={true}
+                    />
+                  </span>
+                </Col>
+              </Row>
+              <Row>
+                <Col className="text-center">
+                  {!state.isCanvasDisabled && <Button className='my-4' onClick={handleCanvasClear}>Clear</Button>}
+                </Col>
+              </Row>
             </Col>
           </Row>
         </div> :
-          state.username && state.namespace && <div>
-            <SendInvitation username={state.username} namespace={state.namespace} />
-            <ReadyCheckModal show={state.isGameReady} handleClose={sendUserConfirmation} />
-            {state.isPlayerReady && "On attend juste encore un petit peu..."}
-            </div>
-        }
+        state.username && state.namespace && <div>
+          <SendInvitation username={state.username} namespace={state.namespace} />
+          <ReadyCheckModal show={state.isGameReady} handleClose={sendUserConfirmation} />
+          {state.isPlayerReady && "On attend juste encore un petit peu..."}
+        </div>
+      }
     </div>
   );
 }
