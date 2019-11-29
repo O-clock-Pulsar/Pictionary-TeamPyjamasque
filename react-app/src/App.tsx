@@ -9,11 +9,12 @@ import io from 'socket.io-client';
 import Cookie from 'js-cookie';
 import Timer from './components/Timer';
 import SendInvitation from './components/SendInvitation';
+import ReadyCheckModal from './components/ReadyCheckModal';
 import Answer from './components/Answer';
 
 function App() {
 
-  let canvas = useRef({getSaveData: () => null, clear: () => null});
+  let canvas = useRef({ getSaveData: () => null, clear: () => null });
 
   let [state, setState] = useState({
     currentPicture: null,
@@ -21,9 +22,13 @@ function App() {
     brushColor: "#000000",
     brushRadius: 6,
     namespaceSocket: null,
-    gameReady: false,
+    isGameReady: false,
     namespace: null,
-    username: null
+    username: null,
+    isPlayerReady: false,
+    isGameStarted: false,
+    word: "",
+    timer: {displayMinutes: 0, displaySeconds: 0}
   });
 
   const getUsername = async (): Promise<void> => {
@@ -52,15 +57,66 @@ function App() {
   const initaliseNamespace = (namespace: string, username: string): SocketIOClient.Socket => {
     const socketAddress = process.env.REACT_APP_SOCKET_ADDRESS ? process.env.REACT_APP_SOCKET_ADDRESS : 'http://localhost:5060/'
     const namespaceSocket: SocketIOClient.Socket = io(`${socketAddress}${namespace}?username=${username}`);
-    
-    namespaceSocket.on("drawed", (currentPicture: JSON)=> {
-      setState(state=> ({
+
+    namespaceSocket.on('game ready', () => {
+      setState(state => ({
+        ...state,
+        isGameReady: true
+      }))
+    })
+
+    namespaceSocket.on('game start', (timerSeconds) => {
+      const displayMinutes = Math.floor(timerSeconds/60);
+      const displaySeconds = timerSeconds - displayMinutes * 60;
+      setState(state => ({
+        ...state,
+        isGameStarted: true,
+        timer: {displayMinutes, displaySeconds}
+      }))
+    })
+
+    namespaceSocket.on("drawed", (currentPicture: JSON) => {
+      setState(state => ({
         ...state,
         currentPicture
       }))
     })
-    
+
+    namespaceSocket.on("receive word", (word: string) => {
+      setState(state => ({
+        ...state,
+        word
+      }))
+
+    })
+
+    namespaceSocket.on('waiting', () => {
+      setState(state => ({
+        ...state,
+        isPlayerReady : true
+      }))
+    })
+
+    namespaceSocket.on('become drawerer', () => {
+      namespaceSocket.emit('became drawerer')
+    })
+
+    namespaceSocket.on('become answerer', () => {
+      namespaceSocket.emit('became answerer')
+    })
+
+    namespaceSocket.on('set drawerer interface', () => {
+      setState(state => ({
+        ...state,
+        isCanvasDisabled : false
+      }))
+    })
+
     return namespaceSocket;
+  }
+
+  const sendUserConfirmation = () => {
+    state.namespaceSocket.emit('player ready', state.username)
   }
 
   useEffect(() => {
@@ -69,10 +125,10 @@ function App() {
     return function disconnectNamespace(): void {
       state.namespaceSocket.disconnect();
     }
-  },[]);
+  }, []);
 
   useEffect(() => {
-    if(state.username){
+    if (state.username) {
       joinNamespace();
     }
   }, [state.username])
@@ -82,7 +138,7 @@ function App() {
   }, [canvas.current])
 
   useEffect(() => {
-    if(state.namespaceSocket){
+    if (state.namespaceSocket) {
       state.namespaceSocket.emit('draw', state.currentPicture)
     }
   }, [state.currentPicture])
@@ -107,16 +163,22 @@ function App() {
           <h1>ODRAW</h1>
         </Col>
       </Row>
-      {state.gameReady ?
+      {state.isGameStarted ?
         <div id="game-screen">
           <Row>
             <Col>
-              <Timer />
+              <Timer displayMinutes={state.timer.displayMinutes} displaySeconds={state.timer.displaySeconds} />
             </Col>
+            {!state.isCanvasDisabled && state.word && 
+              <Col className="text-center">
+                <h4>Votre mot est </h4>
+                <h1 id="word-text">{state.word}</h1>
+              </Col> 
+            }
           </Row>
           <Row>
             <Col>
-              <Answer/>
+              <Answer />
             </Col>
             <Col>
               <Row>
@@ -126,9 +188,9 @@ function App() {
                       ref={canvas}
                       loadTimeOffset={0}
                       lazyRadius={0}
-                      brushRadius={state.brushRadius} 
+                      brushRadius={state.brushRadius}
                       brushColor={state.brushColor}
-                      canvasWidth="50vw" 
+                      canvasWidth="50vw"
                       canvasHeight="50vh"
                       hideGrid={true}
                       disabled={state.isCanvasDisabled}
@@ -140,13 +202,20 @@ function App() {
               </Row>
               <Row>
                 <Col className="text-center">
-                {!state.isCanvasDisabled && <Button className='my-4' onClick={handleCanvasClear}>Clear</Button>}
+                  {!state.isCanvasDisabled && <Button className='my-4' onClick={handleCanvasClear}>Clear</Button>}
                 </Col>
               </Row>
             </Col>
           </Row>
         </div> :
-        state.username && state.namespace && <SendInvitation username={state.username} namespace={state.namespace} />
+        state.username && state.namespace && <div>
+          <SendInvitation username={state.username} namespace={state.namespace} />
+          <ReadyCheckModal show={state.isGameReady && !state.isPlayerReady} handleClose={sendUserConfirmation} />
+          {state.isPlayerReady && 
+            <Row>
+              <Col className="text-center">On attend juste encore un petit peu...</Col>
+            </Row>}
+        </div>
       }
     </div>
   );

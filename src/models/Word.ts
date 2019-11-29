@@ -1,4 +1,4 @@
-import {Schema, model, Document} from 'mongoose';
+import { Document, Schema, model } from 'mongoose';
 
 interface IWord extends Document {
     word: string,
@@ -6,18 +6,20 @@ interface IWord extends Document {
 }
 
 const wordSchema = new Schema(
-    {
-        word: {
-            type: String,
-            required: true,
-            unique: true
-        },
-        library_id : {
-            type : Number,
-            required : true, 
-            unique: true,
-        }
-    }
-)
+  {
+    word: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    library_id: {
+      type: Number,
+      required: true,
+      unique: true,
+    },
+  },
+);
 
-export default model<IWord>('Word', wordSchema);
+export default model<IWord>('Word',
+  wordSchema,
+  'word');

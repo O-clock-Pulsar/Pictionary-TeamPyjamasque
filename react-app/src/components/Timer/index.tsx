@@ -3,12 +3,13 @@ import { useState, useEffect } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import './style.css';
+import PropTypes from 'prop-types';
  
-function Timer(){
+function Timer({displayMinutes, displaySeconds}){
 
   let [state, setState] = useState({
-      seconds: 0,
-      minutes: 5,
+      seconds: displaySeconds,
+      minutes: displayMinutes,
       interval: null
     });
 
@@ -52,11 +53,17 @@ function Timer(){
       <Row>
         <Col className="text-center">
           <h1>
-            <span id="timer-text">{state.minutes}:{state.seconds > 10 ? state.seconds : "0" + String(state.seconds)}</span>
+            <span id="timer-text">{state.minutes}:{state.seconds > 9 ? state.seconds : "0" + String(state.seconds)}</span>
           </h1>
         </Col>
       </Row>
    )
    
 }
+
+Timer.propTypes = {
+  displayMinutes: PropTypes.number.isRequired,
+  displaySeconds: PropTypes.number.isRequired
+}
+
 export default Timer;

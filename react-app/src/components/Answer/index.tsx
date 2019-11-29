@@ -50,7 +50,7 @@ function Answer () {
         <div>
             <Card id="chat-window">
                 <Card.Header>
-                    Vos Réponses
+                    Réponses
                 </Card.Header>
                 <div id="message-window" > 
                             { state.answers.length !== 0 && <ListGroup className="text-center my-2">

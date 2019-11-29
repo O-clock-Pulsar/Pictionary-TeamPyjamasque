@@ -1,5 +1,6 @@
 import { Service } from "typedi";
 import Game, { IGame } from '../models/Game';
+import Word from '../models/Word';
 import adjNoun from 'adj-noun';
 import { IGameServiceResult, IPlayerResult } from '../Interfaces/GameService';
 import io from 'socket.io-client';
@@ -15,8 +16,9 @@ export default class GameService {
         let game = await Game.findOne({host, namespace: {$ne: null}});
         let alreadyExists = true;
         let message = "Vous avez déjà une partie en cours.";
+        let namespace = "";
         if (!game){
-            const namespace = await this.getUniqueNamespace();
+            namespace = await this.getUniqueNamespace();
             game = await new Game({
                 host,
                 players: [host],
@@ -26,7 +28,7 @@ export default class GameService {
             alreadyExists = false;
             message = "Vous avez commencé une nouvelle partie.";
         }
-        return {game, alreadyExists, message};
+        return {game, alreadyExists, message, namespace};
     }
 
     async addToPlayerList(namespace: string, username: string): Promise<IPlayerResult> {
@@ -53,11 +55,56 @@ export default class GameService {
         const namespace = adjNoun().join('-');
         const game = await Game.findOne({namespace});
         if (game){
-            this.getUniqueNamespace();
+            return this.getUniqueNamespace();
         } else return namespace;
     }
 
     async endGame(namespace: string): Promise<IGame>{
         return await Game.findOneAndUpdate({namespace}, {namespace: null}, {new:true});
     }
+
+    async startRound(namespace: string, username: string) {
+        let round = true;
+        let ready = true;
+        const game = await Game.findOneAndUpdate({namespace}, {$addToSet: {players: username}}, {new: true});
+        const playerList = game.players;
+    }
+
+    async readyCheck({namespace}) {
+        let round = true;
+        let ready = true;
+        socket.emit('ready check', namespace)
+    }
+
+    async getRoundWord() {
+        const word = await Word.findOne();
+        return word;
+    }
+
+    async getPlayerList(namespace: string) {
+        const game = await Game.findOne({namespace});
+        const playerList = game.players;
+        return playerList;
+    }
+
+    async dispatchWord(namespace: string,username: string) {
+        const game = await Game.findOne({namespace}, {players: username});
+        const playerList = game.players;
+        let word = this.getRoundWord();
+        // playerList.forEach(element => this.round.word);
+        playerList.forEach(function(){
+            if('drawer'){
+                socket.emit(this.word);
+            }
+            else if('answerer'){
+                socket.emit(this.bcrypt.word);
+            }
+            else{
+                console.log(('something gones wrong:'));
+            }
+        })
+    }
+
+    
+    
 }
