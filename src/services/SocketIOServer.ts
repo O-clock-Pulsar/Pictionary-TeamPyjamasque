@@ -57,10 +57,11 @@ export default class Server {
               this.namespaces[gameNamespace].isInProgress = false;
               this.namespaces[gameNamespace].drawerer = '';
               this.namespaces[gameNamespace].word = '';
+              this.namespaces[gameNamespace].timerSeconds = 180;
+              this.namespaces[gameNamespace].timerInterval;
 
               this.namespaces[gameNamespace].on('connection',
                 async (namespaceSocket: SocketIO.Socket): Promise<void> => {
-                  // Returns null if not enough players to start
                   const { username } = namespaceSocket.handshake.query;
 
                   this.namespaces[gameNamespace].connectedUsers[username] = namespaceSocket.id;
@@ -71,11 +72,15 @@ export default class Server {
                     this.namespaces[gameNamespace].playerList = playerResults.playerList;
                     io.of(gameNamespace).emit('game ready');
                   } else if (this.namespaces[gameNamespace].isInProgress) {
-                    io.of(gameNamespace).emit('game start');
+                    io.of(gameNamespace).emit('game start',
+                      this.namespaces[gameNamespace].timerSeconds);
                     if (username === this.namespaces[gameNamespace].drawerer) {
                       const drawererSocketId = this.namespaces[gameNamespace].connectedUsers[this.namespaces[gameNamespace].drawerer];
                       io.of(gameNamespace).to(drawererSocketId).emit('receive word',
                         this.namespaces[gameNamespace].word);
+                      io.of(gameNamespace).to(this.namespaces[gameNamespace].connectedUsers[username]).emit('become drawerer');
+                    } else {
+                      io.of(gameNamespace).to(this.namespaces[gameNamespace].connectedUsers[username]).emit('become answerer');
                     }
                   }
 
@@ -106,7 +111,17 @@ export default class Server {
                         const { word } = await gameService.getRoundWord();
                         this.namespaces[gameNamespace].word = word;
                         this.namespaces[gameNamespace].isInProgress = true;
-                        io.of(gameNamespace).emit('game start');
+                        io.of(gameNamespace).emit('game start',
+                          this.namespaces[gameNamespace].timerSeconds);
+                        if (!this.namespaces[gameNamespace].timerInterval) {
+                          this.namespaces[gameNamespace].timerInterval = setInterval(() => {
+                            this.namespaces[gameNamespace].timerSeconds -= 1;
+                            if (this.namespaces[gameNamespace].timerSeconds === 0) {
+                              namespaceSocket.emit('round end');
+                              clearInterval(this.namespaces[gameNamespace].timerInterval);
+                            }
+                          }, 1000);
+                        }
                         io.of(gameNamespace).to(drawererSocketId).emit('receive word',
                           word);
                         players.forEach((player: string): void => {
@@ -132,7 +147,6 @@ export default class Server {
                     (): void => {
                       namespaceSocket.leave('drawerer');
                       namespaceSocket.join('answerers');
-                      namespaceSocket.emit('set answerer interface');
                     });
 
                   namespaceSocket.on('draw',

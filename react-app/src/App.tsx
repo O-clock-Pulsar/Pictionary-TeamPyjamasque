@@ -28,7 +28,7 @@ function App() {
     isPlayerReady: false,
     isGameStarted: false,
     word: "",
-    timer: null
+    timer: {displayMinutes: 0, displaySeconds: 0}
   });
 
   const getUsername = async (): Promise<void> => {
@@ -65,10 +65,13 @@ function App() {
       }))
     })
 
-    namespaceSocket.on('game start', () => {
+    namespaceSocket.on('game start', (timerSeconds) => {
+      const displayMinutes = Math.floor(timerSeconds/60);
+      const displaySeconds = timerSeconds - displayMinutes * 60;
       setState(state => ({
         ...state,
-        isGameStarted: true
+        isGameStarted: true,
+        timer: {displayMinutes, displaySeconds}
       }))
     })
 
@@ -102,20 +105,13 @@ function App() {
       namespaceSocket.emit('became answerer')
     })
 
-    namespaceSocket.on('set drawerer interface', (timer) => {
+    namespaceSocket.on('set drawerer interface', () => {
       setState(state => ({
         ...state,
-        isCanvasDisabled : false,
-        timer: timer
+        isCanvasDisabled : false
       }))
     })
-    
-    namespaceSocket.on('set answerer interface', (timer) => {
-      setState(state => ({
-        ...state,
-        timer: timer
-      }))
-    })
+
     return namespaceSocket;
   }
 
@@ -171,7 +167,7 @@ function App() {
         <div id="game-screen">
           <Row>
             <Col>
-              <Timer />
+              <Timer displayMinutes={state.timer.displayMinutes} displaySeconds={state.timer.displaySeconds} />
             </Col>
             {!state.isCanvasDisabled && state.word && 
               <Col className="text-center">
