@@ -1,22 +1,34 @@
-/*
- * import { expect } from 'chai';
- * import { Container } from 'typedi';
- * import chaiInterface from 'chai-interface';
- * import GameService from '../src/services/GameService';
- */
+import chai, { expect } from 'chai';
+import { Container } from 'typedi';
+import sinon from 'sinon';
+import GameService from '../../src/services/GameService';
+import Game from '../../src/models/Game';
 
+chai.use(require('chai-interface'));
 
-// chai.use(chaiInterface);
+const gameService = Container.get(GameService);
 
-// const gameService = Container.get(GameService);
+describe('GameService Tests',
+  () => {
+    it('Game service\'s createGame returns an object with an IGameServiceResult interface',
+      async () => {
+        sinon.stub(Game.prototype,
+          'save').returnsThis();
 
-/*
- * describe('Game Service Tests',
- *   () => {
- *     it('Game service\'s createGame returns an object with IGameServiceResult interface',
- *       () => {
- *         const result = gameService.createGame('Stan Lee');
- *         expect(result).to.be.a.instanceOf(Object);
- *       });
- *   });
- */
+        const result = await gameService.createGame('Stan Lee');
+
+        expect(result).to.have.interface({
+          game: {
+            host: String,
+            players: [String],
+            namespace: String,
+            date: Date,
+            library_id: Number,
+          },
+          alreadyExists: Boolean,
+          message: String,
+          namespace: String,
+        });
+        sinon.restore();
+      });
+  });
