@@ -8,13 +8,13 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 
-function Answer () {
+function Answer ({namespaceSocket, answers}) {
 
     let messagesEnd = useRef(null);
 
     const [state, setState] = useState({
         inputText: "",
-        answers: []
+        answers: answers ? answers : []
     });
 
     // Event type is broken according to GitHub discussions. Set to any.
@@ -30,13 +30,18 @@ function Answer () {
         event.preventDefault();
         const answer = state.inputText;
         if(answer){
-            const answers = state.answers;
-            answers.push(answer);
-            setState(state => ({
-                ...state,
-                answers,
-                inputText: ""
-            }))
+            try{
+                namespaceSocket.emit('answer', answer)
+                const answers = state.answers;
+                answers.push(answer);
+                setState(state => ({
+                    ...state,
+                    answers,
+                    inputText: ""
+                }));
+            } catch(e){
+                console.log('There was a problem sending the message');
+            }
         }
     }
 
