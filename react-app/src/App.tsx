@@ -28,7 +28,8 @@ function App() {
     isPlayerReady: false,
     isGameStarted: false,
     word: "",
-    timer: {displayMinutes: 0, displaySeconds: 0}
+    timer: {displayMinutes: 0, displaySeconds: 0},
+    answers: []
   });
 
   const getUsername = async (): Promise<void> => {
@@ -112,6 +113,15 @@ function App() {
       }))
     })
 
+    namespaceSocket.on('answered', (answer) => {
+      const answers = state.answers;
+      answers.push(answer)
+      setState(state => ({
+        ...state,
+        answers
+      }))
+    })
+
     return namespaceSocket;
   }
 
@@ -178,7 +188,7 @@ function App() {
           </Row>
           <Row>
             <Col>
-              <Answer />
+              <Answer namespaceSocket={state.namespaceSocket} answers={state.answers} />
             </Col>
             <Col>
               <Row>
