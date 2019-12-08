@@ -26,7 +26,7 @@ socketServer.start();
 
 app.use(NonceGenerator);
 
-app.use(helmet);
+app.use(helmet(process.env.SOCKET_ADDRESS));
 
 app.use(cookieParser(process.env.COOKIE_SECRET || 'dummy'));
 
