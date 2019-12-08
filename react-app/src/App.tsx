@@ -56,8 +56,13 @@ function App() {
   };
 
   const initaliseNamespace = (namespace: string, username: string): SocketIOClient.Socket => {
-    const socketAddress = process.env.REACT_APP_SOCKET_ADDRESS ? process.env.REACT_APP_SOCKET_ADDRESS : 'http://localhost:5060/'
-    const namespaceSocket: SocketIOClient.Socket = io(`${socketAddress}${namespace}?username=${username}`);
+    let namespaceSocket: SocketIOClient.Socket;
+    if ( process.env.NODE_ENV !== 'production'){
+      const socketAddress = 'http://localhost:5060/'
+      namespaceSocket = io(`${socketAddress}${namespace}?username=${username}`);
+    } else {
+      namespaceSocket = io(`/${namespace}?username=${username}`);
+    }
 
     namespaceSocket.on('game ready', () => {
       setState(state => ({

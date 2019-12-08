@@ -1,31 +1,29 @@
 import SocketIO from 'socket.io';
 import { Container } from 'typedi';
-import { finished } from 'stream';
-import { Db } from 'mongodb';
-import { token } from 'morgan';
-import bcrypt from 'bcrypt';
 import GameService from '../services/GameService';
 import { Invitation } from '../Interfaces/SocketIOServer';
+import { app } from '../index';
 
 const gameService = Container.get(GameService);
 
-const io: SocketIO.Server = SocketIO();
+const io: SocketIO.Server = SocketIO(app);
 
 export default class Server {
-    port: number;
+  server: any;
 
-    namespaces: Object;
+  namespaces: Object;
 
-    connectedUsers: Object;
+  connectedUsers: Object;
 
-    // Port type must be any to avoid problems with SocketIO types but is converted to a number when stored after activating the server
-    constructor(port: any) {
-      this.port = Number(port);
-      this.namespaces = {};
-      this.connectedUsers = {};
-    }
+  // Port type must be any to avoid problems with SocketIO types but is converted to a number when stored after activating the server
+  constructor(server: any) {
+    this.server = server;
+    this.namespaces = {};
+    this.connectedUsers = {};
+  }
 
-    start(): void {
+  start(): void {
+    try {
       io.on('connection',
         (baseSocket: SocketIO.Socket): void => {
           const { username } = baseSocket.handshake.query;
@@ -120,7 +118,8 @@ export default class Server {
                               namespaceSocket.emit('round end');
                               clearInterval(this.namespaces[gameNamespace].timerInterval);
                             }
-                          }, 1000);
+                          },
+                          1000);
                         }
                         io.of(gameNamespace).to(drawererSocketId).emit('receive word',
                           word);
@@ -172,9 +171,8 @@ export default class Server {
             });
         });
 
-      try {
-        io.listen(this.port);
-        console.log('Socket IO Server started');
-      } catch (e) { console.log(e); }
-    }
+      io.listen(this.server);
+      console.log('Socket IO Server started');
+    } catch (e) { console.log(e); }
+  }
 }

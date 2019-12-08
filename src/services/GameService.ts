@@ -63,48 +63,8 @@ export default class GameService {
         return await Game.findOneAndUpdate({namespace}, {namespace: null}, {new:true});
     }
 
-    async startRound(namespace: string, username: string) {
-        let round = true;
-        let ready = true;
-        const game = await Game.findOneAndUpdate({namespace}, {$addToSet: {players: username}}, {new: true});
-        const playerList = game.players;
-    }
-
-    async readyCheck({namespace}) {
-        let round = true;
-        let ready = true;
-        socket.emit('ready check', namespace)
-    }
-
     async getRoundWord() {
         const word = await Word.findOne();
         return word;
     }
-
-    async getPlayerList(namespace: string) {
-        const game = await Game.findOne({namespace});
-        const playerList = game.players;
-        return playerList;
-    }
-
-    async dispatchWord(namespace: string,username: string) {
-        const game = await Game.findOne({namespace}, {players: username});
-        const playerList = game.players;
-        let word = this.getRoundWord();
-        // playerList.forEach(element => this.round.word);
-        playerList.forEach(function(){
-            if('drawer'){
-                socket.emit(this.word);
-            }
-            else if('answerer'){
-                socket.emit(this.bcrypt.word);
-            }
-            else{
-                console.log(('something gones wrong:'));
-            }
-        })
-    }
-
-    
-    
 }
