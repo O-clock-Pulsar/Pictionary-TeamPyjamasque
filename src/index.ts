@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import 'reflect-metadata';
 import flash from 'express-flash-notification';
 import cookieParser from 'cookie-parser';
+import lusca from 'lusca';
 import Server from './services/SocketIOServer';
 import AuthChecker from './middlewares/AuthChecker';
 import router from './router';
@@ -33,6 +34,11 @@ app.use(cookieParser(process.env.COOKIE_SECRET || 'dummy'));
 
 app.use(session);
 
+lusca.csrf();
+app.use(lusca.xframe('SAMEORIGIN'));
+app.use(lusca.xssProtection(true));
+
+
 app.use(flash(app,
   FlashSettings));
 
@@ -58,6 +64,7 @@ app.use(router);
 
 // middleware pour les 404 !
 app.use(pageNotFound);
+// error handler
 
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/odraw',
   { useNewUrlParser: true },

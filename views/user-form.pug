@@ -11,6 +11,7 @@ block content
             div(class="row")
                 div(class=(login ? "col-md-2" : "col-md-1"))
                 div(class=(login ? "col-md-8 text-center form-group align-self-center" : "col-md-6 text-center form-group align-self-center"))
+                    input(type='hidden', name='_csrf', value=_csrf)
                     label(for="username") Nom d'utilisateur
                     input(type="text" class=(usernameError ? "is-invalid form-control" : "form-control") id="username" name="username" required autofocus)
                 if !login                                         
