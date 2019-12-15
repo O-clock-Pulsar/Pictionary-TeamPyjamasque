@@ -58,7 +58,7 @@ function App() {
   const initaliseNamespace = (namespace: string, username: string): SocketIOClient.Socket => {
     let namespaceSocket: SocketIOClient.Socket;
     if ( process.env.NODE_ENV !== 'production'){
-      const socketAddress = 'http://localhost:5060/'
+      const socketAddress = 'http://localhost:5050/'
       namespaceSocket = io(`${socketAddress}${namespace}?username=${username}`);
     } else {
       namespaceSocket = io(`/${namespace}?username=${username}`);

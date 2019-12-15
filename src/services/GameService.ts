@@ -3,11 +3,8 @@ import Game, { IGame } from '../models/Game';
 import Word from '../models/Word';
 import adjNoun from 'adj-noun';
 import { IGameServiceResult, IPlayerResult } from '../Interfaces/GameService';
-import io from 'socket.io-client';
 
-const socketAddress = process.env.SOCKET_IO_ADDRESS_HTTP_PROTOCOL ? process.env.SOCKET_IO_ADDRESS_HTTP_PROTOCOL+":"+process.env.SOCKET_IO_PORT : 'http://localhost:5060/'
-const socket = io(socketAddress)
-
+// Add this as a dependency ?
 adjNoun.seed(parseInt(process.env.ADJ_NOUN_SEED) || 1);
 
 @Service()
@@ -24,7 +21,6 @@ export default class GameService {
                 players: [host],
                 namespace
             }).save();
-            socket.emit('game start', namespace);
             alreadyExists = false;
             message = "Vous avez commencé une nouvelle partie.";
         }

@@ -12,6 +12,3 @@ resources:
   memory_gb: 1
 network:
   session_affinity: true
-  forwarded_ports:
-    - 5050
-    - 5060

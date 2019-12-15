@@ -3,8 +3,6 @@ import helmet from 'helmet';
 export default (socketAddress: string) => {
   const socketAddressHTTP = socketAddress ? `http://${socketAddress}` : 'http://localhost';
   const socketAddressWS = socketAddress ? `ws://${socketAddress}` : 'ws://localhost';
-  console.log(socketAddressHTTP);
-  console.log(socketAddressWS);
 
   return helmet({
     contentSecurityPolicy: {

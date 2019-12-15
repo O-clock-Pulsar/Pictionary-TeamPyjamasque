@@ -19,7 +19,7 @@ function SendInvitation({username, namespace}){
     const joinBaseSocket = (): void => {
       let baseSocket: SocketIOClient.Socket;
       if ( process.env.NODE_ENV !== 'production'){
-        const socketAddress = 'http://localhost:5060/'
+        const socketAddress = 'http://localhost:5050/'
         baseSocket = io(`${socketAddress}?username=${username}`);
       } else {
         baseSocket = io(`?username=${username}`);
