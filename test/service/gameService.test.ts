@@ -17,6 +17,7 @@ describe('GameService Tests',
 
         const result = await gameService.createGame('Stan Lee');
 
+        // @ts-ignore
         expect(result).to.have.interface({
           game: {
             host: String,
