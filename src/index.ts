@@ -75,3 +75,5 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/odraw',
         console.log(`App running on port ${PORT}`);
       });
   });
+
+export default app;
