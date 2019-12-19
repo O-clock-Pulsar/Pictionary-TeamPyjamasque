@@ -16,6 +16,7 @@ import session from './middlewares/Session';
 import pageNotFound from './middlewares/PageNotFound';
 import NonceGenerator from './middlewares/NonceGenerator';
 
+
 dotenv.config();
 
 const app: express.Express = express();
@@ -34,10 +35,12 @@ app.use(cookieParser(process.env.COOKIE_SECRET || 'dummy'));
 
 app.use(session);
 
-lusca.csrf();
+app.use(lusca.csrf());
 app.use(lusca.xframe('SAMEORIGIN'));
 app.use(lusca.xssProtection(true));
-
+app.use(lusca.csp({ policy: { 'default-src': '*' } }));
+app.use(lusca.hsts({ maxAge: 31536000 }));
+app.use(lusca.p3p('ABCDEF'));
 
 app.use(flash(app,
   FlashSettings));
