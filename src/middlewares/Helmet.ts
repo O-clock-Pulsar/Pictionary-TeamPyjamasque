@@ -9,6 +9,7 @@ export default (socketAddress: string) => {
       directives: {
         defaultSrc: ["'self'"],
         reportUri: '/report-violation',
+        imgSrc: ["'self'", 'data:'],
         styleSrc: ["'self'", 'fonts.googleapis.com'],
         fontSrc: ["'self'", 'fonts.gstatic.com'],
         scriptSrc: ["'self'", (req, res) => `'nonce-${res.locals.nonce}'`],
