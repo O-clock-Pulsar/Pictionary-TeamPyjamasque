@@ -29,28 +29,24 @@ export default class GameController {
 
   static async showGames(request: Request, response: Response): Promise<void> {
     const availableGames = await Game.find({ namespace: { $ne: null } });
-    if (availableGames.length === 0) {
-      response.render('no-games');
-    } else {
-      const games = availableGames.map((game) => {
-        const { namespace } = game;
-        const { host } = game;
-        const { players } = game;
-        // Arbitrary number for now
-        const placesLeft = 4 - game.players.length;
-        const startTime = `${game.date.getDate()}/${game.date.getMonth()
-          + 1}/${game.date.getFullYear()} ${game.date.getHours()}:${game.date.getMinutes()}:${game.date.getSeconds()}`;
-        return {
-          namespace,
-          host,
-          players,
-          placesLeft,
-          startTime,
-        };
-      });
-      response.render('game-list',
-        { games });
-    }
+    const games = availableGames.map((game) => {
+      const { namespace } = game;
+      const { host } = game;
+      const { players } = game;
+      // Arbitrary number for now
+      const placesLeft = 4 - game.players.length;
+      const startTime = `${game.date.getDate()}/${game.date.getMonth()
+        + 1}/${game.date.getFullYear()} ${game.date.getHours()}:${game.date.getMinutes()}:${game.date.getSeconds()}`;
+      return {
+        namespace,
+        host,
+        players,
+        placesLeft,
+        startTime,
+      };
+    });
+    response.render('game-list',
+      { games });
   }
 
   static play(request: Request, response: Response): void {
