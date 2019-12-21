@@ -20,8 +20,9 @@ function App() {
   let [state, setState] = useState({
     currentPicture: null,
     isCanvasDisabled: true,
-    canvasWidth: window.innerWidth >= 768 ? window.innerWidth/2 : window.innerWidth,
-    canvasHeight: window.innerWidth >= 768 ? window.innerHeight/2 : window.innerHeight/3,
+    isDesktop: window.innerWidth >= 768,
+    canvasWidth: window.innerWidth/2,
+    canvasHeight: window.innerHeight/2,
     isAnswerDisabled: false,
     brushColor: "#000000",
     brushRadius: window.innerWidth >= 768 ? 6 : 2,
@@ -139,8 +140,25 @@ function App() {
     state.namespaceSocket.emit('player ready', state.username)
   }
 
+  const setMobile = (isDesktop: boolean) => {
+    if(isDesktop){
+      setState(state => ({
+        ...state,
+        canvasWidth: window.innerWidth/2,
+        canvasHeight:  window.innerHeight/2,
+      }))
+    } else {
+      setState(state => ({
+        ...state,
+        canvasWidth: window.innerWidth,
+        canvasHeight:  window.innerHeight/3,
+      }))
+    }
+  } 
+
   useEffect(() => {
     getUsername();
+    setMobile(state.isDesktop);
 
     return function disconnectNamespace(): void {
       state.namespaceSocket.disconnect();
@@ -187,21 +205,28 @@ function App() {
       {state.isGameStarted ?
         <div id="game-screen">
           <Row>
-            <Col>
-              <Timer displayMinutes={state.timer.displayMinutes} displaySeconds={state.timer.displaySeconds} />
-            </Col>
-            {!state.isCanvasDisabled && state.word && 
-              <Col className="text-center">
+          {!state.isCanvasDisabled && state.word && 
+              <Col className="text-center" xs={{order: 2}}>
                 <h4>Votre mot est </h4>
                 <h1 id="word-text">{state.word}</h1>
               </Col> 
             }
+            <Col xs={{order: 1}} >
+              <Timer displayMinutes={state.timer.displayMinutes} displaySeconds={state.timer.displaySeconds} />
+              {!state.isDesktop &&
+                <Row>
+                  <Col className="text-center">
+                    {!state.isCanvasDisabled && <Button onClick={handleCanvasClear}>Clear</Button>}
+                  </Col>
+                </Row>
+              }
+            </Col>
           </Row>
           <Row>
             <Col md={{ order: 2 }} >
               <Row>
                 <Col>
-                  <span className="border border-primary d-flex justify-content-center" onTouchEnd={handleCanvasChange} onMouseUp={handleCanvasChange} >
+                  <span className="border border-primary d-flex justify-content-center my-4" onTouchEnd={handleCanvasChange} onMouseUp={handleCanvasChange} >
                     <CanvasDraw
                       ref={canvas}
                       loadTimeOffset={0}
@@ -218,11 +243,13 @@ function App() {
                   </span>
                 </Col>
               </Row>
-              <Row>
-                <Col className="text-center">
-                  {!state.isCanvasDisabled && <Button className='my-4' onClick={handleCanvasClear}>Clear</Button>}
-                </Col>
-              </Row>
+              {state.isDesktop &&
+                <Row>
+                  <Col className="text-center">
+                    {!state.isCanvasDisabled && <Button onClick={handleCanvasClear}>Clear</Button>}
+                  </Col>
+                </Row>
+              }
             </Col>
             <Col md={{ order: 1 }}>
               <Answer namespaceSocket={state.namespaceSocket} answers={state.answers} isDisabled={state.isAnswerDisabled} />

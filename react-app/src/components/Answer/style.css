@@ -1,7 +1,13 @@
 #chat-window{
-    height: 50vh
+    height: 50vh;
 }
 
 #message-window{
-    overflow-y: auto
+    overflow-y: auto;
+}
+
+@media (max-width: 500px) {
+    #chat-window {
+        height: 30vh;
+    }
 }

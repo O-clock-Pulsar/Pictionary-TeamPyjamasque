@@ -1,7 +1,5 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import './style.css';
 import PropTypes from 'prop-types';
  
@@ -50,13 +48,9 @@ function Timer({displayMinutes, displaySeconds}){
   },[])
 
    return(
-      <Row>
-        <Col className="text-center">
-          <h1>
-            <span id="timer-text">{state.minutes}:{state.seconds > 9 ? state.seconds : "0" + String(state.seconds)}</span>
-          </h1>
-        </Col>
-      </Row>
+    <h1 className="text-center">
+      <span id="timer-text">{state.minutes}:{state.seconds > 9 ? state.seconds : "0" + String(state.seconds)}</span>
+    </h1>
    )
    
 }
