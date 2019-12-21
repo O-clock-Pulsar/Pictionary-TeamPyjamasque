@@ -19,6 +19,7 @@ function App() {
   let [state, setState] = useState({
     currentPicture: null,
     isCanvasDisabled: true,
+    isAnswerDisabled: false,
     brushColor: "#000000",
     brushRadius: 6,
     namespaceSocket: null,
@@ -114,7 +115,8 @@ function App() {
     namespaceSocket.on('set drawerer interface', () => {
       setState(state => ({
         ...state,
-        isCanvasDisabled : false
+        isCanvasDisabled: false,
+        isAnswerDisabled: true
       }))
     })
 
@@ -193,7 +195,7 @@ function App() {
           </Row>
           <Row>
             <Col>
-              <Answer namespaceSocket={state.namespaceSocket} answers={state.answers} />
+              <Answer namespaceSocket={state.namespaceSocket} answers={state.answers} isDisabled={state.isAnswerDisabled} />
             </Col>
             <Col>
               <Row>

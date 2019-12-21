@@ -7,8 +7,9 @@ import Button from 'react-bootstrap/Button';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
+import PropTypes, { string } from 'prop-types';
 
-function Answer ({namespaceSocket, answers}) {
+function Answer ({namespaceSocket, answers, isDisabled}) {
 
     let messagesEnd = useRef(null);
 
@@ -60,27 +61,35 @@ function Answer ({namespaceSocket, answers}) {
                 <div id="message-window" > 
                             { state.answers.length !== 0 && <ListGroup className="text-center my-2">
                                 {
-                                    state.answers.map((answer, index) => <ListGroup.Item key={`answer-${index.toString()}`}>{answer}</ListGroup.Item>)
+                                    state.answers.map((answer: string, index: number) => <ListGroup.Item key={`answer-${index.toString()}`}>{answer}</ListGroup.Item>)
                                 }
                                 <div ref={messagesEnd} ></div>
                             </ListGroup> }
                 </div> 
             </Card>
-            <Form onSubmit={handleSubmit}>
-                <InputGroup className="my-4">
-                    <FormControl 
-                        type="text"
-                        placeholder="Ecrivez votre réponse"
-                        aria-label="Ecrivez votre réponse"
-                        onChange={handleChange}
-                        value={state.inputText} />
-                    <InputGroup.Append>
-                        <Button type="submit">Envoyer</Button>
-                    </InputGroup.Append>
-                </InputGroup>
-            </Form>
+            {!isDisabled && 
+                <Form onSubmit={handleSubmit}>
+                    <InputGroup className="my-4">
+                        <FormControl 
+                            type="text"
+                            placeholder="Ecrivez votre réponse"
+                            aria-label="Ecrivez votre réponse"
+                            onChange={handleChange}
+                            value={state.inputText} />
+                        <InputGroup.Append>
+                            <Button type="submit">Envoyer</Button>
+                        </InputGroup.Append>
+                    </InputGroup>
+                </Form>
+            }
         </div>
     )
 }
+
+Answer.propTypes = {
+    namespaceSocket: PropTypes.any.isRequired,
+    answers: PropTypes.arrayOf(string).isRequired,
+    isDisabled: PropTypes.bool.isRequired
+  }
 
 export default Answer;
