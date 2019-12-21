@@ -20,9 +20,11 @@ function App() {
   let [state, setState] = useState({
     currentPicture: null,
     isCanvasDisabled: true,
+    canvasWidth: window.innerWidth >= 768 ? window.innerWidth/2 : window.innerWidth,
+    canvasHeight: window.innerWidth >= 768 ? window.innerHeight/2 : window.innerHeight/3,
     isAnswerDisabled: false,
     brushColor: "#000000",
-    brushRadius: 6,
+    brushRadius: window.innerWidth >= 768 ? 6 : 2,
     namespaceSocket: null,
     isGameReady: false,
     namespace: null,
@@ -178,7 +180,7 @@ function App() {
     <div className="App">
       <FlashMessage/>
       <Row>
-        <Col className="text-center">
+        <Col className="d-none d-md-block text-center">
           <h1>ODRAW</h1>
         </Col>
       </Row>
@@ -196,21 +198,18 @@ function App() {
             }
           </Row>
           <Row>
-            <Col>
-              <Answer namespaceSocket={state.namespaceSocket} answers={state.answers} isDisabled={state.isAnswerDisabled} />
-            </Col>
-            <Col>
+            <Col md={{ order: 2 }} >
               <Row>
                 <Col>
-                  <span className="border border-primary d-flex justify-content-center" onMouseUp={handleCanvasChange}>
+                  <span className="border border-primary d-flex justify-content-center" onTouchEnd={handleCanvasChange} onMouseUp={handleCanvasChange} >
                     <CanvasDraw
                       ref={canvas}
                       loadTimeOffset={0}
                       lazyRadius={0}
                       brushRadius={state.brushRadius}
                       brushColor={state.brushColor}
-                      canvasWidth="50vw"
-                      canvasHeight="50vh"
+                      canvasWidth={state.canvasWidth}
+                      canvasHeight={state.canvasHeight}
                       hideGrid={true}
                       disabled={state.isCanvasDisabled}
                       saveData={state.currentPicture}
@@ -224,6 +223,9 @@ function App() {
                   {!state.isCanvasDisabled && <Button className='my-4' onClick={handleCanvasClear}>Clear</Button>}
                 </Col>
               </Row>
+            </Col>
+            <Col md={{ order: 1 }}>
+              <Answer namespaceSocket={state.namespaceSocket} answers={state.answers} isDisabled={state.isAnswerDisabled} />
             </Col>
           </Row>
         </div> :
