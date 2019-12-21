@@ -11,6 +11,7 @@ import Timer from './components/Timer';
 import SendInvitation from './components/SendInvitation';
 import ReadyCheckModal from './components/ReadyCheckModal';
 import Answer from './components/Answer';
+import FlashMessage from './components/FlashMessage';
 
 function App() {
 
@@ -175,6 +176,7 @@ function App() {
 
   return (
     <div className="App">
+      <FlashMessage/>
       <Row>
         <Col className="text-center">
           <h1>ODRAW</h1>

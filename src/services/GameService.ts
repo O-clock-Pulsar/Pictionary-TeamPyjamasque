@@ -23,6 +23,8 @@ export default class GameService {
             }).save();
             alreadyExists = false;
             message = "Vous avez commencé une nouvelle partie.";
+        } else {
+            namespace = game.namespace
         }
         return {game, alreadyExists, message, namespace};
     }

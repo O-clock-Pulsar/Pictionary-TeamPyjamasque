@@ -16,14 +16,15 @@ export default class GameController {
     );
     const { username } = token;
     const result: IGameServiceResult = await gameService.createGame(username);
-    const { namespace } = result.game;
-    if (!result.alreadyExists) {
+    const { alreadyExists, namespace, message } = result;
+    if (!alreadyExists) {
       const io = request.app.get('socketio');
       io.createNamespace(namespace);
     }
-    request.flash(result.alreadyExists ? 'danger' : 'success',
-      result.message,
-      false);
+    response.cookie('flashIsDanger',
+      alreadyExists);
+    response.cookie('flashMessage',
+      message);
     response.redirect(`/game/${namespace}`);
   }
 
