@@ -62,7 +62,7 @@ export default class GameService {
     }
 
     async getRoundWord() {
-        const word = await Word.findOne();
-        return word;
+        const document = await Word.aggregate([{ $sample: {size: 1} }]);
+        return document[0];
     }
 }
