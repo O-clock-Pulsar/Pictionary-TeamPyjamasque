@@ -140,25 +140,30 @@ function App() {
     state.namespaceSocket.emit('player ready', state.username)
   }
 
-  const setMobile = (isDesktop: boolean) => {
+  const setIsDesktop = () => {
+    handleCanvasChange();
+    const isDesktop = window.innerWidth >= 768;
     if(isDesktop){
       setState(state => ({
         ...state,
+        isDesktop,
         canvasWidth: window.innerWidth/2,
-        canvasHeight:  window.innerHeight/2,
+        canvasHeight:  window.innerHeight/2
       }))
     } else {
       setState(state => ({
         ...state,
+        isDesktop,
         canvasWidth: window.innerWidth,
-        canvasHeight:  window.innerHeight/3,
+        canvasHeight:  window.innerHeight/3
       }))
     }
-  } 
+  }
 
   useEffect(() => {
     getUsername();
-    setMobile(state.isDesktop);
+    setIsDesktop();
+    window.addEventListener("resize", setIsDesktop)
 
     return function disconnectNamespace(): void {
       state.namespaceSocket.disconnect();
