@@ -35,8 +35,8 @@ function App() {
 
   const getUsername = async (): Promise<void> => {
     const token = Cookie.get("token");
-    const decodedToken = JSON.parse(await (await fetch(`authentificate/${token}`)).json());
-    const username = decodedToken.username;
+    const authResponse = JSON.parse(await (await fetch(`authentificate/${token}`)).json());
+    const username = authResponse.username;
     setState(state => ({
       ...state,
       username

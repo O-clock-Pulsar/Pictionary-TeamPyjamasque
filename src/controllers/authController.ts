@@ -39,9 +39,10 @@ export default class AuthController {
     try {
       const decodedToken: any = jsonwebtoken.verify(request.params.token,
         process.env.JWT_SECRET || 'dummy');
-      response.json(JSON.stringify(decodedToken));
+      const authResponse = { username: decodedToken.username };
+      response.json(JSON.stringify(authResponse));
     } catch {
-      response.json({});
+      response.status(500);
     }
   }
 }
