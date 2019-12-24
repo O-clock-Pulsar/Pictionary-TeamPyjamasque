@@ -65,4 +65,8 @@ export default class GameService {
         const document = await Word.aggregate([{ $sample: {size: 1} }]);
         return document[0];
     }
+
+    getCurrentGames(){
+        return Game.find({namespace: {$ne: null}});
+    }
 }

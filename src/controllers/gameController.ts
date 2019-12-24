@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { Container } from 'typedi';
 import jsonwebtoken from 'jsonwebtoken';
 import GameService from '../services/GameService';
-import Game from '../models/Game';
 import { IGameServiceResult } from '../Interfaces/GameService';
 
 const gameService = Container.get(GameService);
@@ -29,7 +28,7 @@ export default class GameController {
   }
 
   static async showGames(request: Request, response: Response): Promise<void> {
-    const availableGames = await Game.find({ namespace: { $ne: null } });
+    const availableGames = await gameService.getCurrentGames();
     const games = availableGames.map((game) => {
       const { namespace } = game;
       const { host } = game;

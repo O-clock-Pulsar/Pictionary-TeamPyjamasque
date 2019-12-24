@@ -23,7 +23,8 @@ export default class Server {
   }
 
   createNamespace(gameNamespace: string): void {
-    this.namespaces[gameNamespace] = this.io.of(`/${gameNamespace}`);
+    this.namespaces[gameNamespace] = {};
+    this.namespaces[gameNamespace].namespace = this.io.of(`/${gameNamespace}`);
     this.namespaces[gameNamespace].connectedUsers = {};
     this.namespaces[gameNamespace].readyUsers = new Set();
     this.namespaces[gameNamespace].playerList;
@@ -33,7 +34,7 @@ export default class Server {
     this.namespaces[gameNamespace].timerSeconds = 180;
     this.namespaces[gameNamespace].timerInterval;
 
-    this.namespaces[gameNamespace].on('connection',
+    this.namespaces[gameNamespace].namespace.on('connection',
       async (namespaceSocket: SocketIO.Socket): Promise<void> => {
         const { username } = namespaceSocket.handshake.query;
 
@@ -145,7 +146,7 @@ export default class Server {
       });
   }
 
-  start(): void {
+  async start(): Promise<void> {
     try {
       this.io.on('connection',
         (baseSocket: SocketIO.Socket): void => {
@@ -171,6 +172,11 @@ export default class Server {
         });
 
       this.io.listen(this.server);
+
+      // Creates namespaces for games in progress in case of server crash/restart
+      const currentGames = await gameService.getCurrentGames();
+      currentGames.forEach((game) => { this.createNamespace(game.namespace); });
+
       console.log('Socket IO Server started');
     } catch (e) { console.log(e); }
   }
