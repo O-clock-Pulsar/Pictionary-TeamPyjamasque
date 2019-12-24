@@ -17,17 +17,12 @@ import NonceGenerator from './middlewares/NonceGenerator';
 
 dotenv.config();
 
-const app: express.Express = express();
+export const app: express.Express = express();
 const PORT = parseInt(process.env.PORT) || 5050;
-const SOCKET_PORT = parseInt(process.env.SOCKET_IO_PORT) || 5060;
-const socketServer = new Server(SOCKET_PORT);
-
-
-socketServer.start();
 
 app.use(NonceGenerator);
 
-app.use(helmet);
+app.use(helmet(process.env.SOCKET_ADDRESS));
 
 app.use(cookieParser(process.env.COOKIE_SECRET || 'dummy'));
 
@@ -46,7 +41,6 @@ app.use(express.static('public'));
 app.use('/react',
   express.static('public/react'));
 
-// Middlewares moved morgan into if for clear tests
 if (process.env.NODE_ENV !== 'production') {
   app.use(morgan('dev'));
 }
@@ -56,8 +50,9 @@ app.use(AuthChecker);
 // routing
 app.use(router);
 
-// middleware pour les 404 !
 app.use(pageNotFound);
+
+let server;
 
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/odraw',
   { useNewUrlParser: true },
@@ -70,9 +65,13 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/odraw',
     console.log('Mongoose connected');
 
     // lancer l'appli
-    app.listen(PORT,
+    server = app.listen(PORT,
       () => {
         console.log(`App running on port ${PORT}`);
+        const socketServer = new Server(server);
+        socketServer.start();
+        app.set('socketio',
+          socketServer);
       });
   });
 

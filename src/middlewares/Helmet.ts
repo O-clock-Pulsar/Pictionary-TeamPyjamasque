@@ -1,32 +1,34 @@
 import helmet from 'helmet';
 
-const socketAddressHTTP = process.env.SOCKET_IO_ADDRESS_HTTP_PROTOCOL ? process.env.SOCKET_IO_ADDRESS_HTTP_PROTOCOL : 'http://localhost';
-const socketAddressWS = process.env.SOCKET_IO_ADDRESS_WS_PROTOCOL ? process.env.SOCKET_IO_ADDRESS_WS_PROTOCOL : 'ws://localhost';
-const socketPORT = process.env.SOCKET_IO_PORT ? process.env.SOCKET_IO_PORT : 5060;
+export default (socketAddress: string) => {
+  const socketAddressHTTP = socketAddress ? `http://${socketAddress}` : 'http://localhost:5050';
+  const socketAddressWS = socketAddress ? `ws://${socketAddress}` : 'ws://localhost:5050';
 
-export default helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      reportUri: '/report-violation',
-      styleSrc: ["'self'", 'fonts.googleapis.com'],
-      fontSrc: ["'self'", 'fonts.gstatic.com'],
-      scriptSrc: ["'self'", (req, res) => `'nonce-${res.locals.nonce}'`],
-      connectSrc: ["'self'",
-        `${socketAddressHTTP}:${socketPORT}`,
-        `${socketAddressWS}:${socketPORT}`],
+  return helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        reportUri: '/report-violation',
+        imgSrc: ["'self'", 'data:'],
+        styleSrc: ["'self'", 'fonts.googleapis.com'],
+        fontSrc: ["'self'", 'fonts.gstatic.com'],
+        scriptSrc: ["'self'", (req, res) => `'nonce-${res.locals.nonce}'`],
+        connectSrc: ["'self'",
+          `${socketAddressHTTP}`,
+          `${socketAddressWS}`],
+      },
     },
-  },
-  hidePoweredBy: {
-    setTo: 'PHP 7.3.6',
-  },
-  permittedCrossDomainPolicies: {
-    permittedPolicies: 'none',
-  },
-  referrerPolicy: {
-    policy: 'same-origin',
-  },
-  xssFilter: {
-    reportUri: '/report-violation',
-  },
-});
+    hidePoweredBy: {
+      setTo: 'PHP 7.3.6',
+    },
+    permittedCrossDomainPolicies: {
+      permittedPolicies: 'none',
+    },
+    referrerPolicy: {
+      policy: 'same-origin',
+    },
+    xssFilter: {
+      reportUri: '/report-violation',
+    },
+  });
+};

@@ -1,4 +1,4 @@
-const baseSocket = io(`http://localhost:5060?username=${username}`);
+const baseSocket = io(`?username=${username}`);
 
 baseSocket.on('invite',
   (invitation) => {

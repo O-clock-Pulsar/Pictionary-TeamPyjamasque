@@ -49,7 +49,8 @@ export default class UserService {
 
     async uploadAvatar(avatarData: Express.Multer.File, userInfo: IUser): Promise<IUserServiceResults> {
         try{
-            const user = await User.findByIdAndUpdate(userInfo.id, {avatar: avatarData.originalname}, {new: true})
+            const name = encodeURIComponent(avatarData.originalname.trim());
+            const user = await User.findByIdAndUpdate(userInfo.id, {avatar: name}, {new: true})
             await promises.writeFile(`${__dirname}../../../public/uploads/avatars/${user.avatar}`, avatarData.buffer);
             return {error: false, message: "L'avatar de l'utilisateur a été enregistré avec succès."}
         } catch (e) {return {error: true, message: "Une erreur s'est produite lors de'enregistrement de l'image, mais le compte a été créé."}}
