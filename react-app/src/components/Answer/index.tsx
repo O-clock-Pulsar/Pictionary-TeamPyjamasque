@@ -10,14 +10,16 @@ import Form from 'react-bootstrap/Form';
 import PropTypes, { string } from 'prop-types';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Badge from 'react-bootstrap/Badge';
 
-function Answer({ namespaceSocket, answers, isDisabled }) {
+function Answer({ namespaceSocket, answers, isDisabled, checkAnswer }) {
 
     let messagesEnd = useRef(null);
 
     const [state, setState] = useState({
         inputText: "",
-        answers: answers ? answers : []
+        answers: answers ? answers : [],
+        score: 0
     });
 
     // Event type is broken according to GitHub discussions. Set to any.
@@ -29,7 +31,7 @@ function Answer({ namespaceSocket, answers, isDisabled }) {
         }));
     }
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
         event.preventDefault();
         const answer = state.inputText;
         if (answer) {
@@ -37,10 +39,12 @@ function Answer({ namespaceSocket, answers, isDisabled }) {
                 namespaceSocket.emit('answer', answer)
                 const answers = state.answers;
                 answers.push(answer);
+                const isCorrect = checkAnswer(answer);
                 setState(state => ({
                     ...state,
                     answers,
-                    inputText: ""
+                    inputText: "",
+                    score: isCorrect ? state.score + 15 : state.score
                 }));
             } catch (e) {
                 console.log('There was a problem sending the message');
@@ -87,6 +91,7 @@ function Answer({ namespaceSocket, answers, isDisabled }) {
                         </ListGroup>}
                     </div>
                 </Card>
+            <p className="my-2">Votre score : <Badge variant="warning">{state.score}</Badge></p>
             </Col>
         </Row>
     )
@@ -95,7 +100,8 @@ function Answer({ namespaceSocket, answers, isDisabled }) {
 Answer.propTypes = {
     namespaceSocket: PropTypes.any.isRequired,
     answers: PropTypes.arrayOf(string).isRequired,
-    isDisabled: PropTypes.bool.isRequired
+    isDisabled: PropTypes.bool.isRequired,
+    checkAnswer: PropTypes.func.isRequired
 }
 
 export default Answer;

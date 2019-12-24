@@ -56,4 +56,16 @@ export default class GameController {
       response.redirect('/react');
     } else response.redirect('http://localhost:3000');
   }
+
+  static checkWord(request: Request, response: Response): void {
+    const io = request.app.get('socketio');
+    const input = request.params.word;
+    const roundWord = io.namespaces[request.params.namespace].word;
+    const compareResult = input.localeCompare(roundWord,
+      'fr',
+      { sensitivity: 'base' });
+    if (compareResult === 0) {
+      response.json(JSON.stringify({ correct: true }));
+    } else response.json(JSON.stringify({ correct: false }));
+  }
 }

@@ -199,6 +199,17 @@ function App() {
     handleCanvasChange();
   };
 
+  const checkAnswer = async (answer: string): Promise<boolean> => {
+    const results = JSON.parse(await (await fetch(`/${state.namespace}/${answer}`)).json());
+    if (results.correct){
+      setState(state=> ({
+        ...state,
+        isAnswerDisabled: true
+      }))
+    }
+    return results.correct
+  }
+
   return (
     <div className="App">
       <FlashMessage/>
@@ -257,7 +268,7 @@ function App() {
               }
             </Col>
             <Col md={{ order: 1 }}>
-              <Answer namespaceSocket={state.namespaceSocket} answers={state.answers} isDisabled={state.isAnswerDisabled} />
+              <Answer namespaceSocket={state.namespaceSocket} answers={state.answers} isDisabled={state.isAnswerDisabled} checkAnswer={checkAnswer} />
             </Col>
           </Row>
         </div> :
