@@ -1,5 +1,6 @@
 import SocketIO from 'socket.io';
 import { Container } from 'typedi';
+import { INamespaceObject } from 'src/Interfaces/SocketIO';
 import GameService from '../services/GameService';
 import { Invitation } from '../Interfaces/SocketIOServer';
 
@@ -8,11 +9,11 @@ const gameService = Container.get(GameService);
 export default class Server {
   server: any;
 
-  io: any;
+  io: SocketIO.Server;
 
-  namespaces: Object;
+  namespaces: object;
 
-  connectedUsers: Object;
+  connectedUsers: object;
 
   // Port type must be any to avoid problems with SocketIO types but is converted to a number when stored after activating the server
   constructor(server: any) {
@@ -23,39 +24,33 @@ export default class Server {
   }
 
   createNamespace(gameNamespace: string): void {
-    this.namespaces[gameNamespace] = {};
-    this.namespaces[gameNamespace].namespace = this.io.of(`/${gameNamespace}`);
-    this.namespaces[gameNamespace].connectedUsers = {};
-    this.namespaces[gameNamespace].readyUsers = new Set();
-    this.namespaces[gameNamespace].playerList;
-    this.namespaces[gameNamespace].isInProgress = false;
-    this.namespaces[gameNamespace].drawerer = '';
-    this.namespaces[gameNamespace].word = '';
-    this.namespaces[gameNamespace].timerSeconds = 180;
-    this.namespaces[gameNamespace].timerInterval;
+    const namespaceObject: INamespaceObject = {
+      namespace: this.io.of(`/${gameNamespace}`),
+      connectedUsers: {},
+      readyUsers: new Set(),
+      playerList: [],
+      isInProgress: false,
+      drawerer: '',
+      word: '',
+      timerSeconds: 180,
+      timerInterval: null,
+    };
 
-    this.namespaces[gameNamespace].namespace.on('connection',
+    namespaceObject.namespace.on('connection',
       async (namespaceSocket: SocketIO.Socket): Promise<void> => {
         const { username } = namespaceSocket.handshake.query;
-
-        this.namespaces[gameNamespace].connectedUsers[username] = namespaceSocket.id;
+        namespaceObject.connectedUsers[username] = namespaceSocket.id;
 
         const playerResults = await gameService.addToPlayerList(gameNamespace,
           username);
-        if (!this.namespaces[gameNamespace].isInProgress && playerResults.ready) {
-          this.namespaces[gameNamespace].playerList = playerResults.playerList;
+
+        if (playerResults.ready && !namespaceObject.isInProgress) {
+          namespaceObject.playerList = playerResults.playerList;
           this.io.of(gameNamespace).emit('game ready');
-        } else if (this.namespaces[gameNamespace].isInProgress) {
-          this.io.of(gameNamespace).emit('game start',
-            this.namespaces[gameNamespace].timerSeconds);
-          if (username === this.namespaces[gameNamespace].drawerer) {
-            const drawererSocketId = this.namespaces[gameNamespace].connectedUsers[this.namespaces[gameNamespace].drawerer];
-            this.io.of(gameNamespace).to(drawererSocketId).emit('receive word',
-              this.namespaces[gameNamespace].word);
-            this.io.of(gameNamespace).to(this.namespaces[gameNamespace].connectedUsers[username]).emit('become drawerer');
-          } else {
-            this.io.of(gameNamespace).to(this.namespaces[gameNamespace].connectedUsers[username]).emit('become answerer');
-          }
+        } else if (namespaceObject.isInProgress) {
+          this.joinInProgress(gameNamespace,
+            namespaceObject,
+            username);
         }
 
         namespaceSocket.on('disconnect',
@@ -63,49 +58,23 @@ export default class Server {
             namespaceSocket.leave('drawerer');
             namespaceSocket.leave('answerer');
 
-            delete this.namespaces[gameNamespace].connectedUsers[username];
+            delete namespaceObject.connectedUsers[username];
 
             const playerResults = await gameService.removeFromPlayerList(gameNamespace,
               username);
-            if (playerResults.playerList.length === 0 && process.env.NODE_ENV === 'production') {
-              // Nod env check added to make testing in development easier for when react reloads after changes. Possibly remove later?
+            if (playerResults.playerList.length === 0) {
               delete this.namespaces[gameNamespace];
-              gameService.endGame(gameNamespace);
+              gameService.endGame(gameNamespace,
+                namespaceObject.playerList);
             }
           });
 
         namespaceSocket.on('player ready',
           async (username) => {
-            this.namespaces[gameNamespace].readyUsers.add(username);
-            if (this.namespaces[gameNamespace].readyUsers.size === this.namespaces[gameNamespace].playerList.length) {
-              const players = this.namespaces[gameNamespace].playerList;
-              const drawerer = players[Math.floor(Math.random() * players.length)];
-              this.namespaces[gameNamespace].drawerer = drawerer;
-              const drawererSocketId = this.namespaces[gameNamespace].connectedUsers[drawerer];
-              const { word } = await gameService.getRoundWord();
-              this.namespaces[gameNamespace].word = word;
-              this.namespaces[gameNamespace].isInProgress = true;
-              this.io.of(gameNamespace).emit('game start',
-                this.namespaces[gameNamespace].timerSeconds);
-              if (!this.namespaces[gameNamespace].timerInterval) {
-                this.namespaces[gameNamespace].timerInterval = setInterval(() => {
-                  this.namespaces[gameNamespace].timerSeconds -= 1;
-                  if (this.namespaces[gameNamespace].timerSeconds === 0) {
-                    namespaceSocket.emit('round end');
-                    clearInterval(this.namespaces[gameNamespace].timerInterval);
-                  }
-                },
-                1000);
-              }
-              this.io.of(gameNamespace).to(drawererSocketId).emit('receive word',
-                word);
-              players.forEach((player: string): void => {
-                if (player === drawerer) {
-                  this.io.of(gameNamespace).to(this.namespaces[gameNamespace].connectedUsers[player]).emit('become drawerer');
-                } else {
-                  this.io.of(gameNamespace).to(this.namespaces[gameNamespace].connectedUsers[player]).emit('become answerer');
-                }
-              });
+            namespaceObject.readyUsers.add(username);
+            if (namespaceObject.readyUsers.size === namespaceObject.playerList.length) {
+              this.setUpGame(gameNamespace,
+                namespaceObject);
             } else {
               namespaceSocket.emit('waiting');
             }
@@ -126,13 +95,13 @@ export default class Server {
 
         namespaceSocket.on('draw',
           (image: JSON): void => {
-            this.namespaces[gameNamespace].to('answerers').emit('drawed',
+            namespaceObject.namespace.to('answerers').emit('drawed',
               image);
           });
 
         namespaceSocket.on('answer',
           (answer: string): void => {
-            this.namespaces[gameNamespace].to('drawerer').emit('answered',
+            namespaceObject.namespace.to('drawerer').emit('answered',
               answer);
           });
 
@@ -141,9 +110,54 @@ export default class Server {
             namespaceSocket.leave('drawerer');
             namespaceSocket.leave('answerer');
             delete this.namespaces[gameNamespace];
-            gameService.endGame(gameNamespace);
+            gameService.endGame(gameNamespace,
+              namespaceObject.playerList);
           });
       });
+    this.namespaces[gameNamespace] = namespaceObject;
+  }
+
+  async setUpGame(gameNamespace: string, namespaceObject: INamespaceObject): Promise<void> {
+    const drawer = await gameService.chooseDrawer(gameNamespace);
+    namespaceObject.drawerer = drawer;
+    const drawererSocketId = namespaceObject.connectedUsers[drawer];
+    const word = await gameService.getRoundWord();
+    namespaceObject.word = word;
+    namespaceObject.isInProgress = true;
+    this.io.of(gameNamespace).emit('game start',
+      namespaceObject.timerSeconds);
+    if (!namespaceObject.timerInterval) {
+      namespaceObject.timerInterval = setInterval(() => {
+        namespaceObject.timerSeconds -= 1;
+        if (namespaceObject.timerSeconds === 0) {
+          this.io.of(gameNamespace).emit('round end');
+          clearInterval(namespaceObject.timerInterval);
+        }
+      },
+      1000);
+    }
+    this.io.of(gameNamespace).to(drawererSocketId).emit('receive word',
+      word);
+    namespaceObject.playerList.forEach((player: string): void => {
+      if (player === drawer) {
+        this.io.of(gameNamespace).to(namespaceObject.connectedUsers[player]).emit('become drawerer');
+      } else {
+        this.io.of(gameNamespace).to(namespaceObject.connectedUsers[player]).emit('become answerer');
+      }
+    });
+  }
+
+  joinInProgress(gameNamespace: string, namespaceObject: INamespaceObject, username: string): void {
+    this.io.of(gameNamespace).emit('game start',
+      namespaceObject.timerSeconds);
+    if (username === namespaceObject.drawerer) {
+      const drawererSocketId = namespaceObject.connectedUsers[namespaceObject.drawerer];
+      this.io.of(gameNamespace).to(drawererSocketId).emit('receive word',
+        namespaceObject.word);
+      this.io.of(gameNamespace).to(namespaceObject.connectedUsers[username]).emit('become drawerer');
+    } else {
+      this.io.of(gameNamespace).to(namespaceObject.connectedUsers[username]).emit('become answerer');
+    }
   }
 
   async start(): Promise<void> {

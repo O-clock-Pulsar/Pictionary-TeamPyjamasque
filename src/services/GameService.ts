@@ -57,16 +57,21 @@ export default class GameService {
         } else return namespace;
     }
 
-    async endGame(namespace: string): Promise<IGame>{
-        return await Game.findOneAndUpdate({namespace}, {namespace: null}, {new:true});
+    async endGame(namespace: string, playerList: string[]): Promise<IGame>{
+        return await Game.findOneAndUpdate({namespace}, {namespace: null, playerList}, {new:true});
     }
 
     async getRoundWord() {
         const document = await Word.aggregate([{ $sample: {size: 1} }]);
-        return document[0];
+        return document[0].word;
     }
 
-    getCurrentGames(){
-        return Game.find({namespace: {$ne: null}});
+    getCurrentGames(): Promise<IGame[]> {
+        return Game.find({namespace: {$ne: null}}).exec();
+    }
+
+    async chooseDrawer(namespace: string): Promise<string> {
+        const {players} = await Game.findOne({namespace})
+        return players[Math.floor(Math.random() * players.length)];
     }
 }
