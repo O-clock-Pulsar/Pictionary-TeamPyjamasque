@@ -12,14 +12,13 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Badge from 'react-bootstrap/Badge';
 
-function Answer({ namespaceSocket, answers, isDisabled, checkAnswer }) {
+function Answer({ namespaceSocket, answers, isDisabled, checkAnswer, score }) {
 
     let messagesEnd = useRef(null);
 
     const [state, setState] = useState({
         inputText: "",
         answers: answers ? answers : [],
-        score: 0
     });
 
     // Event type is broken according to GitHub discussions. Set to any.
@@ -36,15 +35,13 @@ function Answer({ namespaceSocket, answers, isDisabled, checkAnswer }) {
         const answer = state.inputText;
         if (answer) {
             try {
-                namespaceSocket.emit('answer', answer)
                 const answers = state.answers;
                 answers.push(answer);
-                const isCorrect = checkAnswer(answer);
+                checkAnswer(answer);
                 setState(state => ({
                     ...state,
                     answers,
-                    inputText: "",
-                    score: isCorrect ? state.score + 15 : state.score
+                    inputText: ""
                 }));
             } catch (e) {
                 console.log('There was a problem sending the message');
@@ -91,7 +88,7 @@ function Answer({ namespaceSocket, answers, isDisabled, checkAnswer }) {
                         </ListGroup>}
                     </div>
                 </Card>
-            <p className="my-2">Votre score : <Badge variant="warning">{state.score}</Badge></p>
+            <p className="my-2">Votre score : <Badge variant="warning">{score}</Badge></p>
             </Col>
         </Row>
     )
@@ -101,7 +98,8 @@ Answer.propTypes = {
     namespaceSocket: PropTypes.any.isRequired,
     answers: PropTypes.arrayOf(string).isRequired,
     isDisabled: PropTypes.bool.isRequired,
-    checkAnswer: PropTypes.func.isRequired
+    checkAnswer: PropTypes.func.isRequired,
+    score: PropTypes.number.isRequired
 }
 
 export default Answer;

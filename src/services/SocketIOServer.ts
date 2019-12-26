@@ -33,6 +33,9 @@ export default class Server {
       word: '',
       timerSeconds: 180,
       timerInterval: null,
+      stillPlaying: [],
+      exDrawers: [],
+      results: [],
     };
 
     namespaceObject.namespace.on('connection',
@@ -90,6 +93,7 @@ export default class Server {
           (): void => {
             namespaceSocket.leave('drawer');
             namespaceSocket.join('answerers');
+            namespaceSocket.emit('set answerer interface');
           });
 
         namespaceSocket.on('draw',
@@ -99,12 +103,19 @@ export default class Server {
           });
 
         namespaceSocket.on('answer',
-          (answer: string): void => {
+          (answer: string, isCorrect: boolean): void => {
             namespaceObject.namespace.to('drawer').emit('answered',
               answer);
+            if (isCorrect) {
+              namespaceObject.stillPlaying.splice(namespaceObject.stillPlaying.indexOf(username));
+            }
+            if (!namespaceObject.stillPlaying.length) {
+              this.roundChange(gameNamespace,
+                namespaceObject);
+            }
           });
 
-        namespaceSocket.on('game end',
+        namespaceSocket.on('game over',
           (gameNamespace: string): void => {
             namespaceSocket.leave('drawer');
             namespaceSocket.leave('answerer');
@@ -112,38 +123,62 @@ export default class Server {
             gameService.endGame(gameNamespace,
               namespaceObject.playerList);
           });
+
+        namespaceSocket.on('ended game',
+          (results) => {
+            namespaceObject.results.push([results.username, results.score]);
+            if (namespaceObject.results.length === namespaceObject.playerList.length) {
+              namespaceObject.results.sort((a, b) => a[1] - b[1]);
+              namespaceObject.results.forEach((result) => this.io.of(gameNamespace).to(namespaceObject.connectedUsers[result[0]]).emit('game over',
+                namespaceObject.results));
+            }
+          });
       });
     this.namespaces[gameNamespace] = namespaceObject;
   }
 
+  roundChange(gameNamespace: string, namespaceObject: INamespaceObject): void {
+    namespaceObject.exDrawers.push(namespaceObject.drawer);
+    this.setUpGame(gameNamespace,
+      namespaceObject);
+  }
+
   async setUpGame(gameNamespace: string, namespaceObject: INamespaceObject): Promise<void> {
-    const drawer = await gameService.chooseDrawer(gameNamespace);
-    namespaceObject.drawer = drawer;
-    const drawerSocketId = namespaceObject.connectedUsers[drawer];
-    const word = await gameService.getRoundWord();
-    namespaceObject.word = word;
-    namespaceObject.isInProgress = true;
-    this.io.of(gameNamespace).emit('game start',
-      namespaceObject.timerSeconds);
-    if (!namespaceObject.timerInterval) {
-      namespaceObject.timerInterval = setInterval(() => {
-        namespaceObject.timerSeconds -= 1;
-        if (namespaceObject.timerSeconds === 0) {
-          this.io.of(gameNamespace).emit('round end');
-          clearInterval(namespaceObject.timerInterval);
-        }
-      },
-      1000);
-    }
-    this.io.of(gameNamespace).to(drawerSocketId).emit('receive word',
-      word);
-    namespaceObject.playerList.forEach((player: string): void => {
-      if (player === drawer) {
-        this.io.of(gameNamespace).to(namespaceObject.connectedUsers[player]).emit('become drawer');
-      } else {
-        this.io.of(gameNamespace).to(namespaceObject.connectedUsers[player]).emit('become answerer');
+    const drawer = await gameService.chooseDrawer(gameNamespace,
+      namespaceObject.exDrawers);
+    if (!drawer) {
+      this.io.of(gameNamespace).emit('end game');
+    } else {
+      namespaceObject.drawer = drawer;
+      namespaceObject.stillPlaying = [...namespaceObject.playerList];
+      namespaceObject.stillPlaying.splice(namespaceObject.stillPlaying.indexOf(namespaceObject.drawer),
+        1);
+      const drawerSocketId = namespaceObject.connectedUsers[drawer];
+      const word = await gameService.getRoundWord();
+      namespaceObject.word = word;
+      namespaceObject.isInProgress = true;
+      this.io.of(gameNamespace).emit('game start',
+        namespaceObject.timerSeconds);
+      if (!namespaceObject.timerInterval) {
+        namespaceObject.timerInterval = setInterval(() => {
+          namespaceObject.timerSeconds -= 1;
+          if (namespaceObject.timerSeconds === 0) {
+            this.io.of(gameNamespace).emit('round end');
+            clearInterval(namespaceObject.timerInterval);
+          }
+        },
+        1000);
       }
-    });
+      this.io.of(gameNamespace).to(drawerSocketId).emit('receive word',
+        word);
+      namespaceObject.playerList.forEach((player: string): void => {
+        if (player === drawer) {
+          this.io.of(gameNamespace).to(namespaceObject.connectedUsers[player]).emit('become drawer');
+        } else {
+          this.io.of(gameNamespace).to(namespaceObject.connectedUsers[player]).emit('become answerer');
+        }
+      });
+    }
   }
 
   joinInProgress(gameNamespace: string, namespaceObject: INamespaceObject, username: string): void {

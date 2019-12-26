@@ -70,8 +70,11 @@ export default class GameService {
         return Game.find({namespace: {$ne: null}}).exec();
     }
 
-    async chooseDrawer(namespace: string): Promise<string> {
-        const {players} = await Game.findOne({namespace})
-        return players[Math.floor(Math.random() * players.length)];
+    async chooseDrawer(namespace: string, exDrawers: string[]): Promise<string|null> {
+        const {players} = await Game.findOne({namespace});
+        const playersLeft = players.filter(x => !exDrawers.includes(x))
+        if(playersLeft.length){
+            return playersLeft[Math.floor(Math.random() * playersLeft.length)];
+        } else return null;
     }
 }

@@ -13,5 +13,8 @@ export interface INamespaceObject {
     drawer: string;
     word: string;
     timerSeconds: number;
-    timerInterval: NodeJS.Timeout
+    timerInterval: NodeJS.Timeout;
+    stillPlaying: string[];
+    exDrawers: string[];
+    results: any[];
   }

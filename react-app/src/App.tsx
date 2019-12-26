@@ -12,6 +12,7 @@ import SendInvitation from './components/SendInvitation';
 import ReadyCheckModal from './components/ReadyCheckModal';
 import Answer from './components/Answer';
 import FlashMessage from './components/FlashMessage';
+import ResultsModal from './components/ResultsModal';
 
 function App() {
 
@@ -34,7 +35,10 @@ function App() {
     isGameStarted: false,
     word: "",
     timer: {displayMinutes: 0, displaySeconds: 0},
-    answers: []
+    answers: [],
+    score: 0,
+    isOver: false,
+    results: []
   });
 
   const getUsername = async (): Promise<void> => {
@@ -124,12 +128,28 @@ function App() {
       }))
     })
 
-    namespaceSocket.on('answered', (answer) => {
+    namespaceSocket.on('set answerer interface', () => {
+      setState(state => ({
+        ...state,
+        isCanvasDisabled: true,
+        isAnswerDisabled: false
+      }))
+    })
+
+    namespaceSocket.on('answered', (answer: string) => {
       const answers = state.answers;
       answers.push(answer)
       setState(state => ({
         ...state,
         answers
+      }))
+    })
+
+    namespaceSocket.on('game over', (results: [string, number]) => {
+      setState(state => ({
+        ...state,
+        isOver: true,
+        results
       }))
     })
 
@@ -159,6 +179,14 @@ function App() {
       }))
     }
   }
+
+  useEffect(() => {
+    if(state.namespaceSocket){
+      state.namespaceSocket.on('end game', () => {
+        state.namespaceSocket.emit('ended game', {username: state.username, score: state.score})
+      })
+    }
+  }, [state.score])
 
   useEffect(() => {
     getUsername();
@@ -202,10 +230,12 @@ function App() {
   const checkAnswer = async (answer: string): Promise<boolean> => {
     const results = JSON.parse(await (await fetch(`/${state.namespace}/${answer}`)).json());
     if (results.correct){
-      setState(state=> ({
-        ...state,
-        isAnswerDisabled: true
-      }))
+      state.namespaceSocket.emit('answer', answer, results.correct);
+      setState(state => ({
+          ...state,
+          score: state.score + 15,
+          isAnswerDisabled: true
+      }));
     }
     return results.correct
   }
@@ -213,6 +243,7 @@ function App() {
   return (
     <div className="App">
       <FlashMessage/>
+      <ResultsModal results={state.results} isOver={state.isOver} />
       <Row>
         <Col className="d-none d-md-block text-center">
           <h1>ODRAW</h1>
@@ -268,7 +299,7 @@ function App() {
               }
             </Col>
             <Col md={{ order: 1 }}>
-              <Answer namespaceSocket={state.namespaceSocket} answers={state.answers} isDisabled={state.isAnswerDisabled} checkAnswer={checkAnswer} />
+              <Answer namespaceSocket={state.namespaceSocket} answers={state.answers} isDisabled={state.isAnswerDisabled} checkAnswer={checkAnswer} score={state.score} />
             </Col>
           </Row>
         </div> :
