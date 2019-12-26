@@ -164,6 +164,10 @@ function App() {
       }))
     })
 
+    namespaceSocket.on('end game', () => {
+      namespaceSocket.emit('ended game', {username: state.username, score: state.score})
+    })
+
     return namespaceSocket;
   }
 
@@ -193,6 +197,7 @@ function App() {
 
   useEffect(() => {
     if(state.namespaceSocket){
+      state.namespaceSocket.off('end game');
       state.namespaceSocket.on('end game', () => {
         state.namespaceSocket.emit('ended game', {username: state.username, score: state.score})
       })

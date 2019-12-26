@@ -130,7 +130,7 @@ export default class Server {
           (results) => {
             namespaceObject.results.push([results.username, results.score]);
             if (namespaceObject.results.length === namespaceObject.playerList.length) {
-              namespaceObject.results.sort((a, b) => a[1] - b[1]);
+              namespaceObject.results.sort((a, b) => b[1] - a[1]);
               namespaceObject.results.forEach((result) => this.io.of(gameNamespace).to(namespaceObject.connectedUsers[result[0]]).emit('game over',
                 namespaceObject.results));
             }
@@ -141,6 +141,7 @@ export default class Server {
 
   roundChange(gameNamespace: string, namespaceObject: INamespaceObject): void {
     namespaceObject.exDrawers.push(namespaceObject.drawer);
+    clearInterval(namespaceObject.timerInterval);
     this.setUpGame(gameNamespace,
       namespaceObject);
   }
@@ -161,20 +162,18 @@ export default class Server {
       namespaceObject.isInProgress = true;
       this.io.of(gameNamespace).emit('game start',
         namespaceObject.timerTotal);
-      if (!namespaceObject.timerInterval) {
-        namespaceObject.timerSeconds = namespaceObject.timerTotal;
-        namespaceObject.timerInterval = setInterval(() => {
-          namespaceObject.timerSeconds -= 1;
-          if (namespaceObject.timerSeconds <= 0) {
-            this.io.of(gameNamespace).emit('round end');
-            clearInterval(namespaceObject.timerInterval);
-            namespaceObject.timerInterval = null;
-            this.roundChange(gameNamespace,
-              namespaceObject);
-          }
-        },
-        1000);
-      }
+      namespaceObject.timerSeconds = namespaceObject.timerTotal;
+      namespaceObject.timerInterval = setInterval(() => {
+        namespaceObject.timerSeconds -= 1;
+        if (namespaceObject.timerSeconds <= 0) {
+          this.io.of(gameNamespace).emit('round end');
+          clearInterval(namespaceObject.timerInterval);
+          namespaceObject.timerInterval = null;
+          this.roundChange(gameNamespace,
+            namespaceObject);
+        }
+      },
+      1000);
       this.io.of(gameNamespace).to(drawerSocketId).emit('receive word',
         word);
       namespaceObject.playerList.forEach((player: string): void => {
