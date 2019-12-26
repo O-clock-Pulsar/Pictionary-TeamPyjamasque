@@ -108,15 +108,15 @@ function App() {
       }))
     })
 
-    namespaceSocket.on('become drawerer', () => {
-      namespaceSocket.emit('became drawerer')
+    namespaceSocket.on('become drawer', () => {
+      namespaceSocket.emit('became drawer')
     })
 
     namespaceSocket.on('become answerer', () => {
       namespaceSocket.emit('became answerer')
     })
 
-    namespaceSocket.on('set drawerer interface', () => {
+    namespaceSocket.on('set drawer interface', () => {
       setState(state => ({
         ...state,
         isCanvasDisabled: false,
