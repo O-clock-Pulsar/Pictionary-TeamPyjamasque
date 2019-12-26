@@ -12,7 +12,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Badge from 'react-bootstrap/Badge';
 
-function Answer({ namespaceSocket, answers, isDisabled, checkAnswer, score }) {
+function Answer({ answers, isDisabled, checkAnswer, score }) {
 
     let messagesEnd = useRef(null);
 
@@ -95,7 +95,6 @@ function Answer({ namespaceSocket, answers, isDisabled, checkAnswer, score }) {
 }
 
 Answer.propTypes = {
-    namespaceSocket: PropTypes.any.isRequired,
     answers: PropTypes.arrayOf(string).isRequired,
     isDisabled: PropTypes.bool.isRequired,
     checkAnswer: PropTypes.func.isRequired,

@@ -31,7 +31,8 @@ export default class Server {
       isInProgress: false,
       drawer: '',
       word: '',
-      timerSeconds: 180,
+      timerTotal: 180,
+      timerSeconds: 0,
       timerInterval: null,
       stillPlaying: [],
       exDrawers: [],
@@ -65,6 +66,7 @@ export default class Server {
             const playerResults = await gameService.removeFromPlayerList(gameNamespace,
               username);
             if (playerResults.playerList.length === 0) {
+              clearInterval(namespaceObject.timerInterval);
               delete this.namespaces[gameNamespace];
               gameService.endGame(gameNamespace,
                 namespaceObject.playerList);
@@ -158,13 +160,17 @@ export default class Server {
       namespaceObject.word = word;
       namespaceObject.isInProgress = true;
       this.io.of(gameNamespace).emit('game start',
-        namespaceObject.timerSeconds);
+        namespaceObject.timerTotal);
       if (!namespaceObject.timerInterval) {
+        namespaceObject.timerSeconds = namespaceObject.timerTotal;
         namespaceObject.timerInterval = setInterval(() => {
           namespaceObject.timerSeconds -= 1;
-          if (namespaceObject.timerSeconds === 0) {
+          if (namespaceObject.timerSeconds <= 0) {
             this.io.of(gameNamespace).emit('round end');
             clearInterval(namespaceObject.timerInterval);
+            namespaceObject.timerInterval = null;
+            this.roundChange(gameNamespace,
+              namespaceObject);
           }
         },
         1000);

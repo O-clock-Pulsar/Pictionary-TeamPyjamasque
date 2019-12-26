@@ -12,6 +12,7 @@ export interface INamespaceObject {
     isInProgress: boolean;
     drawer: string;
     word: string;
+    timerTotal: number;
     timerSeconds: number;
     timerInterval: NodeJS.Timeout;
     stillPlaying: string[];

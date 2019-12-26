@@ -13,6 +13,7 @@ import ReadyCheckModal from './components/ReadyCheckModal';
 import Answer from './components/Answer';
 import FlashMessage from './components/FlashMessage';
 import ResultsModal from './components/ResultsModal';
+import TimeUpModal from './components/TimeUpModal';
 
 function App() {
 
@@ -38,7 +39,9 @@ function App() {
     answers: [],
     score: 0,
     isOver: false,
-    results: []
+    results: [],
+    isTimeUp: false,
+    rounds: 0
   });
 
   const getUsername = async (): Promise<void> => {
@@ -80,13 +83,14 @@ function App() {
       }))
     })
 
-    namespaceSocket.on('game start', (timerSeconds) => {
-      const displayMinutes = Math.floor(timerSeconds/60);
+    namespaceSocket.on('game start', (timerSeconds: number) => {
+      const displayMinutes = Math.floor(timerSeconds / 60);
       const displaySeconds = timerSeconds - displayMinutes * 60;
       setState(state => ({
         ...state,
         isGameStarted: true,
-        timer: {displayMinutes, displaySeconds}
+        timer: {displayMinutes, displaySeconds},
+        rounds: state.rounds + 1
       }))
     })
 
@@ -150,6 +154,13 @@ function App() {
         ...state,
         isOver: true,
         results
+      }))
+    })
+
+    namespaceSocket.on('round end', () => {
+      setState(state => ({
+        ...state,
+        isTimeUp: true
       }))
     })
 
@@ -240,10 +251,18 @@ function App() {
     return results.correct
   }
 
+  const closeTimeUpModal = () => {
+    setState(state => ({
+      ...state,
+      isTimeUp: false
+    }))
+  }
+
   return (
     <div className="App">
       <FlashMessage/>
       <ResultsModal results={state.results} isOver={state.isOver} />
+      <TimeUpModal show={state.isTimeUp} handleClose={closeTimeUpModal} />
       <Row>
         <Col className="d-none d-md-block text-center">
           <h1>ODRAW</h1>
@@ -259,7 +278,7 @@ function App() {
               </Col> 
             }
             <Col xs={{order: 1}} >
-              <Timer displayMinutes={state.timer.displayMinutes} displaySeconds={state.timer.displaySeconds} />
+              <Timer displayMinutes={state.timer.displayMinutes} displaySeconds={state.timer.displaySeconds} rounds={state.rounds} />
               {!state.isDesktop &&
                 <Row>
                   <Col className="text-center">
@@ -299,7 +318,7 @@ function App() {
               }
             </Col>
             <Col md={{ order: 1 }}>
-              <Answer namespaceSocket={state.namespaceSocket} answers={state.answers} isDisabled={state.isAnswerDisabled} checkAnswer={checkAnswer} score={state.score} />
+              <Answer answers={state.answers} isDisabled={state.isAnswerDisabled} checkAnswer={checkAnswer} score={state.score} />
             </Col>
           </Row>
         </div> :
