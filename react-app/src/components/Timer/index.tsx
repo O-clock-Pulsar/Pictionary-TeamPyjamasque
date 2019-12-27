@@ -38,14 +38,15 @@ function Timer({ displayMinutes, displaySeconds, rounds }){
   }
 
   useEffect(() => {
+    const interval = runTimer();
     setState(state => ({
       ...state,
       seconds: displaySeconds,
       minutes: displayMinutes,
-      interval: runTimer()
+      interval
     }))
 
-    return clearInterval(state.interval);
+    return () => clearInterval(interval);
   },[rounds])
 
    return(

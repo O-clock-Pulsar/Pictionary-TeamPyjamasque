@@ -65,6 +65,7 @@ export default class Server {
 
             const playerResults = await gameService.removeFromPlayerList(gameNamespace,
               username);
+
             if (playerResults.playerList.length === 0) {
               clearInterval(namespaceObject.timerInterval);
               delete this.namespaces[gameNamespace];
@@ -77,11 +78,10 @@ export default class Server {
           async (username) => {
             namespaceObject.readyUsers.add(username);
             if (namespaceObject.readyUsers.size === namespaceObject.playerList.length) {
-              this.setUpGame(gameNamespace,
+              this.findDrawer(gameNamespace,
                 namespaceObject);
-            } else {
-              namespaceSocket.emit('waiting');
             }
+            namespaceSocket.emit('waiting');
           });
 
         namespaceSocket.on('became drawer',
@@ -142,52 +142,57 @@ export default class Server {
   roundChange(gameNamespace: string, namespaceObject: INamespaceObject): void {
     namespaceObject.exDrawers.push(namespaceObject.drawer);
     clearInterval(namespaceObject.timerInterval);
-    this.setUpGame(gameNamespace,
+    this.io.of(gameNamespace).emit('round end');
+    this.findDrawer(gameNamespace,
       namespaceObject);
   }
 
-  async setUpGame(gameNamespace: string, namespaceObject: INamespaceObject): Promise<void> {
-    const drawer = await gameService.chooseDrawer(gameNamespace,
+  async findDrawer(gameNamespace: string, namespaceObject: INamespaceObject): Promise<void> {
+    const { drawer, answerers } = await gameService.assignRoles(gameNamespace,
       namespaceObject.exDrawers);
     if (!drawer) {
       this.io.of(gameNamespace).emit('end game');
     } else {
       namespaceObject.drawer = drawer;
-      namespaceObject.stillPlaying = [...namespaceObject.playerList];
-      namespaceObject.stillPlaying.splice(namespaceObject.stillPlaying.indexOf(namespaceObject.drawer),
-        1);
-      const drawerSocketId = namespaceObject.connectedUsers[drawer];
-      const word = await gameService.getRoundWord();
-      namespaceObject.word = word;
-      namespaceObject.isInProgress = true;
-      this.io.of(gameNamespace).emit('game start',
-        namespaceObject.timerTotal);
-      namespaceObject.timerSeconds = namespaceObject.timerTotal;
-      namespaceObject.timerInterval = setInterval(() => {
-        namespaceObject.timerSeconds -= 1;
-        if (namespaceObject.timerSeconds <= 0) {
-          this.io.of(gameNamespace).emit('round end');
-          clearInterval(namespaceObject.timerInterval);
-          namespaceObject.timerInterval = null;
-          this.roundChange(gameNamespace,
-            namespaceObject);
-        }
-      },
-      1000);
-      this.io.of(gameNamespace).to(drawerSocketId).emit('receive word',
-        word);
-      namespaceObject.playerList.forEach((player: string): void => {
-        if (player === drawer) {
-          this.io.of(gameNamespace).to(namespaceObject.connectedUsers[player]).emit('become drawer');
-        } else {
-          this.io.of(gameNamespace).to(namespaceObject.connectedUsers[player]).emit('become answerer');
-        }
-      });
+      namespaceObject.stillPlaying = answerers;
+      setTimeout(() => this.setUpRound(gameNamespace,
+        namespaceObject),
+      5000);
     }
   }
 
+  async setUpRound(gameNamespace: string, namespaceObject: INamespaceObject): Promise<void> {
+    const drawerSocketId = namespaceObject.connectedUsers[namespaceObject.drawer];
+    const word = await gameService.getRoundWord();
+    namespaceObject.word = word;
+
+    namespaceObject.isInProgress = true;
+    this.io.of(gameNamespace).emit('round start',
+      namespaceObject.timerTotal);
+    namespaceObject.timerSeconds = namespaceObject.timerTotal;
+    namespaceObject.timerInterval = setInterval(() => {
+      namespaceObject.timerSeconds -= 1;
+      if (namespaceObject.timerSeconds <= 0) {
+        clearInterval(namespaceObject.timerInterval);
+        namespaceObject.timerInterval = null;
+        this.roundChange(gameNamespace,
+          namespaceObject);
+      }
+    },
+    1000);
+    this.io.of(gameNamespace).to(drawerSocketId).emit('receive word',
+      word);
+    namespaceObject.playerList.forEach((player: string): void => {
+      if (player === namespaceObject.drawer) {
+        this.io.of(gameNamespace).to(namespaceObject.connectedUsers[player]).emit('become drawer');
+      } else {
+        this.io.of(gameNamespace).to(namespaceObject.connectedUsers[player]).emit('become answerer');
+      }
+    });
+  }
+
   joinInProgress(gameNamespace: string, namespaceObject: INamespaceObject, username: string): void {
-    this.io.of(gameNamespace).emit('game start',
+    this.io.of(gameNamespace).emit('round start',
       namespaceObject.timerSeconds);
     if (username === namespaceObject.drawer) {
       const drawerSocketId = namespaceObject.connectedUsers[namespaceObject.drawer];

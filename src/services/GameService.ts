@@ -2,7 +2,7 @@ import { Service } from "typedi";
 import Game, { IGame } from '../models/Game';
 import Word from '../models/Word';
 import adjNoun from 'adj-noun';
-import { IGameServiceResult, IPlayerResult } from '../Interfaces/GameService';
+import { IGameServiceResult, IPlayerResult, IRoleAssignment } from '../Interfaces/GameService';
 
 // Add this as a dependency ?
 adjNoun.seed(parseInt(process.env.ADJ_NOUN_SEED) || 1);
@@ -70,11 +70,17 @@ export default class GameService {
         return Game.find({namespace: {$ne: null}}).exec();
     }
 
-    async chooseDrawer(namespace: string, exDrawers: string[]): Promise<string|null> {
+    async assignRoles(namespace: string, exDrawers: string[]): Promise<IRoleAssignment> {
+        let drawer = "";
+        let answerers: string[] = [];
         const {players} = await Game.findOne({namespace});
         const playersLeft = players.filter(x => !exDrawers.includes(x))
         if(playersLeft.length){
-            return playersLeft[Math.floor(Math.random() * playersLeft.length)];
-        } else return null;
+            drawer = playersLeft[Math.floor(Math.random() * playersLeft.length)];
+        } else drawer = null;
+        answerers = [...players];
+        answerers.splice(answerers.indexOf(drawer),
+          1);
+        return {drawer, answerers}
     }
 }

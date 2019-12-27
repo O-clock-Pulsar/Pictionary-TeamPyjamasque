@@ -13,7 +13,8 @@ import ReadyCheckModal from './components/ReadyCheckModal';
 import Answer from './components/Answer';
 import FlashMessage from './components/FlashMessage';
 import ResultsModal from './components/ResultsModal';
-import TimeUpModal from './components/TimeUpModal';
+import RoundEndModal from './components/RoundEndModal';
+import RoundWaitMessage from './components/RoundWaitMessage';
 
 function App() {
 
@@ -38,9 +39,10 @@ function App() {
     timer: {displayMinutes: 0, displaySeconds: 0},
     answers: [],
     score: 0,
-    isOver: false,
+    isGameOver: false,
     results: [],
-    isTimeUp: false,
+    isRoundOver: false,
+    hasRoundOverModal: false,
     rounds: 0
   });
 
@@ -83,14 +85,15 @@ function App() {
       }))
     })
 
-    namespaceSocket.on('game start', (timerSeconds: number) => {
+    namespaceSocket.on('round start', (timerSeconds: number) => {
       const displayMinutes = Math.floor(timerSeconds / 60);
       const displaySeconds = timerSeconds - displayMinutes * 60;
       setState(state => ({
         ...state,
         isGameStarted: true,
         timer: {displayMinutes, displaySeconds},
-        rounds: state.rounds + 1
+        rounds: state.rounds + 1,
+        isRoundOver: false
       }))
     })
 
@@ -152,7 +155,9 @@ function App() {
     namespaceSocket.on('game over', (results: [string, number]) => {
       setState(state => ({
         ...state,
-        isOver: true,
+        isGameOver: true,
+        isGameReady: false,
+        isPlayerReady: false,
         results
       }))
     })
@@ -160,8 +165,10 @@ function App() {
     namespaceSocket.on('round end', () => {
       setState(state => ({
         ...state,
-        isTimeUp: true
+        isRoundOver: true,
+        hasRoundOverModal: true
       }))
+      canvas.current.clear();
     })
 
     namespaceSocket.on('end game', () => {
@@ -256,43 +263,45 @@ function App() {
     return results.correct
   }
 
-  const closeTimeUpModal = () => {
+  const closeRoundEndModal = () => {
     setState(state => ({
       ...state,
-      isTimeUp: false
+      hasRoundOverModal: false
     }))
   }
 
   return (
     <div className="App">
       <FlashMessage/>
-      <ResultsModal results={state.results} isOver={state.isOver} />
-      <TimeUpModal show={state.isTimeUp} handleClose={closeTimeUpModal} />
+      <ResultsModal results={state.results} isGameOver={state.isGameOver} />
+      <RoundEndModal show={state.hasRoundOverModal} handleClose={closeRoundEndModal} />
       <Row>
         <Col className="d-none d-md-block text-center">
           <h1>ODRAW</h1>
         </Col>
       </Row>
-      {state.isGameStarted ?
+      {state.isGameStarted && !state.isGameOver ?
         <div id="game-screen">
-          <Row>
-          {!state.isCanvasDisabled && state.word && 
-              <Col className="text-center" xs={{order: 2}}>
-                <h4>Votre mot est </h4>
-                <h1 id="word-text">{state.word}</h1>
-              </Col> 
-            }
-            <Col xs={{order: 1}} >
-              <Timer displayMinutes={state.timer.displayMinutes} displaySeconds={state.timer.displaySeconds} rounds={state.rounds} />
-              {!state.isDesktop &&
-                <Row>
-                  <Col className="text-center">
-                    {!state.isCanvasDisabled && <Button onClick={handleCanvasClear}>Clear</Button>}
-                  </Col>
-                </Row>
+          {state.isRoundOver ? 
+            <RoundWaitMessage/> :
+            <Row>
+            {!state.isCanvasDisabled && state.word && 
+                <Col className="text-center" xs={{order: 2}}>
+                  <h4>Votre mot est </h4>
+                  <h1 id="word-text">{state.word}</h1>
+                </Col> 
               }
-            </Col>
-          </Row>
+              <Col xs={{order: 1}} >
+                <Timer displayMinutes={state.timer.displayMinutes} displaySeconds={state.timer.displaySeconds} rounds={state.rounds} />
+                {!state.isDesktop &&
+                  <Row>
+                    <Col className="text-center">
+                      {!state.isCanvasDisabled && <Button onClick={handleCanvasClear}>Clear</Button>}
+                    </Col>
+                  </Row>
+                }
+              </Col>
+            </Row>}
           <Row>
             <Col md={{ order: 2 }} >
               <Row>
@@ -332,7 +341,7 @@ function App() {
           <ReadyCheckModal show={state.isGameReady && !state.isPlayerReady} handleClose={sendUserConfirmation} />
           {state.isPlayerReady && 
             <Row>
-              <Col className="text-center">On attend juste encore un petit peu...</Col>
+              <Col className="text-center">La partie commencera dans quelques secondes...</Col>
             </Row>}
         </div>
       }

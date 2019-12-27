@@ -3,18 +3,17 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import PropTypes from 'prop-types';
 
-function ResultsModal({ isOver, results }) {
+function ResultsModal({ isGameOver, results }) {
   return (
-    <Modal show={isOver}>
+    <Modal show={isGameOver}>
       <Modal.Header>
-        <Modal.Title>Votre invitation</Modal.Title>
+        <Modal.Title>Partie finie !</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <h3>Partie finie !</h3>
-        <h4>Voici les résultats:</h4>
+        <h3>Voici les résultats:</h3>
         <ol>
           {
-            results.map(result => { return <li>{result[0]} : {result[1]}</li> })
+            results.map((result: Array<any>, index: number) => { return <li key={index}>{result[0]} : {result[1]}</li> })
           }
         </ol>
       </Modal.Body>
@@ -28,7 +27,7 @@ function ResultsModal({ isOver, results }) {
 }
 
 ResultsModal.propTypes = {
-  isOver: PropTypes.bool.isRequired,
+  isGameOver: PropTypes.bool.isRequired,
   results: PropTypes.array.isRequired
 }
 
