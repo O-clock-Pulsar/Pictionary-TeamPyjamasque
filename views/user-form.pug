@@ -32,6 +32,8 @@ block content
                 div(class=(login ? "col-md-8 text-center form-group align-self-center" : "col-md-6 text-center form-group align-self-center"))
                     label(for="password") Mot de passe
                     input(type="password" class=(passwordError ? "is-invalid form-control" : "form-control") id="password" name="password" required)
+                    if !login
+                        include includes/password-popover
                 div(class=(login ? "col-md-2" : "col-md-1"))
             if !login        
                 div(class="row")
@@ -48,3 +50,4 @@ block content
 block javascript
     if !login
         script(src="js/avatarPreview.js")
+        script(src="js/initalizePopovers.js")

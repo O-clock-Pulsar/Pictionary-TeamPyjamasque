@@ -3,6 +3,7 @@ import User, { IUser } from '../models/User';
 import {IRegistrationResult, IUserServiceResults} from '../Interfaces/UserService';
 import {promises} from 'fs';
 import bcrypt from 'bcrypt';
+import owasp from 'owasp-password-strength-test';
 
 @Service()
 export default class UserService {
@@ -17,7 +18,7 @@ export default class UserService {
                 ids.push(key);
             }
         }
-        if(ids.length !== 0){
+        if(ids.length){
             messages.push("Tous les champs sont réquis.");
         }
         if (password !== confirmation){
@@ -25,11 +26,17 @@ export default class UserService {
             ids.push("password");
             ids.push("confirmation");
         }
+        owasp.config({maxLength: 60});
+        const passwordResults = owasp.test(password);
+        if (passwordResults.errors.length){
+            messages.push("Votre mot de passe n'est pas assez sécurisé. Passez sur les ? sous le champ du mot de passe pour plus d'information.");
+            ids.push("password");
+        }
         if (email || username){
         email = email.trim().toLowerCase();
             try{
                 user = await User.findOne({$or:[{email}, {username}]});
-                if (!user){
+                if (!user && !messages.length){
                     username = username.trim();
                     user = await new User({username, password, email}).save();
                 }   else {
@@ -38,7 +45,7 @@ export default class UserService {
                 }
             } catch (e) {messages.push("Une erreur inconnue s'est produite.")}
         }
-        if(messages.length !== 0) {
+        if(messages.length) {
             error = true;
          } else {
             error = false;
