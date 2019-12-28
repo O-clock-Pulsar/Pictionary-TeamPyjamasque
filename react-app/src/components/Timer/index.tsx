@@ -3,8 +3,7 @@ import { useState, useEffect } from 'react';
 import './style.css';
 import PropTypes from 'prop-types';
  
-function Timer({displayMinutes, displaySeconds}){
-
+function Timer({ displayMinutes, displaySeconds, rounds }){
   let [state, setState] = useState({
       seconds: displaySeconds,
       minutes: displayMinutes,
@@ -12,7 +11,7 @@ function Timer({displayMinutes, displaySeconds}){
     });
 
   const runTimer = () => {
-    setInterval(() => {
+    return setInterval(() => {
       setState(state => {
         const seconds = state.seconds - 1;
         if (state.seconds || state.minutes){
@@ -39,13 +38,16 @@ function Timer({displayMinutes, displaySeconds}){
   }
 
   useEffect(() => {
-    setState({
+    const interval = runTimer();
+    setState(state => ({
       ...state,
-      interval: runTimer()
-    })
+      seconds: displaySeconds,
+      minutes: displayMinutes,
+      interval
+    }))
 
-    return clearInterval(state.interval);
-  },[])
+    return () => clearInterval(interval);
+  },[rounds])
 
    return(
     <h1 className="text-center">

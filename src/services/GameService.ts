@@ -2,7 +2,7 @@ import { Service } from "typedi";
 import Game, { IGame } from '../models/Game';
 import Word from '../models/Word';
 import adjNoun from 'adj-noun';
-import { IGameServiceResult, IPlayerResult } from '../Interfaces/GameService';
+import { IGameServiceResult, IPlayerResult, IRoleAssignment } from '../Interfaces/GameService';
 
 // Add this as a dependency ?
 adjNoun.seed(parseInt(process.env.ADJ_NOUN_SEED) || 1);
@@ -57,12 +57,30 @@ export default class GameService {
         } else return namespace;
     }
 
-    async endGame(namespace: string): Promise<IGame>{
-        return await Game.findOneAndUpdate({namespace}, {namespace: null}, {new:true});
+    async endGame(namespace: string, playerList: string[]): Promise<IGame>{
+        return await Game.findOneAndUpdate({namespace}, {namespace: null, playerList}, {new:true});
     }
 
     async getRoundWord() {
         const document = await Word.aggregate([{ $sample: {size: 1} }]);
-        return document[0];
+        return document[0].word;
+    }
+
+    getCurrentGames(): Promise<IGame[]> {
+        return Game.find({namespace: {$ne: null}}).exec();
+    }
+
+    async assignRoles(namespace: string, exDrawers: string[]): Promise<IRoleAssignment> {
+        let drawer = "";
+        let answerers: string[] = [];
+        const {players} = await Game.findOne({namespace});
+        const playersLeft = players.filter(x => !exDrawers.includes(x))
+        if(playersLeft.length){
+            drawer = playersLeft[Math.floor(Math.random() * playersLeft.length)];
+        } else drawer = null;
+        answerers = [...players];
+        answerers.splice(answerers.indexOf(drawer),
+          1);
+        return {drawer, answerers}
     }
 }

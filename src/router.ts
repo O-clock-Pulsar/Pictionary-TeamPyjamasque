@@ -37,6 +37,8 @@ router.get('/game/create',
   GameController.create);
 router.get('/game/:namespace',
   GameController.play);
+router.get('/react/:namespace/:word',
+  GameController.checkWord);
 router.post(
   '/report-violation',
   multerBodyParser.none(),

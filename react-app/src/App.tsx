@@ -12,6 +12,9 @@ import SendInvitation from './components/SendInvitation';
 import ReadyCheckModal from './components/ReadyCheckModal';
 import Answer from './components/Answer';
 import FlashMessage from './components/FlashMessage';
+import ResultsModal from './components/ResultsModal';
+import RoundEndModal from './components/RoundEndModal';
+import RoundWaitMessage from './components/RoundWaitMessage';
 
 function App() {
 
@@ -34,7 +37,13 @@ function App() {
     isGameStarted: false,
     word: "",
     timer: {displayMinutes: 0, displaySeconds: 0},
-    answers: []
+    answers: [],
+    score: 0,
+    isGameOver: false,
+    results: [],
+    isRoundOver: false,
+    hasRoundOverModal: false,
+    rounds: 0
   });
 
   const getUsername = async (): Promise<void> => {
@@ -76,13 +85,15 @@ function App() {
       }))
     })
 
-    namespaceSocket.on('game start', (timerSeconds) => {
-      const displayMinutes = Math.floor(timerSeconds/60);
+    namespaceSocket.on('round start', (timerSeconds: number) => {
+      const displayMinutes = Math.floor(timerSeconds / 60);
       const displaySeconds = timerSeconds - displayMinutes * 60;
       setState(state => ({
         ...state,
         isGameStarted: true,
-        timer: {displayMinutes, displaySeconds}
+        timer: {displayMinutes, displaySeconds},
+        rounds: state.rounds + 1,
+        isRoundOver: false
       }))
     })
 
@@ -108,15 +119,15 @@ function App() {
       }))
     })
 
-    namespaceSocket.on('become drawerer', () => {
-      namespaceSocket.emit('became drawerer')
+    namespaceSocket.on('become drawer', () => {
+      namespaceSocket.emit('became drawer')
     })
 
     namespaceSocket.on('become answerer', () => {
       namespaceSocket.emit('became answerer')
     })
 
-    namespaceSocket.on('set drawerer interface', () => {
+    namespaceSocket.on('set drawer interface', () => {
       setState(state => ({
         ...state,
         isCanvasDisabled: false,
@@ -124,13 +135,44 @@ function App() {
       }))
     })
 
-    namespaceSocket.on('answered', (answer) => {
+    namespaceSocket.on('set answerer interface', () => {
+      setState(state => ({
+        ...state,
+        isCanvasDisabled: true,
+        isAnswerDisabled: false
+      }))
+    })
+
+    namespaceSocket.on('answered', (answer: string) => {
       const answers = state.answers;
       answers.push(answer)
       setState(state => ({
         ...state,
         answers
       }))
+    })
+
+    namespaceSocket.on('game over', (results: [string, number]) => {
+      setState(state => ({
+        ...state,
+        isGameOver: true,
+        isGameReady: false,
+        isPlayerReady: false,
+        results
+      }))
+    })
+
+    namespaceSocket.on('round end', () => {
+      setState(state => ({
+        ...state,
+        isRoundOver: true,
+        hasRoundOverModal: true
+      }))
+      canvas.current.clear();
+    })
+
+    namespaceSocket.on('end game', () => {
+      namespaceSocket.emit('ended game', {username: state.username, score: state.score})
     })
 
     return namespaceSocket;
@@ -159,6 +201,15 @@ function App() {
       }))
     }
   }
+
+  useEffect(() => {
+    if(state.namespaceSocket){
+      state.namespaceSocket.off('end game');
+      state.namespaceSocket.on('end game', () => {
+        state.namespaceSocket.emit('ended game', {username: state.username, score: state.score})
+      })
+    }
+  }, [state.score])
 
   useEffect(() => {
     getUsername();
@@ -199,34 +250,58 @@ function App() {
     handleCanvasChange();
   };
 
+  const checkAnswer = async (answer: string): Promise<boolean> => {
+    const results = JSON.parse(await (await fetch(`/${state.namespace}/${answer}`)).json());
+    if (results.correct){
+      state.namespaceSocket.emit('answer', answer, results.correct);
+      setState(state => ({
+          ...state,
+          score: state.score + 15,
+          isAnswerDisabled: true
+      }));
+    }
+    return results.correct
+  }
+
+  const closeRoundEndModal = () => {
+    setState(state => ({
+      ...state,
+      hasRoundOverModal: false
+    }))
+  }
+
   return (
     <div className="App">
       <FlashMessage/>
+      <ResultsModal results={state.results} isGameOver={state.isGameOver} />
+      <RoundEndModal show={state.hasRoundOverModal} handleClose={closeRoundEndModal} />
       <Row>
         <Col className="d-none d-md-block text-center">
           <h1>ODRAW</h1>
         </Col>
       </Row>
-      {state.isGameStarted ?
+      {state.isGameStarted && !state.isGameOver ?
         <div id="game-screen">
-          <Row>
-          {!state.isCanvasDisabled && state.word && 
-              <Col className="text-center" xs={{order: 2}}>
-                <h4>Votre mot est </h4>
-                <h1 id="word-text">{state.word}</h1>
-              </Col> 
-            }
-            <Col xs={{order: 1}} >
-              <Timer displayMinutes={state.timer.displayMinutes} displaySeconds={state.timer.displaySeconds} />
-              {!state.isDesktop &&
-                <Row>
-                  <Col className="text-center">
-                    {!state.isCanvasDisabled && <Button onClick={handleCanvasClear}>Clear</Button>}
-                  </Col>
-                </Row>
+          {state.isRoundOver ? 
+            <RoundWaitMessage/> :
+            <Row>
+            {!state.isCanvasDisabled && state.word && 
+                <Col className="text-center" xs={{order: 2}}>
+                  <h4>Votre mot est </h4>
+                  <h1 id="word-text">{state.word}</h1>
+                </Col> 
               }
-            </Col>
-          </Row>
+              <Col xs={{order: 1}} >
+                <Timer displayMinutes={state.timer.displayMinutes} displaySeconds={state.timer.displaySeconds} rounds={state.rounds} />
+                {!state.isDesktop &&
+                  <Row>
+                    <Col className="text-center">
+                      {!state.isCanvasDisabled && <Button onClick={handleCanvasClear}>Clear</Button>}
+                    </Col>
+                  </Row>
+                }
+              </Col>
+            </Row>}
           <Row>
             <Col md={{ order: 2 }} >
               <Row>
@@ -257,7 +332,7 @@ function App() {
               }
             </Col>
             <Col md={{ order: 1 }}>
-              <Answer namespaceSocket={state.namespaceSocket} answers={state.answers} isDisabled={state.isAnswerDisabled} />
+              <Answer answers={state.answers} isDisabled={state.isAnswerDisabled} checkAnswer={checkAnswer} score={state.score} />
             </Col>
           </Row>
         </div> :
@@ -266,7 +341,7 @@ function App() {
           <ReadyCheckModal show={state.isGameReady && !state.isPlayerReady} handleClose={sendUserConfirmation} />
           {state.isPlayerReady && 
             <Row>
-              <Col className="text-center">On attend juste encore un petit peu...</Col>
+              <Col className="text-center">La partie commencera dans quelques secondes...</Col>
             </Row>}
         </div>
       }

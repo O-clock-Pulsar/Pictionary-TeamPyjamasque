@@ -1,4 +1,3 @@
-// importer les variables d'environnement
 import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
@@ -52,7 +51,7 @@ app.use(router);
 
 app.use(pageNotFound);
 
-let server;
+let server: any;
 
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/odraw',
   { useNewUrlParser: true },
