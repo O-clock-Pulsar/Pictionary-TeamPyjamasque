@@ -251,7 +251,7 @@ function App() {
   };
 
   const checkAnswer = async (answer: string): Promise<boolean> => {
-    const results = JSON.parse(await (await fetch(`/${state.namespace}/${answer}`)).json());
+    const results = JSON.parse(await (await fetch(`${state.namespace}/${answer}`)).json());
     if (results.correct){
       state.namespaceSocket.emit('answer', answer, results.correct);
       setState(state => ({
