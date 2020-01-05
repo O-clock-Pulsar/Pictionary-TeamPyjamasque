@@ -39,3 +39,7 @@
 .modal-title{
     font-weight: 700;
 }
+
+#popover-content{
+    display: none
+}
