@@ -73,14 +73,19 @@ export default class GameService {
     async assignRoles(namespace: string, exDrawers: string[]): Promise<IRoleAssignment> {
         let drawer = "";
         let answerers: string[] = [];
-        const {players} = await Game.findOne({namespace});
-        const playersLeft = players.filter(x => !exDrawers.includes(x))
-        if(playersLeft.length){
-            drawer = playersLeft[Math.floor(Math.random() * playersLeft.length)];
-        } else drawer = null;
-        answerers = [...players];
-        answerers.splice(answerers.indexOf(drawer),
-          1);
-        return {drawer, answerers}
+        try{
+            const {players} = await Game.findOne({namespace});
+            const playersLeft = players.filter(x => !exDrawers.includes(x))
+            if(playersLeft.length){
+                drawer = playersLeft[Math.floor(Math.random() * playersLeft.length)];
+            } else drawer = null;
+            answerers = [...players];
+            answerers.splice(answerers.indexOf(drawer),
+              1);
+            return {drawer, answerers}
+        } catch (e) {
+            console.log(e)
+            return {drawer: null, answerers: null}
+        }
     }
 }
